@@ -1,0 +1,17 @@
+# Project exclude paths
+/src/index.js
+/src/index.js.map
+
+# dependencies
+/node_modules
+
+# production
+/build
+/dist
+
+# misc
+/.idea
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
