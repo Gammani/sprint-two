@@ -6,40 +6,17 @@ import {getBloggerViewModel, HTTP_STATUSES} from "../utils/utils";
 import {URIParamsBloggerIdModel} from "../models/URIParamsBloggerIdModel";
 import {CreateBloggerModel} from "../models/CreateBloggerModel";
 import {UpdateBloggerModel} from "../models/UpdateBloggerModel";
-import {BloggersType} from "../utils/types";
+import {bloggersRepository} from "../repositories/bloggers-repository";
 
-
-export const bloggers: BloggersType[] = [
-    {
-        id: "1",
-        name: "Leh",
-        youtubeUrl: "https://www.youtube.com/"
-    },
-    {
-        id: "2",
-        name: "Kao",
-        youtubeUrl: "https://www.youtube.com/"
-    },
-    {
-        id: "3",
-        name: "Mint",
-        youtubeUrl: "https://www.youtube.com/"
-    },
-]
 
 export const bloggersRouter = Router({})
 
 bloggersRouter.get('/', (req: RequestWithQuery<QueryBloggersModel>, res: Response<BloggerViewModel[]>) => {
-    let foundBloggers: BloggerViewModel[] = bloggers
-    if (req.query.name) {
-        foundBloggers = bloggers.filter(b => b.name.indexOf(req.query.name) > -1)
-        res.send(foundBloggers.map(getBloggerViewModel))
-    } else {
-        res.send(foundBloggers.map(getBloggerViewModel))
-    }
+    const foundBloggers = bloggersRepository.findBloggers(req.query.name?.toString())
+    res.send(foundBloggers)
 })
-bloggersRouter.get('/b:id', (req: RequestWithParams<URIParamsBloggerIdModel>, res: Response<BloggerViewModel>) => {
-    const foundBlog = bloggers.find(b => b.id === req.params.id)
+bloggersRouter.get('/:id', (req: RequestWithParams<URIParamsBloggerIdModel>, res: Response<BloggerViewModel>) => {
+    const foundBlog: BloggerViewModel | undefined = bloggersRepository.findBloggerById(req.params.id)
     if (foundBlog) {
         res.send(getBloggerViewModel(foundBlog))
     } else {
@@ -47,28 +24,20 @@ bloggersRouter.get('/b:id', (req: RequestWithParams<URIParamsBloggerIdModel>, re
     }
 })
 bloggersRouter.post('/', (req: RequestWithBody<CreateBloggerModel>, res: Response<BloggerViewModel>) => {
-    const newBlogger: BloggerViewModel = {
-        id: (+new Date()).toString(),
-        name: req.body.name,
-        youtubeUrl: req.body.youtubeUrl
-    }
-    bloggers.push(newBlogger)
+    const newBlogger: BloggerViewModel = bloggersRepository.creatBlogger(req.body.name,req.body.youtubeUrl)
     res.status(HTTP_STATUSES.CREATED_201).send(newBlogger)
 })
 bloggersRouter.put('/:id', (req: RequestWithParamsAndBody<URIParamsBloggerIdModel, UpdateBloggerModel>, res) => {
-    const foundBlogger: BloggerViewModel | undefined = bloggers.find(b => b.id === req.params.id)
-    if (foundBlogger) {
-        foundBlogger.name = req.body.name
-        foundBlogger.youtubeUrl = req.body.youtubeUrl
+    const isUpdateBlogger: boolean = bloggersRepository.updateBlogger(req.params.id, req.body.name, req.body.youtubeUrl)
+    if (isUpdateBlogger) {
         res.send(HTTP_STATUSES.NO_CONTENT_204)
     } else {
         res.send(HTTP_STATUSES.NOT_FOUND_404)
     }
 })
-bloggersRouter.delete('/b:id', (req: RequestWithParams<URIParamsBloggerIdModel>, res) => {
-    const foundIndex = bloggers.findIndex(b => b.id === req.params.id)
-    if (foundIndex > -1) {
-        bloggers.splice(foundIndex, 1)
+bloggersRouter.delete('/:id', (req: RequestWithParams<URIParamsBloggerIdModel>, res) => {
+    const isDeleteBlogger: boolean = bloggersRepository.deleteBlogger(req.params.id)
+    if (isDeleteBlogger) {
         res.send(HTTP_STATUSES.NO_CONTENT_204)
     } else {
         res.send(HTTP_STATUSES.NOT_FOUND_404)

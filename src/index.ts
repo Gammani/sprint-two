@@ -2,8 +2,10 @@ import express, {Request, Response} from 'express'
 import bodyParser from 'body-parser';
 import cors from 'cors'
 import {HTTP_STATUSES} from "./utils/utils";
-import {bloggers, bloggersRouter} from "./routes/bloggers-router";
-import {posts, postsRouter} from "./routes/posts-router";
+import {bloggersRouter} from "./routes/bloggers-router";
+import {postsRouter} from "./routes/posts-router";
+import {bloggers} from "./repositories/bloggers-repository";
+import {posts} from "./repositories/posts-repository";
 
 const app = express()
 const port = process.env.PORT || 5000
@@ -17,7 +19,7 @@ app.get('/', (req: Request, res: Response) => {
 })
 
 // Bloggers
-app.use('/bloggers', bloggersRouter)
+app.use('/blogs', bloggersRouter)
 // Posts
 app.use('/posts', postsRouter)
 
