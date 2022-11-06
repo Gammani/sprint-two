@@ -8,11 +8,13 @@ import {CreatePostModel} from "../models/CreatePostModel";
 import {UpdatePostModel} from "../models/UpdatePostModel";
 import {postsRepository} from "../repositories/posts-repository";
 import {authMiddleware} from "../middlewares/auth-middleware";
-import {checkedValidation} from "../middlewares/requestValidatorWithExpressValidator";
-import {body} from "express-validator";
+import {checkedValidation, isValidId} from "../middlewares/requestValidatorWithExpressValidator";
+import {body, CustomValidator} from "express-validator";
+
 
 
 export const postsRouter = Router({})
+
 
 postsRouter.get('/', (req: RequestWithQuery<QueryPostsModel>, res: Response<PostViewModel[]>) => {
     let foundPosts: PostViewModel[] = postsRepository.findPosts(req.query.title?.toString())
@@ -35,7 +37,7 @@ postsRouter.post('/', authMiddleware,
     body('title').isString().trim().notEmpty().isLength({max: 30}),
     body('shortDescription').isString().trim().notEmpty().isLength({max: 100}),
     body('content').isString().trim().notEmpty().isLength({max: 1000}),
-    body('blogId').isString().trim().notEmpty(),
+    body('blogId').custom(isValidId).isString().trim().notEmpty(),
     checkedValidation,
     (req: RequestWithBody<CreatePostModel>, res: Response<PostViewModel>) => {
     const newPost: PostViewModel | undefined = postsRepository.creatPost(req.body.title, req.body.shortDescription, req.body.content, req.body.blogId)
@@ -50,7 +52,7 @@ postsRouter.put('/:id', authMiddleware,
     body('title').isString().trim().notEmpty().isLength({max: 30}),
     body('shortDescription').isString().trim().notEmpty().isLength({max: 100}),
     body('content').isString().trim().notEmpty().isLength({max: 1000}),
-    body('blogId').isString().trim().notEmpty(),
+    body('blogId').custom(isValidId).isString().trim().notEmpty(),
     checkedValidation,
     (req: RequestWithParamsAndBody<URIParamsPostIdModel, UpdatePostModel>, res) => {
     const isUpdatePost: boolean = postsRepository.updatePost(req.params.id, req.body.title, req.body.shortDescription, req.body.content, req.body.blogId)
