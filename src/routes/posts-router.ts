@@ -37,7 +37,7 @@ postsRouter.post('/', authMiddleware,
     body('title').isString().trim().notEmpty().isLength({max: 30}),
     body('shortDescription').isString().trim().notEmpty().isLength({max: 100}),
     body('content').isString().trim().notEmpty().isLength({max: 1000}),
-    body('blogId').custom(isValidId).isString().trim().notEmpty(),
+    body('blogId').custom(isValidId),
     checkedValidation,
     (req: RequestWithBody<CreatePostModel>, res: Response<PostViewModel>) => {
     const newPost: PostViewModel | undefined = postsRepository.creatPost(req.body.title, req.body.shortDescription, req.body.content, req.body.blogId)
@@ -52,7 +52,7 @@ postsRouter.put('/:id', authMiddleware,
     body('title').isString().trim().notEmpty().isLength({max: 30}),
     body('shortDescription').isString().trim().notEmpty().isLength({max: 100}),
     body('content').isString().trim().notEmpty().isLength({max: 1000}),
-    body('blogId').custom(isValidId).isString().trim().notEmpty(),
+    body('blogId').custom(isValidId),
     checkedValidation,
     (req: RequestWithParamsAndBody<URIParamsPostIdModel, UpdatePostModel>, res) => {
     const isUpdatePost: boolean = postsRepository.updatePost(req.params.id, req.body.title, req.body.shortDescription, req.body.content, req.body.blogId)
