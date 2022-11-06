@@ -21,4 +21,5 @@ export const isValidId: CustomValidator = blogId => {
     if(foundBloggers) {
         return Promise.reject('blogId не валидный')
     }
+    return
 }
