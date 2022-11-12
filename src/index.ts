@@ -7,11 +7,11 @@ import {postsRouter} from "./routes/posts-router";
 import {bloggers} from "./repositories/bloggers-repository";
 import {posts} from "./repositories/posts-repository";
 
-const app = express()
+export const app = express()
 const port = process.env.PORT || 5000
 
 
-app.use(bodyParser())
+app.use(bodyParser.json())
 app.use(cors())
 
 app.get('/', (req: Request, res: Response) => {
@@ -26,7 +26,7 @@ app.use('/posts', postsRouter)
 app.delete('/testing/all-data', (req, res) => {
     posts.splice(0, posts.length)
     bloggers.splice(0, bloggers.length)
-    res.send(HTTP_STATUSES.NO_CONTENT_204)
+    res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
 })
 
 

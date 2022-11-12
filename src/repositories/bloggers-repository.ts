@@ -21,7 +21,7 @@ export const bloggers: BloggersType[] = [
 ]
 
 export const bloggersRepository = {
-    findBloggers(name: string | null | undefined): BloggerViewModel[] {
+    async findBloggers(name: string | null | undefined): Promise<BloggerViewModel[]> {
         let foundBloggers: BloggerViewModel[] = bloggers
         if (name) {
             foundBloggers = bloggers.filter(b => b.name.indexOf(name) > -1)
@@ -30,7 +30,7 @@ export const bloggersRepository = {
             return (foundBloggers.map(getBloggerViewModel))
         }
     },
-    findBloggerById(id: string): BloggerViewModel | undefined {
+    async findBloggerById(id: string): Promise<BloggerViewModel | undefined> {
         const foundBlog = bloggers.find(b => b.id === id)
         if (foundBlog) {
             return getBloggerViewModel(foundBlog)
@@ -38,12 +38,12 @@ export const bloggersRepository = {
             return undefined
         }
     },
-    creatBlogger(name: string, youtubeUrl: string): BloggerViewModel {
+    async creatBlogger(name: string, youtubeUrl: string): Promise<BloggerViewModel> {
         const newBlogger: BloggerViewModel = {id: (+new Date()).toString(), name, youtubeUrl}
         bloggers.push(newBlogger)
         return newBlogger
     },
-    updateBlogger(id: string, name: string, youtubeUrl: string): boolean {
+    async updateBlogger(id: string, name: string, youtubeUrl: string): Promise<boolean> {
         const foundBlogger: BloggerViewModel | undefined = bloggers.find(b => b.id === id)
         if (foundBlogger) {
             foundBlogger.name = name
@@ -53,7 +53,7 @@ export const bloggersRepository = {
             return false
         }
     },
-    deleteBlogger(id: string): boolean {
+    async deleteBlogger(id: string): Promise<boolean> {
         const foundIndex: number = bloggers.findIndex(b => b.id === id)
         if (foundIndex > -1) {
             bloggers.splice(foundIndex, 1)

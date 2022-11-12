@@ -48,7 +48,7 @@ export const posts: PostsType[] = [
 ]
 
 export const postsRepository = {
-    findPosts(title: string | undefined | null): PostViewModel[] {
+    async findPosts(title: string | undefined | null): Promise<PostViewModel[]> {
         let foundPosts: PostViewModel[] = posts
         if (title) {
             foundPosts = posts.filter(p => p.title.indexOf(title) > -1)
@@ -57,7 +57,7 @@ export const postsRepository = {
             return foundPosts.map(getPostsViewModel)
         }
     },
-    findPostById(id: string): PostViewModel | undefined {
+    async findPostById(id: string): Promise<PostViewModel | undefined> {
         const foundPost = posts.find(p => p.id === id)
         if (foundPost) {
             return foundPost
@@ -65,7 +65,7 @@ export const postsRepository = {
             return undefined
         }
     },
-    creatPost(title: string, shortDescription: string, content: string, blogId: string): PostViewModel | undefined {
+    async creatPost(title: string, shortDescription: string, content: string, blogId: string): Promise<PostViewModel | undefined> {
         const foundBlogger: BloggerViewModel | undefined = bloggers.find(b => b.id === blogId)
         if (foundBlogger) {
             const newPost: PostViewModel = {
@@ -77,7 +77,7 @@ export const postsRepository = {
             return undefined
         }
     },
-    updatePost(postId: string, title: string, shortDescription: string, content: string, blogId: string): boolean {
+    async updatePost(postId: string, title: string, shortDescription: string, content: string, blogId: string): Promise<boolean> {
         const foundPost: PostViewModel | undefined = posts.find(p => p.id === postId)
         if (foundPost) {
             foundPost.title = title,
@@ -89,7 +89,7 @@ export const postsRepository = {
             return false
         }
     },
-    deletePost(id: string): boolean {
+    async deletePost(id: string): Promise<boolean> {
         const foundIndex = posts.findIndex(p => p.id === id)
         if (foundIndex > -1) {
             posts.splice(foundIndex, 1)
