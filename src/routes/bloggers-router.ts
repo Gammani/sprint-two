@@ -6,10 +6,11 @@ import {getBloggerViewModel, HTTP_STATUSES} from "../utils/utils";
 import {URIParamsBloggerIdModel} from "../models/URIParamsBloggerIdModel";
 import {CreateBloggerModel} from "../models/CreateBloggerModel";
 import {UpdateBloggerModel} from "../models/UpdateBloggerModel";
-import {bloggersRepository} from "../repositories/bloggers-repository";
+import {bloggersInMemoryRepository} from "../repositories/bloggers-in-memory-repository";
 import {authMiddleware} from "../middlewares/auth-middleware";
 import {checkedValidation} from "../middlewares/requestValidatorWithExpressValidator";
 import {body} from "express-validator";
+import {bloggersRepository} from "../repositories/bloggers-db-repository";
 
 
 export const bloggersRouter = Router({})
@@ -19,7 +20,7 @@ bloggersRouter.get('/', async (req: RequestWithQuery<QueryBloggersModel>, res: R
     res.send(foundBloggers)
 })
 bloggersRouter.get('/:id', async (req: RequestWithParams<URIParamsBloggerIdModel>, res: Response<BloggerViewModel>) => {
-    const foundBlog: BloggerViewModel | undefined = await bloggersRepository.findBloggerById(req.params.id)
+    const foundBlog: BloggerViewModel | undefined = await bloggersInMemoryRepository.findBloggerById(req.params.id)
     if (foundBlog) {
         res.send(getBloggerViewModel(foundBlog))
     } else {
@@ -31,7 +32,7 @@ bloggersRouter.post('/', authMiddleware,
     body('youtubeUrl').isString().trim().isLength({max: 100}).matches(/^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/),
     checkedValidation,
     async (req: RequestWithBody<CreateBloggerModel>, res: Response<BloggerViewModel>) => {
-    const newBlogger: BloggerViewModel = await bloggersRepository.creatBlogger(req.body.name,req.body.youtubeUrl)
+    const newBlogger: BloggerViewModel = await bloggersInMemoryRepository.creatBlogger(req.body.name,req.body.youtubeUrl)
         // const token: any = req.headers.authorization
         res.status(HTTP_STATUSES.CREATED_201).send(newBlogger)
 })
@@ -43,7 +44,7 @@ bloggersRouter.put('/:id', authMiddleware,
 
 
     async (req: RequestWithParamsAndBody<URIParamsBloggerIdModel, UpdateBloggerModel>, res) => {
-    const isUpdateBlogger: boolean = await bloggersRepository.updateBlogger(req.params.id, req.body.name, req.body.youtubeUrl)
+    const isUpdateBlogger: boolean = await bloggersInMemoryRepository.updateBlogger(req.params.id, req.body.name, req.body.youtubeUrl)
     if (isUpdateBlogger) {
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
     } else {
@@ -52,7 +53,7 @@ bloggersRouter.put('/:id', authMiddleware,
 })
 
 bloggersRouter.delete('/:id', authMiddleware, async (req: RequestWithParams<URIParamsBloggerIdModel>, res) => {
-    const isDeleteBlogger: boolean = await bloggersRepository.deleteBlogger(req.params.id)
+    const isDeleteBlogger: boolean = await bloggersInMemoryRepository.deleteBlogger(req.params.id)
     if (isDeleteBlogger) {
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
     } else {

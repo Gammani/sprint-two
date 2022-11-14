@@ -1,7 +1,7 @@
 import {NextFunction, Request, Response} from "express";
 import {CustomValidator, validationResult} from "express-validator";
 import {ErrorsType} from "../utils/types";
-import {bloggers, bloggersRepository} from "../repositories/bloggers-repository";
+import {bloggers, bloggersInMemoryRepository} from "../repositories/bloggers-in-memory-repository";
 
 
 export const checkedValidation = (req: Request, res: Response, next: NextFunction) => {

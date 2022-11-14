@@ -2,7 +2,7 @@ import {PostsType} from "../utils/types";
 import {PostViewModel} from "../models/PostViewModel";
 import {getPostsViewModel} from "../utils/utils";
 import {BloggerViewModel} from "../models/BloggerViewModel";
-import {bloggers} from "./bloggers-repository";
+import {bloggers} from "./bloggers-in-memory-repository";
 
 export const posts: PostsType[] = [
     {
@@ -47,7 +47,7 @@ export const posts: PostsType[] = [
     },
 ]
 
-export const postsRepository = {
+export const postsInMemoryRepository = {
     async findPosts(title: string | undefined | null): Promise<PostViewModel[]> {
         let foundPosts: PostViewModel[] = posts
         if (title) {

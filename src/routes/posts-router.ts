@@ -6,7 +6,7 @@ import {HTTP_STATUSES} from "../utils/utils";
 import {URIParamsPostIdModel} from "../models/URIParamsPostIdModel";
 import {CreatePostModel} from "../models/CreatePostModel";
 import {UpdatePostModel} from "../models/UpdatePostModel";
-import {postsRepository} from "../repositories/posts-repository";
+import {postsInMemoryRepository} from "../repositories/posts-in-memory-repository";
 import {authMiddleware} from "../middlewares/auth-middleware";
 import {checkedValidation, isValidId} from "../middlewares/requestValidatorWithExpressValidator";
 import {body} from "express-validator";
@@ -16,7 +16,7 @@ export const postsRouter = Router({})
 
 
 postsRouter.get('/', async (req: RequestWithQuery<QueryPostsModel>, res: Response<PostViewModel[]>) => {
-    let foundPosts: PostViewModel[] = await postsRepository.findPosts(req.query.title?.toString())
+    let foundPosts: PostViewModel[] = await postsInMemoryRepository.findPosts(req.query.title?.toString())
     if(req.query.title) {
 
         res.send(foundPosts)
@@ -25,7 +25,7 @@ postsRouter.get('/', async (req: RequestWithQuery<QueryPostsModel>, res: Respons
     }
 })
 postsRouter.get('/:id', async (req: RequestWithParams<URIParamsPostIdModel>, res: Response<PostViewModel>) => {
-    const foundPost: PostViewModel | undefined = await postsRepository.findPostById(req.params.id)
+    const foundPost: PostViewModel | undefined = await postsInMemoryRepository.findPostById(req.params.id)
     if (foundPost) {
         res.send(foundPost)
     } else {
@@ -39,7 +39,7 @@ postsRouter.post('/', authMiddleware,
     body('blogId').custom(isValidId),
     checkedValidation,
     async (req: RequestWithBody<CreatePostModel>, res: Response<PostViewModel>) => {
-    const newPost: PostViewModel | undefined = await postsRepository.creatPost(req.body.title, req.body.shortDescription, req.body.content, req.body.blogId)
+    const newPost: PostViewModel | undefined = await postsInMemoryRepository.creatPost(req.body.title, req.body.shortDescription, req.body.content, req.body.blogId)
     if (newPost) {
         res.status(HTTP_STATUSES.CREATED_201).send(newPost)
     } else {
@@ -54,7 +54,7 @@ postsRouter.put('/:id', authMiddleware,
     body('blogId').custom(isValidId),
     checkedValidation,
     async (req: RequestWithParamsAndBody<URIParamsPostIdModel, UpdatePostModel>, res) => {
-    const isUpdatePost: boolean = await postsRepository.updatePost(req.params.id, req.body.title, req.body.shortDescription, req.body.content, req.body.blogId)
+    const isUpdatePost: boolean = await postsInMemoryRepository.updatePost(req.params.id, req.body.title, req.body.shortDescription, req.body.content, req.body.blogId)
     if (isUpdatePost) {
         res.send(HTTP_STATUSES.NO_CONTENT_204)
     } else {
@@ -63,7 +63,7 @@ postsRouter.put('/:id', authMiddleware,
 })
 
 postsRouter.delete('/:id', authMiddleware, async (req: RequestWithParams<URIParamsPostIdModel>, res) => {
-    const isDeletePost: boolean = await postsRepository.deletePost(req.params.id)
+    const isDeletePost: boolean = await postsInMemoryRepository.deletePost(req.params.id)
     if (isDeletePost) {
         res.send(HTTP_STATUSES.NO_CONTENT_204)
     } else {

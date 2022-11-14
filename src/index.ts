@@ -4,8 +4,8 @@ import cors from 'cors'
 import {HTTP_STATUSES} from "./utils/utils";
 import {bloggersRouter} from "./routes/bloggers-router";
 import {postsRouter} from "./routes/posts-router";
-import {bloggers} from "./repositories/bloggers-repository";
-import {posts} from "./repositories/posts-repository";
+import {bloggers} from "./repositories/bloggers-in-memory-repository";
+import {posts} from "./repositories/posts-in-memory-repository";
 
 export const app = express()
 const port = process.env.PORT || 5000

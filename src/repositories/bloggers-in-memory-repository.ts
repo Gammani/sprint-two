@@ -20,7 +20,7 @@ export const bloggers: BloggersType[] = [
     },
 ]
 
-export const bloggersRepository = {
+export const bloggersInMemoryRepository = {
     async findBloggers(name: string | null | undefined): Promise<BloggerViewModel[]> {
         let foundBloggers: BloggerViewModel[] = bloggers
         if (name) {
