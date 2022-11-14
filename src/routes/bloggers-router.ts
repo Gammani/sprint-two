@@ -32,7 +32,8 @@ bloggersRouter.post('/', authMiddleware,
     checkedValidation,
     async (req: RequestWithBody<CreateBloggerModel>, res: Response<BloggerViewModel>) => {
     const newBlogger: BloggerViewModel = await bloggersRepository.creatBlogger(req.body.name,req.body.youtubeUrl)
-    res.status(HTTP_STATUSES.CREATED_201).send(newBlogger)
+        // const token: any = req.headers.authorization
+        res.status(HTTP_STATUSES.CREATED_201).send(newBlogger)
 })
 
 bloggersRouter.put('/:id', authMiddleware,
@@ -44,17 +45,17 @@ bloggersRouter.put('/:id', authMiddleware,
     async (req: RequestWithParamsAndBody<URIParamsBloggerIdModel, UpdateBloggerModel>, res) => {
     const isUpdateBlogger: boolean = await bloggersRepository.updateBlogger(req.params.id, req.body.name, req.body.youtubeUrl)
     if (isUpdateBlogger) {
-        res.send(HTTP_STATUSES.NO_CONTENT_204)
+        res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
     } else {
-        res.send(HTTP_STATUSES.NOT_FOUND_404)
+        res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
     }
 })
 
 bloggersRouter.delete('/:id', authMiddleware, async (req: RequestWithParams<URIParamsBloggerIdModel>, res) => {
     const isDeleteBlogger: boolean = await bloggersRepository.deleteBlogger(req.params.id)
     if (isDeleteBlogger) {
-        res.send(HTTP_STATUSES.NO_CONTENT_204)
+        res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
     } else {
-        res.send(HTTP_STATUSES.NOT_FOUND_404)
+        res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
     }
 })
