@@ -21,8 +21,8 @@ export const bloggersRepository = {
         }
     },
     async creatBlogger(name: string, youtubeUrl: string): Promise<BloggerViewModel> {
-        const newBlogger: BloggerViewModel = {id: (+new Date()).toString(), name, youtubeUrl}
-        const result = await bloggersCollection.insertOne(newBlogger)
+        const newBlogger: BloggerViewModel = {id: (+new Date()).toString(), name: name, youtubeUrl: youtubeUrl}
+        const result = await bloggersCollection.insertOne({id: (+new Date()).toString(), name: name, youtubeUrl: youtubeUrl})
         return newBlogger
     }
 }
