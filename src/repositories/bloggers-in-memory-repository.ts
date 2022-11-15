@@ -31,7 +31,7 @@ export const bloggersInMemoryRepository = {
         }
     },
     async findBloggerById(id: string): Promise<BloggerViewModel | undefined> {
-        const foundBlog = bloggers.find(b => b.id === id)
+        const foundBlog: BloggerViewModel | undefined = bloggers.find(b => b.id === id)
         if (foundBlog) {
             return getBloggerViewModel(foundBlog)
         } else {

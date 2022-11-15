@@ -6,7 +6,6 @@ dotenv.config()
 
 
 const url = process.env.MONGODB_URL
-console.log('url: ', url)
 if(!url) {
     throw new Error(`! Url doesn't found`)
 }

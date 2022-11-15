@@ -11,5 +11,18 @@ export const bloggersRepository = {
         }
 
         return await bloggersCollection.find(filter, {projection: {_id: 0}}).toArray()
+    },
+    async findBloggerById(id: string): Promise<BloggerViewModel | null> {
+        const blogger: BloggerViewModel | null = await bloggersCollection.findOne({id: id}, {projection: {_id: 0}})
+        if(blogger) {
+            return blogger
+        } else {
+            return null
+        }
+    },
+    async creatBlogger(name: string, youtubeUrl: string): Promise<BloggerViewModel> {
+        const newBlogger: BloggerViewModel = {id: (+new Date()).toString(), name, youtubeUrl}
+        const result = await bloggersCollection.insertOne(newBlogger)
+        return newBlogger
     }
 }
