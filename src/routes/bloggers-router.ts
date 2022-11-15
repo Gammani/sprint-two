@@ -20,7 +20,7 @@ bloggersRouter.get('/', async (req: RequestWithQuery<QueryBloggersModel>, res: R
     res.send(foundBloggers)
 })
 bloggersRouter.get('/:id', async (req: RequestWithParams<URIParamsBloggerIdModel>, res: Response<BloggerViewModel>) => {
-    const foundBlog: BloggerViewModel | undefined = await bloggersInMemoryRepository.findBloggerById(req.params.id)
+    const foundBlog: BloggerViewModel | null = await bloggersRepository.findBloggerById(req.params.id)
     if (foundBlog) {
         res.send(getBloggerViewModel(foundBlog))
     } else {
@@ -32,7 +32,7 @@ bloggersRouter.post('/', authMiddleware,
     body('youtubeUrl').isString().trim().isLength({max: 100}).matches(/^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/),
     checkedValidation,
     async (req: RequestWithBody<CreateBloggerModel>, res: Response<BloggerViewModel>) => {
-    const newBlogger: BloggerViewModel = await bloggersInMemoryRepository.creatBlogger(req.body.name,req.body.youtubeUrl)
+    const newBlogger: BloggerViewModel = await bloggersRepository.creatBlogger(req.body.name,req.body.youtubeUrl)
         // const token: any = req.headers.authorization
         res.status(HTTP_STATUSES.CREATED_201).send(newBlogger)
 })
