@@ -2,6 +2,8 @@ import {NextFunction, Request, Response} from "express";
 import {CustomValidator, validationResult} from "express-validator";
 import {ErrorsType} from "../utils/types";
 import {bloggers, bloggersInMemoryRepository} from "../repositories/bloggers-in-memory-repository";
+import {BloggerViewModel} from "../models/BloggerViewModel";
+import {bloggersRepository} from "../repositories/bloggers-db-repository";
 
 
 export const checkedValidation = (req: Request, res: Response, next: NextFunction) => {
@@ -16,9 +18,10 @@ export const checkedValidation = (req: Request, res: Response, next: NextFunctio
     }
 }
 
-export const isValidId: CustomValidator = blogId => {
-    const foundBloggers = bloggers.find(b => b.id === blogId)
-    if(!foundBloggers) {
+
+export const isValidId: CustomValidator = async (blogId) => {
+    const foundBlogger: BloggerViewModel | null = await bloggersRepository.findBloggerById(blogId)
+    if(!foundBlogger) {
         return Promise.reject('blogId не валидный')
     } else {
         return true
