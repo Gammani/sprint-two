@@ -18,8 +18,8 @@ export const bloggersCollection = client.db().collection<BloggersType>("bloggers
 export const postsCollection = client.db().collection<PostsType>("posts")
 
 export const removeAllDataBase = async () =>{
-    await client.db("bloggers")
-    await client.db("posts")
+    await client.db().collection<BloggersType>("bloggers").drop()
+    await client.db().collection<PostsType>("posts").drop()
 }
 
 export async function runDb() {
