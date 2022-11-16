@@ -1,7 +1,6 @@
 import {NextFunction, Request, Response} from "express";
 import {CustomValidator, validationResult} from "express-validator";
 import {ErrorsType} from "../utils/types";
-import {bloggers, bloggersInMemoryRepository} from "../repositories/bloggers-in-memory-repository";
 import {BloggerViewModel} from "../models/BloggerViewModel";
 import {bloggersRepository} from "../repositories/bloggers-db-repository";
 

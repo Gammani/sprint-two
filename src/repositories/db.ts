@@ -17,6 +17,11 @@ const client = new MongoClient(url)
 export const bloggersCollection = client.db().collection<BloggersType>("bloggers")
 export const postsCollection = client.db().collection<PostsType>("posts")
 
+export const removeAllDataBase = async () =>{
+    await client.db("bloggers")
+    await client.db("posts")
+}
+
 export async function runDb() {
     try {
         // Connect the client to the server
