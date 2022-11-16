@@ -6,7 +6,6 @@ import {getBloggerViewModel, HTTP_STATUSES} from "../utils/utils";
 import {URIParamsBloggerIdModel} from "../models/URIParamsBloggerIdModel";
 import {CreateBloggerModel} from "../models/CreateBloggerModel";
 import {UpdateBloggerModel} from "../models/UpdateBloggerModel";
-import {bloggersInMemoryRepository} from "../repositories/bloggers-in-memory-repository";
 import {authMiddleware} from "../middlewares/auth-middleware";
 import {checkedValidation} from "../middlewares/requestValidatorWithExpressValidator";
 import {body} from "express-validator";
@@ -44,7 +43,7 @@ bloggersRouter.put('/:id', authMiddleware,
 
 
     async (req: RequestWithParamsAndBody<URIParamsBloggerIdModel, UpdateBloggerModel>, res) => {
-    const isUpdateBlogger: boolean = await bloggersInMemoryRepository.updateBlogger(req.params.id, req.body.name, req.body.youtubeUrl)
+    const isUpdateBlogger: boolean = await bloggersRepository.updateBlogger(req.params.id, req.body.name, req.body.youtubeUrl)
     if (isUpdateBlogger) {
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
     } else {
@@ -53,7 +52,7 @@ bloggersRouter.put('/:id', authMiddleware,
 })
 
 bloggersRouter.delete('/:id', authMiddleware, async (req: RequestWithParams<URIParamsBloggerIdModel>, res) => {
-    const isDeleteBlogger: boolean = await bloggersInMemoryRepository.deleteBlogger(req.params.id)
+    const isDeleteBlogger: boolean = await bloggersRepository.deleteBlogger(req.params.id)
     if (isDeleteBlogger) {
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
     } else {

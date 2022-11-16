@@ -65,7 +65,7 @@ export const postsInMemoryRepository = {
             return undefined
         }
     },
-    async creatPost(title: string, shortDescription: string, content: string, blogId: string): Promise<PostViewModel | undefined> {
+    async createPost(title: string, shortDescription: string, content: string, blogId: string): Promise<PostViewModel | undefined> {
         const foundBlogger: BloggerViewModel | undefined = bloggers.find(b => b.id === blogId)
         if (foundBlogger) {
             const newPost: PostViewModel = {

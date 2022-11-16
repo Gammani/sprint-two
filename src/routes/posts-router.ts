@@ -39,7 +39,7 @@ postsRouter.post('/', authMiddleware,
     body('blogId').custom(isValidId),
     checkedValidation,
     async (req: RequestWithBody<CreatePostModel>, res: Response<PostViewModel>) => {
-    const newPost: PostViewModel | undefined = await postsInMemoryRepository.creatPost(req.body.title, req.body.shortDescription, req.body.content, req.body.blogId)
+    const newPost: PostViewModel | undefined = await postsInMemoryRepository.createPost(req.body.title, req.body.shortDescription, req.body.content, req.body.blogId)
     if (newPost) {
         res.status(HTTP_STATUSES.CREATED_201).send(newPost)
     } else {

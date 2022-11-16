@@ -24,5 +24,13 @@ export const bloggersRepository = {
         const newBlogger: BloggerViewModel = {id: (+new Date()).toString(), name: name, youtubeUrl: youtubeUrl}
         const result = await bloggersCollection.insertOne({id: (+new Date()).toString(), name: name, youtubeUrl: youtubeUrl})
         return newBlogger
+    },
+    async updateBlogger(id: string, name: string, youtubeUrl: string): Promise<boolean> {
+        const result = await bloggersCollection.updateOne({id: id}, {$set: {name: name, youtubeUrl: youtubeUrl}})
+        return result.matchedCount === 1;
+    },
+    async deleteBlogger(id: string): Promise<boolean> {
+        const result = await bloggersCollection.deleteOne({id: id})
+        return result.deletedCount === 1;
     }
 }
