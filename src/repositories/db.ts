@@ -1,26 +1,25 @@
 import {MongoClient} from 'mongodb'
 import * as dotenv from 'dotenv'
 import {BloggersType, PostsType} from "../utils/types";
+
 dotenv.config()
 
 
-
-const url = process.env.MONGODB_URL
-if(!url) {
+// const url = process.env.MONGODB_URL || "mongodb://0.0.0.0:27017"
+const url = "mongodb://0.0.0.0:27017"
+if (!url) {
     throw new Error(`! Url doesn't found`)
 }
 
-const client = new MongoClient(url)
+export const client = new MongoClient(url)
 // const db = client.db("world_around")
 // export const bloggersCollection = db.collection<BloggersType>("bloggers")
 // export const postsCollection = db.collection<PostsType>("posts")
-export const bloggersCollection = client.db().collection<BloggersType>("bloggers")
-export const postsCollection = client.db().collection<PostsType>("posts")
 
-export const removeAllDataBase = async () =>{
-    await client.db().collection<BloggersType>("bloggers").drop()
-    await client.db().collection<PostsType>("posts").drop()
-}
+const db = client.db("friendlyWorld")
+export const bloggersCollection = db.collection<BloggersType>("bloggers")
+export const postsCollection = db.collection<PostsType>("posts")
+
 
 export async function runDb() {
     try {

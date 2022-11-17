@@ -1,6 +1,8 @@
 import {BloggersType, PostsType} from "./types";
 import {BloggerViewModel} from "../models/BloggerViewModel";
 import {PostViewModel} from "../models/PostViewModel";
+import {bloggersRepository} from "../repositories/bloggers-db-repository";
+import {postsRepository} from "../repositories/posts-db-repository";
 
 
 export const HTTP_STATUSES = {
@@ -29,4 +31,9 @@ export const getPostsViewModel = (post: PostsType): PostViewModel => {
         blogId: post.blogId,
         blogName: post.blogName,
     }
+}
+export const removeAllDataBase = async () => {
+    await bloggersRepository.deleteAll()
+    await postsRepository.deleteAll()
+    return
 }
