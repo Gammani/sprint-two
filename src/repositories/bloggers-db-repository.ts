@@ -22,7 +22,7 @@ export const bloggersRepository = {
     },
     async creatBlogger(name: string, description: string, websiteUrl: string): Promise<BloggerViewModel> {
         const newBlogger: BloggerViewModel = {id: (+new Date()).toString(), name: name, description: description, websiteUrl: websiteUrl, createdAt: new Date().toISOString()}
-        const result = await bloggersCollection.insertOne(newBlogger)
+        const result = await bloggersCollection.insertOne({...newBlogger})
         return newBlogger
     },
     async updateBlogger(id: string, description: string, name: string, websiteUrl: string): Promise<boolean> {
