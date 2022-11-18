@@ -10,7 +10,9 @@ export type RequestWithParamsAndBody<T, Y> = Request<T, {}, Y>
 export type BloggersType = {
     id: string,
     name: string,
-    youtubeUrl: string
+    description: string
+    websiteUrl: string
+    createdAt: string
 }
 export type PostsType = {
     id: string,
@@ -19,6 +21,7 @@ export type PostsType = {
     content: string
     blogId: string
     blogName: string
+    createdAt: string
 }
 
 type ErrorsMessageType = {

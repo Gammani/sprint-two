@@ -28,22 +28,24 @@ bloggersRouter.get('/:id', async (req: RequestWithParams<URIParamsBloggerIdModel
 })
 bloggersRouter.post('/', authMiddleware,
     body('name').isString().trim().isLength({max: 15}).notEmpty(),
-    body('youtubeUrl').isString().trim().isLength({max: 100}).matches(/^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/),
+    body('description').isString().trim().isLength({max: 500}).notEmpty(),
+    body('websiteUrl').isString().trim().isLength({max: 100}).matches(/^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/),
     checkedValidation,
     async (req: RequestWithBody<CreateBloggerModel>, res: Response<BloggerViewModel>) => {
-    const newBlogger: BloggerViewModel = await bloggersRepository.creatBlogger(req.body.name,req.body.youtubeUrl)
+    const newBlogger: BloggerViewModel = await bloggersRepository.creatBlogger(req.body.name,req.body.description, req.body.websiteUrl)
         // const token: any = req.headers.authorization
         res.status(HTTP_STATUSES.CREATED_201).send(newBlogger)
 })
 
 bloggersRouter.put('/:id', authMiddleware,
     body('name').isString().trim().isLength({max: 15}).notEmpty(),
-    body('youtubeUrl').isString().trim().isLength({max: 100}).matches(/^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/),
+    body('description').isString().trim().isLength({max: 500}).notEmpty(),
+    body('websiteUrl').isString().trim().isLength({max: 100}).matches(/^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/),
     checkedValidation,
 
 
     async (req: RequestWithParamsAndBody<URIParamsBloggerIdModel, UpdateBloggerModel>, res) => {
-    const isUpdateBlogger: boolean = await bloggersRepository.updateBlogger(req.params.id, req.body.name, req.body.youtubeUrl)
+    const isUpdateBlogger: boolean = await bloggersRepository.updateBlogger(req.params.id, req.body.description, req.body.name, req.body.websiteUrl)
     if (isUpdateBlogger) {
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
     } else {

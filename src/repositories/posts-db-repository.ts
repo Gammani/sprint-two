@@ -24,7 +24,7 @@ export const postsRepository = {
         const foundBlogger: BloggerViewModel | null = await bloggersCollection.findOne({id: blogId}, {projection: {_id: 0}})
         if(foundBlogger) {
             const newPost: PostViewModel = {
-                id: (+new Date()).toString(), title, shortDescription, content, blogId, blogName: foundBlogger.name
+                id: (+new Date()).toString(), title, shortDescription, content, blogId, blogName: foundBlogger.name, createdAt: foundBlogger.createdAt
             }
             const result = await postsCollection.insertOne(newPost)
             return newPost;

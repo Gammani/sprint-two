@@ -16,8 +16,6 @@ export const createApp = () => {
     })
 
     app.delete('/testing/all-data', async (req: Request, res: Response) => {
-        // posts.splice(0, posts.length)
-        // bloggers.splice(0, bloggers.length)
         await removeAllDataBase()
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
     })

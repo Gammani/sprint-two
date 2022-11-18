@@ -19,7 +19,9 @@ export const getBloggerViewModel = (blogger: BloggersType): BloggerViewModel => 
     return {
         id: blogger.id,
         name: blogger.name,
-        youtubeUrl: blogger.youtubeUrl
+        description: blogger.description,
+        websiteUrl: blogger.websiteUrl,
+        createdAt: blogger.createdAt
     }
 }
 export const getPostsViewModel = (post: PostsType): PostViewModel => {
@@ -30,6 +32,7 @@ export const getPostsViewModel = (post: PostsType): PostViewModel => {
         content: post.content,
         blogId: post.blogId,
         blogName: post.blogName,
+        createdAt: post.createdAt
     }
 }
 export const removeAllDataBase = async () => {
