@@ -5,8 +5,8 @@ import {BloggersType, PostsType} from "../utils/types";
 dotenv.config()
 
 
-// const url = process.env.MONGODB_URL || "mongodb://0.0.0.0:27017"
-const url = "mongodb://0.0.0.0:27017"
+const url = process.env.MONGODB_URL || "mongodb://0.0.0.0:27017"
+// const url = "mongodb://0.0.0.0:27017"
 if (!url) {
     throw new Error(`! Url doesn't found`)
 }
