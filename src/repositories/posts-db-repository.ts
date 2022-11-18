@@ -7,14 +7,14 @@ export const postsRepository = {
     async findPosts(title: string | undefined | null): Promise<PostViewModel[]> {
         const filter: any = {}
 
-        if(title) {
+        if (title) {
             filter.title = {$regex: title}
         }
         return postsCollection.find(filter, {projection: {_id: 0}}).toArray();
     },
     async findPostById(id: string): Promise<PostViewModel | null> {
         const post: PostViewModel | null = await postsCollection.findOne({id: id}, {projection: {_id: 0}})
-        if(post) {
+        if (post) {
             return post;
         } else {
             return null;
@@ -22,9 +22,15 @@ export const postsRepository = {
     },
     async createPost(title: string, shortDescription: string, content: string, blogId: string): Promise<PostViewModel | null> {
         const foundBlogger: BloggerViewModel | null = await bloggersCollection.findOne({id: blogId}, {projection: {_id: 0}})
-        if(foundBlogger) {
+        if (foundBlogger) {
             const newPost: PostViewModel = {
-                id: (+new Date()).toString(), title, shortDescription, content, blogId, blogName: foundBlogger.name, createdAt: foundBlogger.createdAt
+                id: (+new Date()).toString(),
+                title,
+                shortDescription,
+                content,
+                blogId,
+                blogName: foundBlogger.name,
+                createdAt: foundBlogger.createdAt
             }
             const result = await postsCollection.insertOne({...newPost})
             return newPost;
@@ -32,19 +38,29 @@ export const postsRepository = {
             return null
         }
     },
-    async updatePost(postId: string, title: string, shortDescription: string, content: string, blogId: string): Promise<string> {
-        const foundPost: PostViewModel | null = await postsCollection.findOne({id: postId})
-        if(foundPost) {
-            const blogger: BloggerViewModel | null = await bloggersRepository.findBloggerById(blogId)
-            if(!blogger) {
-                return 'not found bloggerId'
-            } else {
-                const result = postsCollection.updateOne({id: postId}, {title: title, shortDescription: shortDescription, content: content, bloggerId: blogId})
-                return 'no content'
+    async updatePost(postId: string, title: string, shortDescription: string, content: string, blogId: string): Promise<boolean> {
+        //     const foundPost: PostViewModel | null = await postsCollection.findOne({id: postId})
+        //     if(foundPost) {
+        //         const blogger: BloggerViewModel | null = await bloggersRepository.findBloggerById(blogId)
+        //         if(!blogger) {
+        //             return 'not found bloggerId'
+        //         } else {
+        //             const result = postsCollection.updateOne({id: postId}, {title: title, shortDescription: shortDescription, content: content, bloggerId: blogId})
+        //             return 'no content'
+        //         }
+        //     } else {
+        //         return 'invalid id'
+        //     }
+        const result = await postsCollection.updateOne({id: postId}, {
+            $set: {
+                title: title,
+                shortDescription: shortDescription,
+                content: content,
+                blogId: blogId
             }
-        } else {
-            return 'invalid id'
-        }
+        })
+        return result.matchedCount === 1
+
     },
     async deletePost(id: string): Promise<boolean> {
         const result = await postsCollection.deleteOne({id: id})
