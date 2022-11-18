@@ -26,7 +26,7 @@ export const postsRepository = {
             const newPost: PostViewModel = {
                 id: (+new Date()).toString(), title, shortDescription, content, blogId, blogName: foundBlogger.name, createdAt: foundBlogger.createdAt
             }
-            const result = await postsCollection.insertOne(newPost)
+            const result = await postsCollection.insertOne({...newPost})
             return newPost;
         } else {
             return null
