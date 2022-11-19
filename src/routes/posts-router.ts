@@ -54,37 +54,20 @@ postsRouter.put('/:id', authMiddleware,
     body('blogId').custom(isValidId),
     checkedValidation,
     async (req: RequestWithParamsAndBody<URIParamsPostIdModel, UpdatePostModel>, res) => {
-    // const isUpdatePost: string = await postsRepository.updatePost(req.params.id, req.body.title, req.body.shortDescription, req.body.content, req.body.blogId)
-        // switch (isUpdatePost) {
-        //     case 'not found bloggerId': {
-        //         res.status(HTTP_STATUSES.BAD_REQUEST_400).send({errorsMessages: [{message: `${isUpdatePost}`, field: "bloggerId"}]})
-        //     }
-        //         break;
-        //     case 'invalid id': {
-        //         res.send(HTTP_STATUSES.NOT_FOUND_404)
-        //     }
-        //         break;
-        //     case 'no content': {
-        //         res.send(HTTP_STATUSES.NO_CONTENT_204)
-        //     }
-        //         break;
-        //     default:
-        //         break;
-        // }
         const isUpdate: boolean = await postsRepository.updatePost(req.params.id, req.body.title, req.body.shortDescription, req.body.content, req.body.blogId)
         if (isUpdate) {
             const blog = await postsRepository.findPostById(req.params.id)
-            res.sendStatus(204)
+            res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
         } else {
-            res.sendStatus(404)
+            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
         }
 })
 
 postsRouter.delete('/:id', authMiddleware, async (req: RequestWithParams<URIParamsPostIdModel>, res) => {
     const isDeletePost: boolean = await postsRepository.deletePost(req.params.id)
     if (isDeletePost) {
-        res.send(HTTP_STATUSES.NO_CONTENT_204)
+        res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
     } else {
-        res.send(HTTP_STATUSES.NOT_FOUND_404)
+        res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
     }
 })

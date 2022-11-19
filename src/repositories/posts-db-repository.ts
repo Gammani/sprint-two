@@ -39,18 +39,6 @@ export const postsRepository = {
         }
     },
     async updatePost(postId: string, title: string, shortDescription: string, content: string, blogId: string): Promise<boolean> {
-        //     const foundPost: PostViewModel | null = await postsCollection.findOne({id: postId})
-        //     if(foundPost) {
-        //         const blogger: BloggerViewModel | null = await bloggersRepository.findBloggerById(blogId)
-        //         if(!blogger) {
-        //             return 'not found bloggerId'
-        //         } else {
-        //             const result = postsCollection.updateOne({id: postId}, {title: title, shortDescription: shortDescription, content: content, bloggerId: blogId})
-        //             return 'no content'
-        //         }
-        //     } else {
-        //         return 'invalid id'
-        //     }
         const result = await postsCollection.updateOne({id: postId}, {
             $set: {
                 title: title,
