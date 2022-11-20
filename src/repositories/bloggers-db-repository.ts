@@ -20,8 +20,7 @@ export const bloggersRepository = {
             return null
         }
     },
-    async creatBlogger(name: string, description: string, websiteUrl: string): Promise<BloggerViewModel> {
-        const newBlogger: BloggerViewModel = {id: (+new Date()).toString(), name: name, description: description, websiteUrl: websiteUrl, createdAt: new Date().toISOString()}
+    async creatBlogger(newBlogger: BloggerViewModel): Promise<BloggerViewModel> {
         const result = await bloggersCollection.insertOne({...newBlogger})
         return newBlogger
     },

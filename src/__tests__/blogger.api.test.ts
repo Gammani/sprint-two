@@ -24,13 +24,6 @@ describe('jestTests', () => {
     let post2: PostViewModel | null = null
     let post3: PostViewModel | null = null
 
-    // describe('clean before testing', () => {
-    //     it('should remove all collections and return statusCode: 204', async () => {
-    //         await request(app).delete('/testing/all-data')
-    //         expect(HTTP_STATUSES.NO_CONTENT_204)
-    //     })
-    // })
-
     // describe('blog_02', () => {
     //     it('should return 200 and empty array', async () => {
     //         await request(app)

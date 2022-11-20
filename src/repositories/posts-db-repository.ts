@@ -20,23 +20,9 @@ export const postsRepository = {
             return null;
         }
     },
-    async createPost(title: string, shortDescription: string, content: string, blogId: string): Promise<PostViewModel | null> {
-        const foundBlogger: BloggerViewModel | null = await bloggersCollection.findOne({id: blogId}, {projection: {_id: 0}})
-        if (foundBlogger) {
-            const newPost: PostViewModel = {
-                id: (+new Date()).toString(),
-                title,
-                shortDescription,
-                content,
-                blogId,
-                blogName: foundBlogger.name,
-                createdAt: foundBlogger.createdAt
-            }
-            const result = await postsCollection.insertOne({...newPost})
-            return newPost;
-        } else {
-            return null
-        }
+    async createPost(createdPost: PostViewModel): Promise<PostViewModel | null> {
+        const result = await postsCollection.insertOne({...createdPost})
+        return createdPost;
     },
     async updatePost(postId: string, title: string, shortDescription: string, content: string, blogId: string): Promise<boolean> {
         const result = await postsCollection.updateOne({id: postId}, {
