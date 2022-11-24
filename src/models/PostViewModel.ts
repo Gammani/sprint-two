@@ -7,3 +7,10 @@ export type PostViewModel = {
     blogName: string
     createdAt: string
 }
+export type PostsWithPaginationViewModel = {
+    pagesCount: number
+    page: number
+    pageSize: number
+    totalCount: number
+    items: PostViewModel[]
+}

@@ -3,7 +3,7 @@ import {RequestWithBody, RequestWithParams, RequestWithParamsAndBody, RequestWit
 import {QueryBloggersModel} from "../models/QueryBloggersModel";
 import {BloggerViewModel, BloggerWithPaginationViewModel} from "../models/BloggerViewModel";
 import {getBloggerViewModel, HTTP_STATUSES} from "../utils/utils";
-import {URIParamsBloggerIdModel} from "../models/URIParamsBloggerIdModel";
+import {URIParamsBloggerIdModel, URIParamsBlogIdModel} from "../models/URIParamsBloggerIdModel";
 import {CreateBloggerModel} from "../models/CreateBloggerModel";
 import {UpdateBloggerModel} from "../models/UpdateBloggerModel";
 import {authMiddleware} from "../middlewares/auth-middleware";
@@ -18,7 +18,7 @@ export const bloggersRouter = Router({})
 bloggersRouter.get('/', async (req: RequestWithQuery<QueryBloggersModel>, res: Response<BloggerWithPaginationViewModel>) => {
 
     if(req.query.searchNameTerm){
-        const foundBloggers = await bloggersQueryDbRepository.findBloggers(
+        const foundBloggers: BloggerWithPaginationViewModel = await bloggersQueryDbRepository.findBloggers(
             req.query.searchNameTerm,
             req.query.pageNumber,
             req.query.pageSize,
@@ -27,7 +27,7 @@ bloggersRouter.get('/', async (req: RequestWithQuery<QueryBloggersModel>, res: R
         )
         res.status(HTTP_STATUSES.OK_200).send(foundBloggers)
     } else {
-        const foundBloggers = await bloggerService.findBloggers(
+        const foundBloggers: BloggerWithPaginationViewModel = await bloggerService.findBloggers(
             req.query.pageNumber,
             req.query.pageSize,
             req.query.sortBy,
@@ -43,6 +43,15 @@ bloggersRouter.get('/:id', async (req: RequestWithParams<URIParamsBloggerIdModel
     } else {
         res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
     }
+})
+bloggersRouter.get('/:blogId/posts', async (req: RequestWithParams<URIParamsBlogIdModel>, res: Response) => {
+    const foundBlog: BloggerViewModel | null = await bloggerService.findBloggerById(req.params.blogId)
+    if(foundBlog) {
+        res.send('Ok')
+    } else {
+        res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
+    }
+
 })
 bloggersRouter.post('/', authMiddleware,
     body('name').isString().trim().isLength({max: 15}).notEmpty(),

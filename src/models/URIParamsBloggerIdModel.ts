@@ -4,3 +4,9 @@ export type URIParamsBloggerIdModel = {
      */
     id: string
 }
+export type URIParamsBlogIdModel = {
+    /**
+     * id of existing blogger
+     */
+    blogId: string
+}

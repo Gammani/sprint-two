@@ -1,11 +1,23 @@
-import {PostViewModel} from "../models/PostViewModel";
+import {PostsWithPaginationViewModel, PostViewModel} from "../models/PostViewModel";
 import {BloggerViewModel} from "../models/BloggerViewModel";
 import {postsRepository} from "../repositories/posts-db-repository";
 import {bloggerService} from "./bloggers-service";
 
 export const postsService = {
-    async findPosts(title: string | undefined | null): Promise<PostViewModel[]> {
-        return await postsRepository.findPosts(title)
+    // async findPosts(title: string | undefined | null): Promise<PostViewModel[]> {
+    //     return await postsRepository.findPosts(title)
+    // },
+    async findPosts(
+        pageNumber: string,
+        pageSize: string,
+        sortBy: string,
+        sortDirection: string,
+        blogId?: string): Promise<PostsWithPaginationViewModel> {
+        return await postsRepository.findPosts(
+            pageNumber,
+            pageSize,
+            sortBy,
+            sortDirection)
     },
     async findPostById(id: string): Promise<PostViewModel | null> {
         return await postsRepository.findPostById(id)
