@@ -28,7 +28,7 @@ postsRouter.get('/', async (req: RequestWithQuery<QueryPostsModel>, res: Respons
         req.query.pageNumber,
         req.query.pageSize,
         req.query.sortBy,
-        req.query.sortDirection,
+        req.query.sortDirection
     )
     res.send(foundPosts)
 })

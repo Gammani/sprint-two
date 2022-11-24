@@ -1,6 +1,12 @@
 import {Response, Router} from "express";
-import {RequestWithBody, RequestWithParams, RequestWithParamsAndBody, RequestWithQuery} from "../utils/types";
-import {QueryBloggersModel} from "../models/QueryBloggersModel";
+import {
+    RequestWithBody,
+    RequestWithParams,
+    RequestWithParamsAndBody,
+    RequestWithParamsAndQuery,
+    RequestWithQuery
+} from "../utils/types";
+import {QueryBloggersModel, QueryBloggersModelWithId} from "../models/QueryBloggersModel";
 import {BloggerViewModel, BloggerWithPaginationViewModel} from "../models/BloggerViewModel";
 import {getBloggerViewModel, HTTP_STATUSES} from "../utils/utils";
 import {URIParamsBloggerIdModel, URIParamsBlogIdModel} from "../models/URIParamsBloggerIdModel";
@@ -11,6 +17,8 @@ import {checkedValidation} from "../middlewares/requestValidatorWithExpressValid
 import {body} from "express-validator";
 import {bloggerService} from "../domain/bloggers-service";
 import {bloggersQueryDbRepository} from "../repositories/bloggers-query-db-repository";
+import {postsService} from "../domain/posts-service";
+import {PostsWithPaginationViewModel} from "../models/PostViewModel";
 
 
 export const bloggersRouter = Router({})
@@ -44,10 +52,17 @@ bloggersRouter.get('/:id', async (req: RequestWithParams<URIParamsBloggerIdModel
         res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
     }
 })
-bloggersRouter.get('/:blogId/posts', async (req: RequestWithParams<URIParamsBlogIdModel>, res: Response) => {
-    const foundBlog: BloggerViewModel | null = await bloggerService.findBloggerById(req.params.blogId)
+bloggersRouter.get('/:blogId/posts', async (req: RequestWithParamsAndQuery<URIParamsBlogIdModel, QueryBloggersModelWithId>, res: Response<PostsWithPaginationViewModel>) => {
+    const foundBlog: BloggerViewModel | null = await bloggerService.findBloggerById(req.params.blogId!)
     if(foundBlog) {
-        res.send('Ok')
+        const foundPosts: PostsWithPaginationViewModel = await postsService.findPosts(
+            req.query.pageNumber,
+            req.query.pageSize,
+            req.query.sortBy,
+            req.query.sortDirection,
+            req.params.blogId
+            )
+        res.status(HTTP_STATUSES.OK_200).send(foundPosts)
     } else {
         res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
     }

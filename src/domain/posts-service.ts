@@ -17,7 +17,9 @@ export const postsService = {
             pageNumber,
             pageSize,
             sortBy,
-            sortDirection)
+            sortDirection,
+            blogId
+        )
     },
     async findPostById(id: string): Promise<PostViewModel | null> {
         return await postsRepository.findPostById(id)

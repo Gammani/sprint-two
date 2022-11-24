@@ -8,3 +8,10 @@ export type QueryBloggersModel = {
     sortBy: string
     sortDirection: string
 }
+export type QueryBloggersModelWithId = {
+    pageNumber: string
+    pageSize: string
+    sortBy: string
+    sortDirection: string
+    blogId?: string
+}

@@ -4,14 +4,6 @@ import {BloggerViewModel} from "../models/BloggerViewModel";
 import {bloggersRepository} from "./bloggers-db-repository";
 
 export const postsRepository = {
-    // async findPosts(title: string | undefined | null): Promise<PostViewModel[]> {
-    //     const filter: any = {}
-    //
-    //     if (title) {
-    //         filter.title = {$regex: title}
-    //     }
-    //     return postsCollection.find(filter, {projection: {_id: 0}}).toArray();
-    // },
     async findPosts(
         pageNumberQuery: string,
         pageSizeQuery: string,
@@ -27,6 +19,26 @@ export const postsRepository = {
 
         const skipPages: number = (pageNumber - 1) * pageSize
 
+
+
+    if(blogId) {
+        const items = await postsCollection
+            .find({blogId: blogId}, {projection: {_id: 0}})
+            .sort({[sortBy]: sortDirection})
+            .skip(skipPages)
+            .limit(pageSize)
+            .toArray()
+        const totalCount = await postsCollection.find({blogId: blogId}).count({})
+        const pageCount = Math.ceil(totalCount / pageSize)
+
+        return {
+            pagesCount: pageCount,
+            page: pageNumber,
+            pageSize: pageSize,
+            totalCount: totalCount,
+            items: items
+        }
+    }
 
         const items = await postsCollection
             .find({}, {projection: {_id: 0}})
@@ -45,6 +57,7 @@ export const postsRepository = {
             items: items
         }
     },
+
     async findPostById(id: string): Promise<PostViewModel | null> {
         const post: PostViewModel | null = await postsCollection.findOne({id: id}, {projection: {_id: 0}})
         if (post) {
