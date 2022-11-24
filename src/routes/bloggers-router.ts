@@ -18,14 +18,16 @@ import {body} from "express-validator";
 import {bloggerService} from "../domain/bloggers-service";
 import {bloggersQueryDbRepository} from "../repositories/bloggers-query-db-repository";
 import {postsService} from "../domain/posts-service";
-import {PostsWithPaginationViewModel} from "../models/PostViewModel";
+import {PostsWithPaginationViewModel, PostViewModel} from "../models/PostViewModel";
+import {CreatePostModelWithBlogId} from "../models/CreatePostModelWithBlogId";
+
 
 
 export const bloggersRouter = Router({})
 
 bloggersRouter.get('/', async (req: RequestWithQuery<QueryBloggersModel>, res: Response<BloggerWithPaginationViewModel>) => {
 
-    if(req.query.searchNameTerm){
+    if (req.query.searchNameTerm) {
         const foundBloggers: BloggerWithPaginationViewModel = await bloggersQueryDbRepository.findBloggers(
             req.query.searchNameTerm,
             req.query.pageNumber,
@@ -54,14 +56,14 @@ bloggersRouter.get('/:id', async (req: RequestWithParams<URIParamsBloggerIdModel
 })
 bloggersRouter.get('/:blogId/posts', async (req: RequestWithParamsAndQuery<URIParamsBlogIdModel, QueryBloggersModelWithId>, res: Response<PostsWithPaginationViewModel>) => {
     const foundBlog: BloggerViewModel | null = await bloggerService.findBloggerById(req.params.blogId!)
-    if(foundBlog) {
+    if (foundBlog) {
         const foundPosts: PostsWithPaginationViewModel = await postsService.findPosts(
             req.query.pageNumber,
             req.query.pageSize,
             req.query.sortBy,
             req.query.sortDirection,
             req.params.blogId
-            )
+        )
         res.status(HTTP_STATUSES.OK_200).send(foundPosts)
     } else {
         res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
@@ -77,6 +79,26 @@ bloggersRouter.post('/', authMiddleware,
         const newBlogger: BloggerViewModel = await bloggerService.creatBlogger(req.body.name, req.body.description, req.body.websiteUrl)
         // const token: any = req.headers.authorization
         res.status(HTTP_STATUSES.CREATED_201).send(newBlogger)
+    })
+
+bloggersRouter.post('/:blogId/posts', authMiddleware,
+    body('title').isString().trim().notEmpty().isLength({max: 30}),
+    body('shortDescription').isString().trim().notEmpty().isLength({max: 100}),
+    body('content').isString().trim().notEmpty().isLength({max: 1000}),
+    checkedValidation,
+
+    async (req: RequestWithParamsAndBody<URIParamsBlogIdModel, CreatePostModelWithBlogId>, res: Response<PostViewModel>) => {
+        const foundBlogger = await bloggerService.findBloggerById(req.params.blogId)
+        const newPost: PostViewModel | null = await postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, req.params.blogId)
+        if(foundBlogger) {
+            if (newPost) {
+                res.status(HTTP_STATUSES.CREATED_201).send(newPost)
+            } else {
+                res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
+            }
+        } else {
+            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
+        }
     })
 
 bloggersRouter.put('/:id', authMiddleware,
