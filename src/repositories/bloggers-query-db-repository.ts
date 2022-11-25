@@ -20,7 +20,7 @@ export const bloggersQueryDbRepository = {
         const filter: any = {}
 
         if (searchNameTerm) {
-            filter.name = {$regex: searchNameTerm}
+            filter.name = {$regex: searchNameTerm, "$options": "i" }
         }
         const skipPages: number = (pageNumber - 1) * pageSize
 
