@@ -13,7 +13,7 @@ export const bloggersRepository = {
         const pageNumber = isNaN(Number(pageNumberQuery)) ? 1 : Number(pageNumberQuery)
         const pageSize = isNaN(Number(pageSizeQuery)) ? 10 : Number(pageSizeQuery)
         const sortBy = sortByQuery ? sortByQuery : 'createdAt'
-        const sortDirection = sortDirectionQuery === 'asc' ? 1 : -1
+        const sortDirection = sortDirectionQuery === 'asc' ? -1 : 1
 
         const skipPages: number = (pageNumber - 1) * pageSize
 
