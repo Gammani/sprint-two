@@ -34,7 +34,7 @@ export const postsService = {
                 content,
                 blogId,
                 blogName: foundBlogger.name,
-                createdAt: foundBlogger.createdAt
+                createdAt: new Date().toISOString()
             }
             return await postsRepository.createPost(createdPost)
         }
