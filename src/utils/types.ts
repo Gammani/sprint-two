@@ -24,6 +24,15 @@ export type PostsType = {
     blogName: string
     createdAt: string
 }
+export type UserType = {
+    id: string
+    login: string
+    email: string
+    createdAt: string
+    passwordHash: string
+    passwordSalt: string
+}
+
 
 type ErrorsMessageType = {
     message: string

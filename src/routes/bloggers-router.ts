@@ -22,7 +22,6 @@ import {PostsWithPaginationViewModel, PostViewModel} from "../models/PostViewMod
 import {CreatePostModelWithBlogId} from "../models/CreatePostModelWithBlogId";
 
 
-
 export const bloggersRouter = Router({})
 
 bloggersRouter.get('/', async (req: RequestWithQuery<QueryBloggersModel>, res: Response<BloggerWithPaginationViewModel>) => {
@@ -90,7 +89,7 @@ bloggersRouter.post('/:blogId/posts', authMiddleware,
     async (req: RequestWithParamsAndBody<URIParamsBlogIdModel, CreatePostModelWithBlogId>, res: Response<PostViewModel>) => {
         const foundBlogger = await bloggerService.findBloggerById(req.params.blogId)
         const newPost: PostViewModel | null = await postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, req.params.blogId)
-        if(foundBlogger) {
+        if (foundBlogger) {
             if (newPost) {
                 res.status(HTTP_STATUSES.CREATED_201).send(newPost)
             } else {

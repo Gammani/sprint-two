@@ -1,6 +1,6 @@
 import {MongoClient} from 'mongodb'
 import * as dotenv from 'dotenv'
-import {BloggersType, PostsType} from "../utils/types";
+import {BloggersType, PostsType, UserType} from "../utils/types";
 
 dotenv.config()
 
@@ -19,6 +19,7 @@ export const client = new MongoClient(url)
 const db = client.db("friendlyWorld")
 export const bloggersCollection = db.collection<BloggersType>("bloggers")
 export const postsCollection = db.collection<PostsType>("posts")
+export const usersCollection = db.collection<UserType>("users")
 
 
 export async function runDb() {
@@ -28,6 +29,7 @@ export async function runDb() {
         // Establish and verify connection
         await client.db("bloggers").command({ping: 1});
         await client.db("posts").command({ping: 1});
+        await client.db("users").command({ping: 1});
         console.log("Connected successfully to mongo server");
 
 

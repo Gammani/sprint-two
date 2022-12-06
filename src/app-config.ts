@@ -4,6 +4,7 @@ import cors from "cors";
 import {bloggersRouter} from "./routes/bloggers-router";
 import {postsRouter} from "./routes/posts-router";
 import {HTTP_STATUSES, removeAllDataBase} from "./utils/utils";
+import {usersRouter} from "./routes/users-router";
 
 
 export const createApp = () => {
@@ -24,6 +25,8 @@ export const createApp = () => {
     app.use('/blogs', bloggersRouter)
 // Posts
     app.use('/posts', postsRouter)
+// Users
+    app.use('/users', usersRouter)
     return app
 }
 
