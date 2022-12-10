@@ -18,6 +18,6 @@ authRouter.post('/login',
         if (checkResult) {
             res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
         } else {
-            res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
+            res.sendStatus(HTTP_STATUSES.NO_UNAUTHORIZED_401)
         }
     })
