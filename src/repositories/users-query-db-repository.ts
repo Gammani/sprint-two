@@ -25,8 +25,13 @@ export const usersQueryDbRepository = {
         //     filter = {$or: [{login: {$regex: searchLoginTerm, "$options": "i" }}, {email: {$regex: searchEmailTerm, "$options": "i" }}]}
         // }
 
+    if(searchLoginTermQuery && searchEmailTerm) {
+        filter = {$or: [{login: {$regex: searchLoginTerm, "$options": "i" }}, {email: {$regex: searchEmailTerm, "$options": "i" }}]}
+    } else {
+        filter = {$and: [{login: {$regex: searchLoginTerm, "$options": "i" }}, {email: {$regex: searchEmailTerm, "$options": "i" }}]}
+    }
+    //     filter = {$or: [{login: {$regex: searchLoginTerm, "$options": "i" }}, {email: {$regex: searchEmailTerm, "$options": "i" }}]}
 
-         filter = {$and: [{login: {$regex: searchLoginTerm, "$options": "i" }}, {email: {$regex: searchEmailTerm, "$options": "i" }}]}
         //filter.login = {$regex: searchLoginTerm, $options: "i"}
         const skipPages: number = (pageNumber - 1) * pageSize
 

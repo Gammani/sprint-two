@@ -35,6 +35,10 @@ export const usersRepository = {
             items: items.map(getUsersViewModel)
         }
     },
+    async findUserByLoginOrEmail(loginOrEmail: string): Promise<UserType | null> {
+        const foundUser = await usersCollection.findOne({$or: [{email: loginOrEmail}, {login: loginOrEmail}]})
+        return foundUser
+    },
     async createUser(newUser: UserType): Promise<UserViewModel> {
         const result = await usersCollection.insertOne({...newUser})
         return {
