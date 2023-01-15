@@ -1,11 +1,12 @@
 import {MongoClient} from 'mongodb'
 import * as dotenv from 'dotenv'
 import {BloggersType, PostsType, UserType} from "../utils/types";
+import {settings} from "../settings";
 
 dotenv.config()
 
 
-const url = process.env.MONGODB_URL || "mongodb://0.0.0.0:27017"
+const url = settings.MONGO_URI || "mongodb://0.0.0.0:27017"
 // const url = "mongodb://0.0.0.0:27017"
 if (!url) {
     throw new Error(`! Url doesn't found`)

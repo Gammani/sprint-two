@@ -1,7 +1,7 @@
 import {UserViewModel, UserWithPaginationViewModel} from "../models/UserViewModel";
 import {usersRepository} from "../repositories/users-db-repository";
 import bcrypt from 'bcrypt'
-import {UserType} from "../utils/types";
+import {UserDBType, UserType} from "../utils/types";
 
 
 export const usersService = {
@@ -38,15 +38,15 @@ export const usersService = {
     async deleteAll() {
         return await usersRepository.deleteAll()
     },
-    async checkCredentials(loginOrEmail: string, password: string): Promise<boolean> {
+    async checkCredentials(loginOrEmail: string, password: string): Promise<UserType | null> {
         const user: UserType | null = await usersRepository.findUserByLoginOrEmail(loginOrEmail)
         if(!user) {
-            return false
+            return null
         } else {
             const passwordHash = await this._generateHash(password, user.passwordSalt)
-            if(user.passwordHash !== passwordHash) return false
+            if(user.passwordHash !== passwordHash) return null
         }
-        return true
+        return user
     },
     async _generateHash(password: string, salt: string) {
         const hash = await bcrypt.hash(password, salt)

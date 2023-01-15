@@ -32,6 +32,15 @@ export type UserType = {
     passwordHash: string
     passwordSalt: string
 }
+export type UserDBType = {
+    _id: string
+    id: string
+    login: string
+    email: string
+    createdAt: string
+    passwordHash: string
+    passwordSalt: string
+}
 
 
 type ErrorsMessageType = {
