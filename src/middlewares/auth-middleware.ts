@@ -1,8 +1,24 @@
-import {Request, Response, NextFunction} from "express";
+import {NextFunction, Request, Response} from "express";
 import {Buffer} from "buffer";
+import {HTTP_STATUSES} from "../utils/utils";
+import {jwtServices} from "../application/jwt-service";
+import {usersService} from "../domain/users-service";
+import {UserViewModel} from "../models/UserViewModel";
 
+// local?
+// export interface userByRequest extends Request {
+//     user: UserViewModel | void | null
+// }
 
-export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
+declare global {
+    namespace Express {
+        export interface Request {
+            user?: UserViewModel | null
+        }
+    }
+}
+
+export const authBasicMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const auth = {login: 'admin', password: 'qwerty'} // change this
 
     // parse login and password from headers
@@ -21,3 +37,23 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
     res.set('WWW-Authenticate', 'Basic realm="401"') // change this
     res.status(401).send('Authentication required.') // custom message
 }
+
+export const authBearerMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+
+    if(!req.headers.authorization) {
+        res.send(HTTP_STATUSES.NO_UNAUTHORIZED_401)
+        return
+    }
+
+
+    const token = req.headers.authorization.split(' ')[1]
+
+    const userId: any = await jwtServices.getUserIdByToken(token)
+    if(userId) {
+        req.user = await usersService.findUserById(userId)
+        next()
+    } else {
+        res.send(HTTP_STATUSES.NO_UNAUTHORIZED_401)
+    }
+}
+

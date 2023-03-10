@@ -40,7 +40,8 @@ export const usersRepository = {
         return foundUser
     },
     async createUser(newUser: UserType): Promise<UserViewModel> {
-        const result = await usersCollection.insertOne({...newUser})
+        console.log(newUser)
+         await usersCollection.insertOne({...newUser})
         return {
             id: newUser.id,
             login: newUser.login,

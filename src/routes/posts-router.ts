@@ -6,7 +6,7 @@ import {HTTP_STATUSES} from "../utils/utils";
 import {URIParamsPostIdModel} from "../models/URIParamsPostIdModel";
 import {CreatePostModel} from "../models/CreatePostModel";
 import {UpdatePostModel} from "../models/UpdatePostModel";
-import {authMiddleware} from "../middlewares/auth-middleware";
+import {authBasicMiddleware} from "../middlewares/auth-middleware";
 import {checkedValidation, isValidId} from "../middlewares/requestValidatorWithExpressValidator";
 import {body} from "express-validator";
 import {postsService} from "../domain/posts-service";
@@ -40,7 +40,7 @@ postsRouter.get('/:id', async (req: RequestWithParams<URIParamsPostIdModel>, res
         res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
     }
 })
-postsRouter.post('/', authMiddleware,
+postsRouter.post('/', authBasicMiddleware,
     body('title').isString().trim().notEmpty().isLength({max: 30}),
     body('shortDescription').isString().trim().notEmpty().isLength({max: 100}),
     body('content').isString().trim().notEmpty().isLength({max: 1000}),
@@ -54,7 +54,7 @@ postsRouter.post('/', authMiddleware,
             res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
         }
     })
-postsRouter.put('/:id', authMiddleware,
+postsRouter.put('/:id', authBasicMiddleware,
     body('title').isString().trim().notEmpty().isLength({max: 30}),
     body('shortDescription').isString().trim().notEmpty().isLength({max: 100}),
     body('content').isString().trim().notEmpty().isLength({max: 1000}),
@@ -69,7 +69,7 @@ postsRouter.put('/:id', authMiddleware,
             res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
         }
     })
-postsRouter.delete('/:id', authMiddleware, async (req: RequestWithParams<URIParamsPostIdModel>, res) => {
+postsRouter.delete('/:id', authBasicMiddleware, async (req: RequestWithParams<URIParamsPostIdModel>, res) => {
     const isDeletePost: boolean = await postsService.deletePost(req.params.id)
     if (isDeletePost) {
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)

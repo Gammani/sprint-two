@@ -2,6 +2,7 @@ import {UserViewModel, UserWithPaginationViewModel} from "../models/UserViewMode
 import {usersRepository} from "../repositories/users-db-repository";
 import bcrypt from 'bcrypt'
 import {UserDBType, UserType} from "../utils/types";
+import {usersCollection} from "../repositories/db";
 
 
 export const usersService = {
@@ -17,6 +18,14 @@ export const usersService = {
             sortByQuery,
             sortDirectionQuery
         )
+    },
+    async findUserById(userId: string): Promise<UserViewModel | null> {
+        const user: UserViewModel | null = await usersCollection.findOne({id: userId}, {projection: {_id: 0}})
+        if(user) {
+            return user
+        } else {
+            return null
+        }
     },
     async createUser(login: string, email: string, password: string): Promise<UserViewModel> {
         const passwordSalt = await bcrypt.genSalt(10)
@@ -50,7 +59,7 @@ export const usersService = {
     },
     async _generateHash(password: string, salt: string) {
         const hash = await bcrypt.hash(password, salt)
-        console.log('hash: ' + hash)
+        // console.log('hash: ' + hash)
         return hash
     }
 }

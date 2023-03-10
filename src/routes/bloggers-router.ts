@@ -12,7 +12,7 @@ import {getBloggerViewModel, HTTP_STATUSES} from "../utils/utils";
 import {URIParamsBloggerIdModel, URIParamsBlogIdModel} from "../models/URIParamsBloggerIdModel";
 import {CreateBloggerModel} from "../models/CreateBloggerModel";
 import {UpdateBloggerModel} from "../models/UpdateBloggerModel";
-import {authMiddleware} from "../middlewares/auth-middleware";
+import {authBasicMiddleware} from "../middlewares/auth-middleware";
 import {checkedValidation} from "../middlewares/requestValidatorWithExpressValidator";
 import {body} from "express-validator";
 import {bloggerService} from "../domain/bloggers-service";
@@ -69,7 +69,7 @@ bloggersRouter.get('/:blogId/posts', async (req: RequestWithParamsAndQuery<URIPa
     }
 
 })
-bloggersRouter.post('/', authMiddleware,
+bloggersRouter.post('/', authBasicMiddleware,
     body('name').isString().trim().isLength({max: 15}).notEmpty(),
     body('description').isString().trim().isLength({max: 500}).notEmpty(),
     body('websiteUrl').isString().trim().isLength({max: 100}).matches(/^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/),
@@ -80,7 +80,7 @@ bloggersRouter.post('/', authMiddleware,
         res.status(HTTP_STATUSES.CREATED_201).send(newBlogger)
     })
 
-bloggersRouter.post('/:blogId/posts', authMiddleware,
+bloggersRouter.post('/:blogId/posts', authBasicMiddleware,
     body('title').isString().trim().notEmpty().isLength({max: 30}),
     body('shortDescription').isString().trim().notEmpty().isLength({max: 100}),
     body('content').isString().trim().notEmpty().isLength({max: 1000}),
@@ -100,7 +100,7 @@ bloggersRouter.post('/:blogId/posts', authMiddleware,
         }
     })
 
-bloggersRouter.put('/:id', authMiddleware,
+bloggersRouter.put('/:id', authBasicMiddleware,
     body('name').isString().trim().isLength({max: 15}).notEmpty(),
     body('description').isString().trim().isLength({max: 500}).notEmpty(),
     body('websiteUrl').isString().trim().isLength({max: 100}).matches(/^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/),
@@ -116,7 +116,7 @@ bloggersRouter.put('/:id', authMiddleware,
         }
     })
 
-bloggersRouter.delete('/:id', authMiddleware, async (req: RequestWithParams<URIParamsBloggerIdModel>, res) => {
+bloggersRouter.delete('/:id', authBasicMiddleware, async (req: RequestWithParams<URIParamsBloggerIdModel>, res) => {
     const isDeleteBlogger: boolean = await bloggerService.deleteBlogger(req.params.id)
     if (isDeleteBlogger) {
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
