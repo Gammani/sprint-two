@@ -1,10 +1,10 @@
-import {Request, Response, Router} from "express";
+import {Response, Router} from "express";
 import {
     RequestWithBody,
     RequestWithParams,
     RequestWithParamsAndBody,
     RequestWithParamsAndQuery,
-    RequestWithQuery, UserType
+    RequestWithQuery
 } from "../utils/types";
 import {QueryPostsModel} from "../models/QueryPostsModel";
 import {PostsWithPaginationViewModel, PostViewModel} from "../models/PostViewModel";
@@ -19,7 +19,7 @@ import {postsService} from "../domain/posts-service";
 import {QueryCommentsModel} from "../models/QueryCommentsModel";
 import {CommentsWithPaginationViewModel} from "../models/CommentViewModel";
 import {URIParamsCommentModel} from "../models/URIParamsCommentModel";
-import {RequestUserViewModel, RequestUserViewModelWithContent} from "../models/UserViewModel";
+import {RequestUserViewModelWithContent} from "../models/UserViewModel";
 import {commentsService} from "../domain/comments-service";
 
 
@@ -93,15 +93,17 @@ postsRouter.delete('/:id', authBasicMiddleware, async (req: RequestWithParams<UR
 postsRouter.get('/:postId/comments', async (req: RequestWithParamsAndQuery<URIParamsCommentModel, QueryCommentsModel>, res: Response<CommentsWithPaginationViewModel | any>) => {
     const foundPost: PostViewModel | null = await postsService.findPostById(req.params.postId!)
     if (foundPost) {
-
+        const foundComments: CommentsWithPaginationViewModel = await commentsService.findComments(
+            req.query.pageNumber,
+            req.query.pageSize,
+            req.query.sortBy,
+            req.query.sortDirection
+        )
+        res.send(foundComments)
+    } else {
+        res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
     }
-    // const foundComments: CommentsWithPaginationViewModel = await commentsService.findComments(
-    //     req.query.pageNumber,
-    //     req.query.pageSize,
-    //     req.query.sortBy,
-    //     req.query.sortDirection
-    // )
-    res.send("get all comments from post")
+
 })
 postsRouter.post('/:postId/comments',
     authBearerMiddleware,
