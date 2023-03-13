@@ -6,6 +6,7 @@ import {postsRouter} from "./routes/posts-router";
 import {HTTP_STATUSES, removeAllDataBase} from "./utils/utils";
 import {usersRouter} from "./routes/users-router";
 import {authRouter} from "./routes/auth-router";
+import {commentsRouter} from "./routes/comments-router";
 
 
 export const createApp = () => {
@@ -30,6 +31,8 @@ export const createApp = () => {
     app.use('/users', usersRouter)
 // Auth
     app.use('/auth', authRouter)
+// Comments
+    app.use('/comments', commentsRouter)
     return app
 }
 

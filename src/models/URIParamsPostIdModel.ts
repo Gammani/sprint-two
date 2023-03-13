@@ -4,3 +4,6 @@ export type URIParamsPostIdModel = {
      */
     id: string
 }
+export type URIParamsPostIdPostModel = {
+
+}

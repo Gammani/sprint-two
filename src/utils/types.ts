@@ -41,7 +41,16 @@ export type UserDBType = {
     passwordHash: string
     passwordSalt: string
 }
-
+type CommentatorInfoType = {
+    userId: string
+    userLogin: string
+}
+export type CommentsType = {
+    id: string
+    content: string
+    commentatorInfo: CommentatorInfoType
+    createdAt: string
+}
 
 type ErrorsMessageType = {
     message: string

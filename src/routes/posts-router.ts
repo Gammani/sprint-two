@@ -1,5 +1,11 @@
-import {Response, Router} from "express";
-import {RequestWithBody, RequestWithParams, RequestWithParamsAndBody, RequestWithQuery} from "../utils/types";
+import {Request, Response, Router} from "express";
+import {
+    RequestWithBody,
+    RequestWithParams,
+    RequestWithParamsAndBody,
+    RequestWithParamsAndQuery,
+    RequestWithQuery
+} from "../utils/types";
 import {QueryPostsModel} from "../models/QueryPostsModel";
 import {PostsWithPaginationViewModel, PostViewModel} from "../models/PostViewModel";
 import {HTTP_STATUSES} from "../utils/utils";
@@ -10,6 +16,9 @@ import {authBasicMiddleware} from "../middlewares/auth-middleware";
 import {checkedValidation, isValidId} from "../middlewares/requestValidatorWithExpressValidator";
 import {body} from "express-validator";
 import {postsService} from "../domain/posts-service";
+import {QueryCommentsModel} from "../models/QueryCommentsModel";
+import {CommentsWithPaginationViewModel} from "../models/CommentViewModel";
+import {URIParamsCommentModel} from "../models/URIParamsCommentModel";
 
 
 export const postsRouter = Router({})
@@ -76,4 +85,22 @@ postsRouter.delete('/:id', authBasicMiddleware, async (req: RequestWithParams<UR
     } else {
         res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
     }
+})
+
+// Comments from post    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+postsRouter.get('/:postId/comments', async (req: RequestWithParamsAndQuery<URIParamsCommentModel, QueryCommentsModel>, res: Response<CommentsWithPaginationViewModel | any>) => {
+    const foundPost: PostViewModel | null = await postsService.findPostById(req.params.postId!)
+    if(foundPost) {
+
+    }
+    // const foundComments: CommentsWithPaginationViewModel = await commentsService.findComments(
+    //     req.query.pageNumber,
+    //     req.query.pageSize,
+    //     req.query.sortBy,
+    //     req.query.sortDirection
+    // )
+    res.send("get all comments from post")
+})
+postsRouter.post('/:postId/comments', (req: RequestWithParamsAndBody<URIParamsCommentModel, any>, res: Response) => {
+    res.send("create new comment in post")
 })

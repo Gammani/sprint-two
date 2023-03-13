@@ -31,8 +31,12 @@ authRouter.post('/login',
 authRouter.get('/me',
     authBearerMiddleware,
 
-    async (req: RequestWithBody<UserViewModel>, res: Response) => {
-    // console.log(req.body)
-        const user = req.body
+    async (req: RequestWithBody<UserType>, res: Response) => {
+    const foundUser = req.body
+        const user = {
+            email: foundUser.email,
+            login: foundUser.login,
+            userId: foundUser.id
+        }
         res.send(user)
 })

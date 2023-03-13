@@ -9,7 +9,6 @@ export const jwtServices = {
     },
     async getUserIdByToken(token: string) {
         try {
-            debugger
             const result: any = await jwt.verify(token, settings.JWT_SECRET)
             // console.log(result)
             return result.userId

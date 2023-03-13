@@ -4,6 +4,7 @@ import {HTTP_STATUSES} from "../utils/utils";
 import {jwtServices} from "../application/jwt-service";
 import {usersService} from "../domain/users-service";
 import {UserViewModel} from "../models/UserViewModel";
+import {UserType} from "../utils/types";
 
 // local?
 // export interface userByRequest extends Request {
@@ -13,7 +14,7 @@ import {UserViewModel} from "../models/UserViewModel";
 declare global {
     namespace Express {
         export interface Request {
-            user?: UserViewModel | null
+            user?: UserType | null
         }
     }
 }
@@ -39,7 +40,7 @@ export const authBasicMiddleware = async (req: Request, res: Response, next: Nex
 }
 
 export const authBearerMiddleware = async (req: Request, res: Response, next: NextFunction) => {
-
+debugger
     if(!req.headers.authorization) {
         res.send(HTTP_STATUSES.NO_UNAUTHORIZED_401)
         return
@@ -50,7 +51,9 @@ export const authBearerMiddleware = async (req: Request, res: Response, next: Ne
 
     const userId: any = await jwtServices.getUserIdByToken(token)
     if(userId) {
-        req.user = await usersService.findUserById(userId)
+        debugger
+        const foundUser = await usersService.findUserById(userId)
+        req.body = foundUser
         next()
     } else {
         res.send(HTTP_STATUSES.NO_UNAUTHORIZED_401)
