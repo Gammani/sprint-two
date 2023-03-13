@@ -4,7 +4,7 @@ import {
     RequestWithParams,
     RequestWithParamsAndBody,
     RequestWithParamsAndQuery,
-    RequestWithQuery
+    RequestWithQuery, UserType
 } from "../utils/types";
 import {QueryPostsModel} from "../models/QueryPostsModel";
 import {PostsWithPaginationViewModel, PostViewModel} from "../models/PostViewModel";
@@ -12,13 +12,15 @@ import {HTTP_STATUSES} from "../utils/utils";
 import {URIParamsPostIdModel} from "../models/URIParamsPostIdModel";
 import {CreatePostModel} from "../models/CreatePostModel";
 import {UpdatePostModel} from "../models/UpdatePostModel";
-import {authBasicMiddleware} from "../middlewares/auth-middleware";
+import {authBasicMiddleware, authBearerMiddleware} from "../middlewares/auth-middleware";
 import {checkedValidation, isValidId} from "../middlewares/requestValidatorWithExpressValidator";
 import {body} from "express-validator";
 import {postsService} from "../domain/posts-service";
 import {QueryCommentsModel} from "../models/QueryCommentsModel";
 import {CommentsWithPaginationViewModel} from "../models/CommentViewModel";
 import {URIParamsCommentModel} from "../models/URIParamsCommentModel";
+import {RequestUserViewModel, RequestUserViewModelWithContent} from "../models/UserViewModel";
+import {commentsService} from "../domain/comments-service";
 
 
 export const postsRouter = Router({})
@@ -90,7 +92,7 @@ postsRouter.delete('/:id', authBasicMiddleware, async (req: RequestWithParams<UR
 // Comments from post    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 postsRouter.get('/:postId/comments', async (req: RequestWithParamsAndQuery<URIParamsCommentModel, QueryCommentsModel>, res: Response<CommentsWithPaginationViewModel | any>) => {
     const foundPost: PostViewModel | null = await postsService.findPostById(req.params.postId!)
-    if(foundPost) {
+    if (foundPost) {
 
     }
     // const foundComments: CommentsWithPaginationViewModel = await commentsService.findComments(
@@ -101,6 +103,12 @@ postsRouter.get('/:postId/comments', async (req: RequestWithParamsAndQuery<URIPa
     // )
     res.send("get all comments from post")
 })
-postsRouter.post('/:postId/comments', (req: RequestWithParamsAndBody<URIParamsCommentModel, any>, res: Response) => {
-    res.send("create new comment in post")
-})
+postsRouter.post('/:postId/comments',
+    authBearerMiddleware,
+    body('content').isString().trim().notEmpty().isLength({max: 300, min: 20}),
+    checkedValidation,
+
+    async (req: RequestWithParamsAndBody<URIParamsCommentModel, RequestUserViewModelWithContent>, res: Response) => {
+        const newComment = await commentsService.createComment(req.body.content, req.user)
+        res.send(newComment)
+    })

@@ -1,4 +1,4 @@
-import {Router, Request, Response} from "express";
+import {Response, Router} from "express";
 import {RequestWithBody, UserType} from "../utils/types";
 import {CreateAuthModel} from "../models/CreateAuthModel";
 import {body} from "express-validator";
@@ -6,9 +6,8 @@ import {checkedValidation} from "../middlewares/requestValidatorWithExpressValid
 import {usersService} from "../domain/users-service";
 import {HTTP_STATUSES} from "../utils/utils";
 import {jwtServices} from "../application/jwt-service";
-import {MeViewModel} from "../models/MeViewModel";
-import {authBasicMiddleware, authBearerMiddleware} from "../middlewares/auth-middleware";
-import {UserViewModel} from "../models/UserViewModel";
+import {authBearerMiddleware} from "../middlewares/auth-middleware";
+import {RequestUserViewModel, UserViewModel} from "../models/UserViewModel";
 
 export const authRouter = Router({})
 
@@ -31,12 +30,7 @@ authRouter.post('/login',
 authRouter.get('/me',
     authBearerMiddleware,
 
-    async (req: RequestWithBody<UserType>, res: Response) => {
-    const foundUser = req.body
-        const user = {
-            email: foundUser.email,
-            login: foundUser.login,
-            userId: foundUser.id
-        }
-        res.send(user)
+    async (req: RequestWithBody<RequestUserViewModel>, res: Response) => {
+    const foundUser = req.user
+        res.send(foundUser)
 })

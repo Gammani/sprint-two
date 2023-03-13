@@ -3,7 +3,7 @@ import {Buffer} from "buffer";
 import {HTTP_STATUSES} from "../utils/utils";
 import {jwtServices} from "../application/jwt-service";
 import {usersService} from "../domain/users-service";
-import {UserViewModel} from "../models/UserViewModel";
+import {RequestUserViewModel, UserViewModel} from "../models/UserViewModel";
 import {UserType} from "../utils/types";
 
 // local?
@@ -14,7 +14,7 @@ import {UserType} from "../utils/types";
 declare global {
     namespace Express {
         export interface Request {
-            user?: UserType | null
+            user?: RequestUserViewModel | null
         }
     }
 }
@@ -53,7 +53,11 @@ debugger
     if(userId) {
         debugger
         const foundUser = await usersService.findUserById(userId)
-        req.body = foundUser
+        req.user = {
+            email: foundUser!.email,
+            login: foundUser!.login,
+            userId: foundUser!.id
+        }
         next()
     } else {
         res.send(HTTP_STATUSES.NO_UNAUTHORIZED_401)

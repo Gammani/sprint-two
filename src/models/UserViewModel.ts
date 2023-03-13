@@ -4,7 +4,15 @@ export type UserViewModel = {
     email: string
     createdAt: string
 }
-
+export type RequestUserViewModel = {
+    email: string
+    login: string
+    userId: string
+}
+export type RequestUserViewModelWithContent = {
+    user: RequestUserViewModel
+    content: string
+}
 export type UserWithPaginationViewModel = {
     pagesCount: number
     page: number
