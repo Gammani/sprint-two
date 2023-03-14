@@ -9,10 +9,6 @@ export type RequestUserViewModel = {
     login: string
     userId: string
 }
-export type RequestUserViewModelWithContent = {
-    user: RequestUserViewModel
-    content: string
-}
 export type UserWithPaginationViewModel = {
     pagesCount: number
     page: number

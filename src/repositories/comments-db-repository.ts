@@ -32,8 +32,32 @@ export const commentsRepository = {
             items: items
         }
     },
+    async findCommentById(id: string): Promise<CommentViewModel | null> {
+        const foundComment: CommentViewModel | null = await commentsCollection.findOne({id: id}, {projection: {_id: 0}})
+        if (foundComment) {
+            return foundComment
+        } else {
+            return null
+        }
+    },
     async createComment(createdComment: CommentViewModel): Promise<CommentViewModel> {
         const result = await commentsCollection.insertOne({...createdComment})
         return createdComment
+    },
+    async updateComment(commentId: string, content: string): Promise<boolean> {
+        const result = await commentsCollection.updateOne({id: commentId}, {
+            $set: {
+                content: content
+            }
+        })
+        return result.matchedCount === 1
+    },
+    async deleteComment(id: string): Promise<boolean> {
+        const result = await commentsCollection.deleteOne({id: id})
+        return result.deletedCount === 1
+    },
+    async deleteAll() {
+        const result = await commentsCollection.deleteMany({})
+        return
     }
 }

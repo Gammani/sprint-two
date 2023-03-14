@@ -1,3 +1,3 @@
-export type CreateCommentModel = {
-
+export type RequestCommentWithContent = {
+    content: string
 }

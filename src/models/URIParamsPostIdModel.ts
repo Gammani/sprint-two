@@ -5,5 +5,5 @@ export type URIParamsPostIdModel = {
     id: string
 }
 export type URIParamsPostIdPostModel = {
-
+    postId: string
 }

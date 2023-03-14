@@ -9,7 +9,7 @@ import {
 import {QueryPostsModel} from "../models/QueryPostsModel";
 import {PostsWithPaginationViewModel, PostViewModel} from "../models/PostViewModel";
 import {HTTP_STATUSES} from "../utils/utils";
-import {URIParamsPostIdModel} from "../models/URIParamsPostIdModel";
+import {URIParamsPostIdModel, URIParamsPostIdPostModel} from "../models/URIParamsPostIdModel";
 import {CreatePostModel} from "../models/CreatePostModel";
 import {UpdatePostModel} from "../models/UpdatePostModel";
 import {authBasicMiddleware, authBearerMiddleware} from "../middlewares/auth-middleware";
@@ -18,9 +18,8 @@ import {body} from "express-validator";
 import {postsService} from "../domain/posts-service";
 import {QueryCommentsModel} from "../models/QueryCommentsModel";
 import {CommentsWithPaginationViewModel} from "../models/CommentViewModel";
-import {URIParamsCommentModel} from "../models/URIParamsCommentModel";
-import {RequestUserViewModelWithContent} from "../models/UserViewModel";
 import {commentsService} from "../domain/comments-service";
+import {RequestCommentWithContent} from "../models/CreateCommentModel";
 
 
 export const postsRouter = Router({})
@@ -90,7 +89,7 @@ postsRouter.delete('/:id', authBasicMiddleware, async (req: RequestWithParams<UR
 })
 
 // Comments from post    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-postsRouter.get('/:postId/comments', async (req: RequestWithParamsAndQuery<URIParamsCommentModel, QueryCommentsModel>, res: Response<CommentsWithPaginationViewModel | any>) => {
+postsRouter.get('/:postId/comments', async (req: RequestWithParamsAndQuery<URIParamsPostIdPostModel, QueryCommentsModel>, res: Response<CommentsWithPaginationViewModel | any>) => {
     const foundPost: PostViewModel | null = await postsService.findPostById(req.params.postId!)
     if (foundPost) {
         const foundComments: CommentsWithPaginationViewModel = await commentsService.findComments(
@@ -110,7 +109,7 @@ postsRouter.post('/:postId/comments',
     body('content').isString().trim().notEmpty().isLength({max: 300, min: 20}),
     checkedValidation,
 
-    async (req: RequestWithParamsAndBody<URIParamsCommentModel, RequestUserViewModelWithContent>, res: Response) => {
+    async (req: RequestWithParamsAndBody<URIParamsPostIdPostModel, RequestCommentWithContent>, res: Response) => {
         const newComment = await commentsService.createComment(req.body.content, req.user)
         res.send(newComment)
     })
