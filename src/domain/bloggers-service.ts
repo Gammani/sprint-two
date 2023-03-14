@@ -27,7 +27,7 @@ export const bloggerService = {
             description: description,
             websiteUrl: websiteUrl,
             createdAt: new Date().toISOString(),
-            isMembership: false
+            isMembership: true
         }
         return await bloggersRepository.creatBlogger(newBlogger)
     },
