@@ -17,7 +17,7 @@ import {checkedValidation, isValidId} from "../middlewares/requestValidatorWithE
 import {body} from "express-validator";
 import {postsService} from "../domain/posts-service";
 import {QueryCommentsModel} from "../models/QueryCommentsModel";
-import {CommentsWithPaginationViewModel} from "../models/CommentViewModel";
+import {CommentsWithPaginationViewModel, CommentViewModel} from "../models/CommentViewModel";
 import {commentsService} from "../domain/comments-service";
 import {RequestCommentWithContent} from "../models/CreateCommentModel";
 
@@ -110,6 +110,10 @@ postsRouter.post('/:postId/comments',
     checkedValidation,
 
     async (req: RequestWithParamsAndBody<URIParamsPostIdPostModel, RequestCommentWithContent>, res: Response) => {
-        const newComment = await commentsService.createComment(req.body.content, req.user)
-        res.send(newComment)
+        const newComment: CommentViewModel | null = await commentsService.createComment(req.body.content, req.user, req.params.postId)
+        if(newComment) {
+            res.status(HTTP_STATUSES.CREATED_201).send(newComment)
+        } else {
+            res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
+        }
     })
