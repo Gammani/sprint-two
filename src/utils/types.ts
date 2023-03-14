@@ -14,6 +14,7 @@ export type BloggersType = {
     description: string
     websiteUrl: string
     createdAt: string
+    isMembership: boolean
 }
 export type PostsType = {
     id: string,
