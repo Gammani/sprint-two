@@ -25,7 +25,8 @@ export const getBloggerViewModel = (blogger: BloggersType): BloggerViewModel => 
         name: blogger.name,
         description: blogger.description,
         websiteUrl: blogger.websiteUrl,
-        createdAt: blogger.createdAt
+        createdAt: blogger.createdAt,
+        isMembership: false
     }
 }
 export const getPostsViewModel = (post: PostsType): PostViewModel => {
