@@ -1,4 +1,4 @@
-import {Response, Router} from "express";
+import {Router, Request, Response} from "express";
 import {RequestWithParams, RequestWithParamsAndBody} from "../utils/types";
 import {URIParamsCommentComIdModel, URIParamsCommentIdModel} from "../models/URIParamsCommentIdModel";
 import {commentsService} from "../domain/comments-service";
@@ -7,6 +7,7 @@ import {authBearerMiddleware} from "../middlewares/auth-middleware";
 import {RequestCommentWithContent} from "../models/CreateCommentModel";
 import {body} from "express-validator";
 import {checkedValidation} from "../middlewares/requestValidatorWithExpressValidator";
+import {CommentViewModel} from "../models/CommentViewModel";
 
 export const commentsRouter = Router({})
 
@@ -25,28 +26,37 @@ commentsRouter.put('/:commentId', authBearerMiddleware,
 
     async (req: RequestWithParamsAndBody<URIParamsCommentComIdModel, RequestCommentWithContent>, res) => {
 
-        const idUserByComment = await commentsService.findCommentById(req.params.commentId)
+
         // console.log("req.user = ", +req.user!.userId)
         // console.log("idUserByComment?.commentatorInfo.userId = ", +idUserByComment!.commentatorInfo.userId)
         // console.log(+req.user!.userId === +idUserByComment!.commentatorInfo.userId)
-        if (+req.user!.userId === +idUserByComment!.commentatorInfo.userId) {
-            const isUpdate: boolean = await commentsService.updateComment(req.params.commentId, req.body.content)
-            if (isUpdate) {
+        const foundComment: CommentViewModel | null = await commentsService.findCommentById(req.params.commentId)
+        if (foundComment) {
+            const idUserByComment = await commentsService.findCommentById(req.params.commentId)
+            if (+req.user!.userId === +idUserByComment!.commentatorInfo.userId) {
+                const isUpdate: boolean = await commentsService.updateComment(req.params.commentId, req.body.content)
                 res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
             } else {
-                res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
+                res.sendStatus(HTTP_STATUSES.FORBIDDEN_403)
             }
         } else {
-            res.sendStatus(HTTP_STATUSES.FORBIDDEN_403)
+            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
         }
+
 
     })
 commentsRouter.delete('/:commentId', authBearerMiddleware,
 
     async (req: RequestWithParams<URIParamsCommentComIdModel>, res) => {
-        const isDeleteComment: boolean = await commentsService.deleteComment(req.params.commentId)
-        if (isDeleteComment) {
-            res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+        const foundComment: CommentViewModel | null = await commentsService.findCommentById(req.params.commentId)
+        if (foundComment) {
+            const idUserByComment = await commentsService.findCommentById(req.params.commentId)
+            if (+req.user!.userId === +idUserByComment!.commentatorInfo.userId) {
+                const isDeleteComment: boolean = await commentsService.deleteComment(req.params.commentId)
+                res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+            } else {
+                res.sendStatus(HTTP_STATUSES.FORBIDDEN_403)
+            }
         } else {
             res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
         }
