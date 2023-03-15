@@ -17,7 +17,7 @@ export const commentsRepository = {
         const skipPages: number = (pageNumber - 1) * pageSize
 
         const items = await commentsCollection
-            .find({}, {projection: {_id: 0}})
+            .find({postId: postId}, {projection: {_id: 0}})
             .sort({[sortBy]: sortDirection})
             .skip(skipPages)
             .limit(pageSize)
