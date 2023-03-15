@@ -17,12 +17,12 @@ export const commentsRepository = {
         const skipPages: number = (pageNumber - 1) * pageSize
 
         const items = await commentsCollection
-            .find({postId: postId}, {projection: {_id: 0, postId: 0}})
+            .find({_postId: postId}, {projection: {_id: 0, _postId: 0}})
             .sort({[sortBy]: sortDirection})
             .skip(skipPages)
             .limit(pageSize)
             .toArray()
-        const totalCount = await commentsCollection.find({postId: postId}).count({})
+        const totalCount = await commentsCollection.find({_postId: postId}).count({})
         const pageCount = Math.ceil(totalCount / pageSize)
 
         return {
@@ -34,7 +34,7 @@ export const commentsRepository = {
         }
     },
     async findCommentById(id: string): Promise<CommentViewModel | null> {
-        const foundComment: CommentViewModel | null = await commentsCollection.findOne({id: id}, {projection: {_id: 0}})
+        const foundComment: CommentViewModel | null = await commentsCollection.findOne({id: id}, {projection: {_id: 0, _postId: 0}})
         if (foundComment) {
             return foundComment
         } else {
