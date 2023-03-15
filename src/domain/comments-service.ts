@@ -10,13 +10,15 @@ export const commentsService = {
         pageNumber: string,
         pageSize: string,
         sortBy: string,
-        sortDirection: string
+        sortDirection: string,
+        postId: string
     ): Promise<CommentsWithPaginationViewModel> {
         return await commentsRepository.findComments(
             pageNumber,
             pageSize,
             sortBy,
-            sortDirection
+            sortDirection,
+            postId
         )
     },
     async findCommentById(id: string): Promise<CommentViewModel | null> {

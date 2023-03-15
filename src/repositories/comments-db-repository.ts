@@ -6,7 +6,8 @@ export const commentsRepository = {
         pageNumberQuery: string,
         pageSizeQuery: string,
         sortByQuery: string,
-        sortDirectionQuery: string
+        sortDirectionQuery: string,
+        postId: string
     ): Promise<CommentsWithPaginationViewModel> {
         const pageNumber = isNaN(Number(pageNumberQuery)) ? 1 : Number(pageNumberQuery)
         const pageSize = isNaN(Number(pageSizeQuery)) ? 10 : Number(pageSizeQuery)
@@ -21,7 +22,7 @@ export const commentsRepository = {
             .skip(skipPages)
             .limit(pageSize)
             .toArray()
-        const totalCount = await commentsCollection.find({}).count({})
+        const totalCount = await commentsCollection.find({postId: postId}).count({})
         const pageCount = Math.ceil(totalCount / pageSize)
 
         return {

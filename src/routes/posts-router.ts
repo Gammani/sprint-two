@@ -96,7 +96,8 @@ postsRouter.get('/:postId/comments', async (req: RequestWithParamsAndQuery<URIPa
             req.query.pageNumber,
             req.query.pageSize,
             req.query.sortBy,
-            req.query.sortDirection
+            req.query.sortDirection,
+            req.params.postId
         )
         res.send(foundComments)
     } else {
