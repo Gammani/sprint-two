@@ -1,5 +1,5 @@
 import {RequestUserViewModel} from "../models/UserViewModel";
-import {CommentsWithPaginationViewModel, CommentViewModel} from "../models/CommentViewModel";
+import {CommentDbViewModel, CommentsWithPaginationViewModel, CommentViewModel} from "../models/CommentViewModel";
 import {commentsRepository} from "../repositories/comments-db-repository";
 import {commentsCollection, postsCollection} from "../repositories/db";
 import {PostViewModel} from "../models/PostViewModel";
@@ -27,14 +27,15 @@ export const commentsService = {
     async createComment(content: string, user: RequestUserViewModel | undefined | null, postId: string): Promise<CommentViewModel | null> {
         const foundPost: PostViewModel | null = await postsService.findPostById(postId)
         if(foundPost) {
-            const createdComment: CommentViewModel = {
+            const createdComment: CommentDbViewModel = {
                 id: (+new Date()).toString(),
                 content: content,
                 commentatorInfo: {
                     userId: user!.userId,
                     userLogin: user!.login
                 },
-                createdAt: new Date().toISOString()
+                createdAt: new Date().toISOString(),
+                _postId: postId
             }
 
             return await commentsRepository.createComment(createdComment)

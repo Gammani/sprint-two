@@ -17,7 +17,7 @@ export const commentsRepository = {
         const skipPages: number = (pageNumber - 1) * pageSize
 
         const items = await commentsCollection
-            .find({postId: postId}, {projection: {_id: 0}})
+            .find({postId: postId}, {projection: {_id: 0, postId: 0}})
             .sort({[sortBy]: sortDirection})
             .skip(skipPages)
             .limit(pageSize)
@@ -43,7 +43,15 @@ export const commentsRepository = {
     },
     async createComment(createdComment: CommentViewModel): Promise<CommentViewModel> {
         const result = await commentsCollection.insertOne({...createdComment})
-        return createdComment
+        return {
+            id: createdComment.id,
+            content: createdComment.content,
+            commentatorInfo: {
+                userId: createdComment.commentatorInfo.userId,
+                userLogin: createdComment.commentatorInfo.userLogin
+            },
+            createdAt: createdComment.createdAt
+        }
     },
     async updateComment(commentId: string, content: string): Promise<boolean> {
         const result = await commentsCollection.updateOne({id: commentId}, {

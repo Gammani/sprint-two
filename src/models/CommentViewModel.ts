@@ -8,6 +8,13 @@ export type CommentViewModel = {
     commentatorInfo: CommentatorInfo
     createdAt: string
 }
+export type CommentDbViewModel = {
+    id: string
+    content: string
+    commentatorInfo: CommentatorInfo
+    createdAt: string
+    _postId: string
+}
 
 export type CommentsWithPaginationViewModel = {
     pagesCount: number
