@@ -110,10 +110,16 @@ postsRouter.post('/:postId/comments',
     checkedValidation,
 
     async (req: RequestWithParamsAndBody<URIParamsPostIdPostModel, RequestCommentWithContent>, res: Response) => {
-        const newComment: CommentViewModel | null = await commentsService.createComment(req.body.content, req.user, req.params.postId)
-        if(newComment) {
-            res.status(HTTP_STATUSES.CREATED_201).send(newComment)
+
+    const foundPost: PostViewModel | null = await postsService.findPostById(req.params.postId!)
+        if (foundPost) {
+            const newComment: CommentViewModel | null = await commentsService.createComment(req.body.content, req.user, req.params.postId)
+            if(newComment) {
+                res.status(HTTP_STATUSES.CREATED_201).send(newComment)
+            } else {
+                res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
+            }
         } else {
-            res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
+            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
         }
     })
