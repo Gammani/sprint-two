@@ -41,7 +41,7 @@ usersRouter.post('/', authBasicMiddleware,
     body('email').isString().trim().notEmpty().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/),
     checkedValidation,
     async (req: RequestWithBody<CreateUserModel>, res: Response<UserViewModel>) => {
-        const newUser: UserViewModel = await usersService.createUser(req.body.login, req.body.email, req.body.password)
+        const newUser: UserViewModel = await usersService.createUserByAdmin(req.body.login, req.body.email, req.body.password)
         res.status(HTTP_STATUSES.CREATED_201).send(newUser)
     })
 usersRouter.delete('/:id', authBasicMiddleware,

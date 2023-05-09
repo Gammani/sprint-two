@@ -2,6 +2,7 @@ import {UserViewModel, UserWithPaginationViewModel} from "../models/UserViewMode
 import {usersCollection} from "./db";
 import {UserType} from "../utils/types";
 import {getUsersViewModel} from "../utils/utils";
+import {ObjectId} from "mongodb";
 
 export const usersRepository = {
     async findUsers(
@@ -36,23 +37,37 @@ export const usersRepository = {
         }
     },
     async findUserByLoginOrEmail(loginOrEmail: string): Promise<UserType | null> {
-        const foundUser = await usersCollection.findOne({$or: [{email: loginOrEmail}, {login: loginOrEmail}]})
+        const foundUser = await usersCollection.findOne({$or: [{'accountData.email': loginOrEmail}, {'accountData.login': loginOrEmail}]})
         return foundUser
     },
     async createUser(newUser: UserType): Promise<UserViewModel> {
-        console.log(newUser)
          await usersCollection.insertOne({...newUser})
         return {
-            id: newUser.id,
-            login: newUser.login,
-            email: newUser.email,
-            createdAt: newUser.createdAt
+            id: newUser.accountData.id,
+            login: newUser.accountData.login,
+            email: newUser.accountData.email,
+            createdAt: newUser.accountData.createdAt
         }
     },
     async deleteUser(id: string): Promise<boolean> {
         const result = await usersCollection.deleteOne({id: id})
         return result.deletedCount === 1
     },
+
+
+
+    async findUserByConfirmationCode(confirmationCode: string) {
+        const user = await usersCollection.findOne({"emailConfirmation.confirmationCode": confirmationCode})
+        // const user = await usersCollection.findOne({$or: [{"emailConfirmation.email": email}, {"emailConfirmation.email": email}]})
+        return user
+    },
+    async updateConfirmation(_id: ObjectId) {
+        let result = await usersCollection
+            .updateOne({_id}, {$set: {'emailConfirmation.isConfirmed': true}})
+        return result.modifiedCount === 1
+    },
+
+
     async deleteAll() {
         const result = await usersCollection.deleteMany({})
         return

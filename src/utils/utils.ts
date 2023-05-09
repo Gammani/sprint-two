@@ -42,10 +42,10 @@ export const getPostsViewModel = (post: PostsType): PostViewModel => {
 }
 export const getUsersViewModel = (user: UserType): UserViewModel => {
     return {
-        id: user.id,
-        login: user.login,
-        email: user.email,
-        createdAt: user.createdAt
+        id: user.accountData.id,
+        login: user.accountData.login,
+        email: user.accountData.email,
+        createdAt: user.accountData.createdAt
     }
 }
 export const removeAllDataBase = async () => {
@@ -55,3 +55,4 @@ export const removeAllDataBase = async () => {
     await commentsRepository.deleteAll()
     return
 }
+

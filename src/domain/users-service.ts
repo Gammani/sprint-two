@@ -1,8 +1,11 @@
 import {UserViewModel, UserWithPaginationViewModel} from "../models/UserViewModel";
 import {usersRepository} from "../repositories/users-db-repository";
 import bcrypt from 'bcrypt'
+import {v4 as uuidv4} from "uuid";
+import add from "date-fns/add";
 import {UserDBType, UserType} from "../utils/types";
 import {usersCollection} from "../repositories/db";
+import {emailAdapter} from "../adapter/email-adapter";
 
 
 export const usersService = {
@@ -19,25 +22,65 @@ export const usersService = {
             sortDirectionQuery
         )
     },
-    async findUserById(userId: string): Promise<UserViewModel | null> {
-        const user: UserViewModel | null = await usersCollection.findOne({id: userId}, {projection: {_id: 0}})
-        if(user) {
+    async findUserById(userId: string): Promise<UserType | null> {
+        const user: UserType | null = await usersCollection.findOne({id: userId}, {projection: {_id: 0}})
+        if (user) {
             return user
         } else {
             return null
         }
     },
-    async createUser(login: string, email: string, password: string): Promise<UserViewModel> {
+    async createUser(login: string, email: string, password: string): Promise<UserViewModel | null> {
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this._generateHash(password, passwordSalt)
 
         const newUser: UserType = {
-            id: (+new Date()).toString(),
-            login,
-            email,
-            createdAt: new Date().toISOString(),
-            passwordHash,
-            passwordSalt
+            accountData: {
+                id: (+new Date()).toString(),
+                login,
+                email,
+                createdAt: new Date().toISOString(),
+                passwordHash
+            },
+            emailConfirmation: {
+                confirmationCode: uuidv4(),
+                expirationDate: add(new Date(), {
+                    hours: 1,
+                    minutes: 3
+                }).toString(),
+                isConfirmed: false
+            }
+        }
+        const createResult = await usersRepository.createUser(newUser)
+
+        try {
+            await emailAdapter.sendEmail(email, login, newUser.emailConfirmation.confirmationCode)
+        } catch (e) {
+            console.log(e)
+            return null
+        }
+        return createResult
+    },
+    async createUserByAdmin(login: string, email: string, password: string): Promise<UserViewModel> {
+        const passwordSalt = await bcrypt.genSalt(10)
+        const passwordHash = await this._generateHash(password, passwordSalt)
+
+        const newUser: UserType = {
+            accountData: {
+                id: (+new Date()).toString(),
+                login,
+                email,
+                createdAt: new Date().toISOString(),
+                passwordHash
+            },
+            emailConfirmation: {
+                confirmationCode: uuidv4(),
+                expirationDate: add(new Date(), {
+                    hours: 1,
+                    minutes: 3
+                }).toString(),
+                isConfirmed: true
+            }
         }
         return await usersRepository.createUser(newUser)
     },
@@ -49,17 +92,24 @@ export const usersService = {
     },
     async checkCredentials(loginOrEmail: string, password: string): Promise<UserType | null> {
         const user: UserType | null = await usersRepository.findUserByLoginOrEmail(loginOrEmail)
-        if(!user) {
-            return null
+
+        if (!user) return null
+        if (!user.emailConfirmation.isConfirmed) return null
+
+        const isHashesEquals: any = await this._isPasswordCorrect(password, user.accountData.passwordHash)
+        if (isHashesEquals) {
+            return user
         } else {
-            const passwordHash = await this._generateHash(password, user.passwordSalt)
-            if(user.passwordHash !== passwordHash) return null
+            return null
         }
-        return user
     },
     async _generateHash(password: string, salt: string) {
         const hash = await bcrypt.hash(password, salt)
         // console.log('hash: ' + hash)
         return hash
-    }
+    },
+    async _isPasswordCorrect(password: string, hash: string) {
+        const isEqual = await bcrypt.compare(password, hash)
+        return isEqual
+    },
 }

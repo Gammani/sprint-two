@@ -54,9 +54,9 @@ debugger
         debugger
         const foundUser = await usersService.findUserById(userId)
         req.user = {
-            email: foundUser!.email,
-            login: foundUser!.login,
-            userId: foundUser!.id
+            email: foundUser!.accountData.email,
+            login: foundUser!.accountData.login,
+            userId: foundUser!.accountData.id
         }
         next()
     } else {

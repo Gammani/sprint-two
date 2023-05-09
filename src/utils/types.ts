@@ -7,7 +7,6 @@ export type RequestWithParamsAndQuery<T, Y> = Request<T, {}, {}, Y>
 export type RequestWithParamsAndBody<T, Y> = Request<T, {}, Y>
 
 
-
 export type BloggersType = {
     id: string,
     name: string,
@@ -25,13 +24,29 @@ export type PostsType = {
     blogName: string
     createdAt: string
 }
-export type UserType = {
+// export type UserType = {
+//     id: string
+//     login: string
+//     email: string
+//     createdAt: string
+//     passwordHash: string
+//     passwordSalt: string
+// }
+type AccountDataType = {
     id: string
     login: string
     email: string
     createdAt: string
     passwordHash: string
-    passwordSalt: string
+}
+type EmailConfirmationType = {
+    confirmationCode: string
+    expirationDate: string
+    isConfirmed: boolean
+}
+export type UserType = {
+    accountData: AccountDataType
+    emailConfirmation: EmailConfirmationType
 }
 export type UserDBType = {
     _id: string
