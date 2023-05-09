@@ -54,7 +54,10 @@ export const usersService = {
         const createResult = await usersRepository.createUser(newUser)
 
         try {
-            await emailAdapter.sendEmail(email, login, newUser.emailConfirmation.confirmationCode)
+            await emailAdapter.sendEmail(email, login, `\` <h1>Thank for your registration</h1>
+ <p>To finish registration please follow the link below:
+     <a href='https://somesite.com/confirm-email?code=${newUser.emailConfirmation.confirmationCode}'>complete registration</a>
+ </p>\``)
         } catch (e) {
             console.log(e)
             return null

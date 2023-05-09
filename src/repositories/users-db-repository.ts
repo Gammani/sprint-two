@@ -66,7 +66,12 @@ export const usersRepository = {
             .updateOne({_id}, {$set: {'emailConfirmation.isConfirmed': true}})
         return result.modifiedCount === 1
     },
-
+    async updateCode(email: string, code: string) {
+        debugger
+        let result = await usersCollection
+            .updateOne({'accountData.email': email}, {$set: {'emailConfirmation.confirmationCode': code}})
+        return result.modifiedCount === 1
+    },
 
     async deleteAll() {
         const result = await usersCollection.deleteMany({})

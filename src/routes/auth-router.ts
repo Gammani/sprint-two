@@ -1,5 +1,5 @@
 import {Request, Response, Router} from "express";
-import {RequestWithBody, UserType} from "../utils/types";
+import {RequestWithBody, RequestWithQuery, UserType} from "../utils/types";
 import {CreateAuthModel} from "../models/CreateAuthModel";
 import {body} from "express-validator";
 import {checkedValidation} from "../middlewares/requestValidatorWithExpressValidator";
@@ -52,11 +52,38 @@ authRouter.post('/registration-confirmation',
         if (result) {
             res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
         } else {
-            res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
+            res.status(HTTP_STATUSES.BAD_REQUEST_400).send({
+                "errorsMessages": [
+                    {
+                        "message": "не валидное поле code",
+                        "field": "code"
+                    }
+                ]
+            })
         }
     })
 
-authRouter.post('/registration-email-resending', (req: Request, res: Response) => {
+authRouter.post('/registration-email-resending',
+    body('email').isString().trim().notEmpty().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/),
+    checkedValidation,
+
+    async (req: RequestWithBody<{email: string}>, res: Response) => {
+
+    const result = await authService.resendCode(req.body.email)
+        console.log(result)
+    if(result) {
+        console.log(result)
+        res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+    } else {
+        res.status(HTTP_STATUSES.BAD_REQUEST_400).send({
+            "errorsMessages": [
+                {
+                    "message": "не валидное поле email",
+                    "field": "email"
+                }
+            ]
+        })
+    }
 
 })
 
