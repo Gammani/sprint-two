@@ -35,7 +35,15 @@ export const usersRepository = {
             page: pageNumber,
             pageSize: pageSize,
             totalCount: totalCount,
-            items: items.map(getUsersViewModel)
+            // items: items.map(getUsersViewModel)
+            items: items.map(item => {
+                return {
+                    id: item.accountData.id,
+                    login: item.accountData.login,
+                    email: item.accountData.email,
+                    createdAt: item.accountData.createdAt
+                }
+            })
         }
     },
     async findUserByLoginOrEmail(loginOrEmail: string): Promise<UserType | null> {
