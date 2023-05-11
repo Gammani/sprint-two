@@ -99,6 +99,7 @@ export const usersRepository = {
         debugger
         let result = await usersCollection
             .updateOne({'accountData.email': email}, {$set: {'emailConfirmation.confirmationCode': code}})
+        debugger
         return result.modifiedCount === 1
     },
 

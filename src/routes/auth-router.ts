@@ -33,6 +33,7 @@ authRouter.post('/registration',
     body('login').isString().trim().isLength({min: 3, max: 10}).notEmpty().matches(/^[a-zA-Z0-9_-]*$/),
     body('password').isString().trim().isLength({min: 6, max: 20}).notEmpty().exists(),
     body('email').isString().trim().notEmpty().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/).exists(),
+
     checkedValidation,
     checkedExistsForLoginOrEmail,
 

@@ -16,13 +16,16 @@ export const authService = {
     async resendCode(email: string) {
         const foundUser = await usersRepository.findUserByLoginOrEmail(email)
         if (foundUser) {
+            debugger
             const code = uuidv4()
             const createResult = await usersRepository.updateCode(email, code)
             try {
+                debugger
                 await emailAdapter.sendEmail(email, foundUser.accountData.login, `\` <h1>Thank for your registration</h1>
  <p>To finish registration please follow the link below:
-     <a href='https://somesite.com/confirm-email?code=${foundUser.emailConfirmation.confirmationCode}'>complete registration</a>
+     <a href='https://somesite.com/confirm-email?code=${code}'>complete registration</a>
  </p>\``)
+                debugger
                 return createResult
             } catch (e) {
                 console.log(e)
