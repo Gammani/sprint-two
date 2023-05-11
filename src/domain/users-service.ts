@@ -6,6 +6,7 @@ import add from "date-fns/add";
 import {UserDBType, UserType} from "../utils/types";
 import {usersCollection} from "../repositories/db";
 import {emailAdapter} from "../adapter/email-adapter";
+import {authService} from "./auth-service";
 
 
 export const usersService = {
@@ -31,6 +32,7 @@ export const usersService = {
         }
     },
     async createUser(login: string, email: string, password: string): Promise<UserViewModel | null> {
+
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this._generateHash(password, passwordSalt)
 

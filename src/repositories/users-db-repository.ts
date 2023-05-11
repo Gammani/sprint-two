@@ -10,7 +10,7 @@ export const usersRepository = {
         pageSizeQuery: string,
         sortByQuery: string,
         sortDirectionQuery: string
-    ): Promise<UserWithPaginationViewModel>{
+    ): Promise<UserWithPaginationViewModel> {
 
         const pageNumber = isNaN(Number(pageNumberQuery)) ? 1 : Number(pageNumberQuery)
         const pageSize = isNaN(Number(pageSizeQuery)) ? 10 : Number(pageSizeQuery)
@@ -25,9 +25,9 @@ export const usersRepository = {
             .skip(skipPages)
             .limit(pageSize)
             .toArray()
-         // const totalCount = await usersCollection.find({}).count({})
+        // const totalCount = await usersCollection.find({}).count({})
         const totalCount = await usersCollection.countDocuments({})
-        const pageCount = Math.ceil(totalCount/pageSize)
+        const pageCount = Math.ceil(totalCount / pageSize)
         console.log(items)
 
         return {
@@ -46,12 +46,32 @@ export const usersRepository = {
             // })
         }
     },
+    async findUserByLogin(login: string): Promise<UserType | null> {
+        const foundUser = await usersCollection.findOne({'accountData.login': login})
+        if(foundUser) {
+            return foundUser
+        } else {
+            return null
+        }
+    },
+    async findUserByEmail(email: string): Promise<UserType | null> {
+        const foundUser = await usersCollection.findOne({'accountData.email': email})
+        if(foundUser) {
+            return foundUser
+        } else {
+            return null
+        }
+    },
     async findUserByLoginOrEmail(loginOrEmail: string): Promise<UserType | null> {
         const foundUser = await usersCollection.findOne({$or: [{'accountData.email': loginOrEmail}, {'accountData.login': loginOrEmail}]})
         return foundUser
     },
+    async findUserByLoginAndEmail(email: string, login: string) {
+        const foundUser = await usersCollection.findOne({$or: [{'accountData.email': email}, {'accountData.login': login}]})
+        return foundUser
+    },
     async createUser(newUser: UserType): Promise<UserViewModel> {
-         await usersCollection.insertOne({...newUser})
+        await usersCollection.insertOne({...newUser})
         return {
             id: newUser.accountData.id,
             login: newUser.accountData.login,
@@ -63,7 +83,6 @@ export const usersRepository = {
         const result = await usersCollection.deleteOne({id: id})
         return result.deletedCount === 1
     },
-
 
 
     async findUserByConfirmationCode(confirmationCode: string) {
