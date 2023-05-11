@@ -2,7 +2,11 @@ import {Response, Router} from "express";
 import {RequestWithBody, UserType} from "../utils/types";
 import {CreateAuthModel} from "../models/CreateAuthModel";
 import {body} from "express-validator";
-import {checkedExistsForLoginOrEmail, checkedValidation} from "../middlewares/requestValidatorWithExpressValidator";
+import {
+    checkedConfirmedEmail,
+    checkedExistsForLoginOrEmail,
+    checkedValidation
+} from "../middlewares/requestValidatorWithExpressValidator";
 import {usersService} from "../domain/users-service";
 import {HTTP_STATUSES} from "../utils/utils";
 import {jwtServices} from "../application/jwt-service";
@@ -83,25 +87,12 @@ authRouter.post('/registration-confirmation',
 authRouter.post('/registration-email-resending',
     body('email').isString().trim().notEmpty().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/),
     checkedValidation,
+    checkedConfirmedEmail,
 
     async (req: RequestWithBody<{ email: string }>, res: Response) => {
 
         const result = await authService.resendCode(req.body.email)
-        console.log(result)
-        if (result) {
-            console.log(result)
-            res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
-        } else {
-            res.status(HTTP_STATUSES.BAD_REQUEST_400).send({
-                "errorsMessages": [
-                    {
-                        "message": "не валидное поле email",
-                        "field": "email"
-                    }
-                ]
-            })
-        }
-
+        res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
     })
 
 authRouter.get('/me',

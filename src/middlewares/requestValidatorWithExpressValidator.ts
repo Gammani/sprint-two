@@ -34,6 +34,21 @@ export const checkedExistsForLoginOrEmail = async (req: Request, res: Response, 
         next()
     }
 }
+export const checkedConfirmedEmail = async (req: Request, res: Response, next: NextFunction) => {
+    let errors: ErrorsType = {errorsMessages: []}
+    const foundUser = await usersRepository.findUserByEmail(req.body.email)
+    if(!foundUser) {
+        errors.errorsMessages.push({message: `не валидное поле email`, field: 'email'})
+    }
+    if(foundUser?.emailConfirmation.isConfirmed) {
+        errors.errorsMessages.push({message: `не валидное поле email`, field: 'email'})
+    }
+    if(errors.errorsMessages.length > 0) {
+        res.status(HTTP_STATUSES.BAD_REQUEST_400).send(errors)
+    } else {
+        next()
+    }
+}
 
 export const isValidId: CustomValidator = async (blogId) => {
     const foundBlogger: BloggerViewModel | null = await bloggersRepository.findBloggerById(blogId)
