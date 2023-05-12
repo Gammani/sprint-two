@@ -7,6 +7,7 @@ import {HTTP_STATUSES, removeAllDataBase} from "./utils/utils";
 import {usersRouter} from "./routes/users-router";
 import {authRouter} from "./routes/auth-router";
 import {commentsRouter} from "./routes/comments-router";
+import {addressRouter} from "./routes/address";
 
 
 export const createApp = () => {
@@ -33,6 +34,8 @@ export const createApp = () => {
     app.use('/auth', authRouter)
 // Comments
     app.use('/comments', commentsRouter)
+    //know my IP
+    app.use('/address', addressRouter)
     return app
 }
 
