@@ -52,7 +52,8 @@ debugger
     const userId: any = await jwtServices.getUserIdByToken(token)
     if(userId) {
         debugger
-        const foundUser = await usersService.findUserById(userId)
+        const foundUser: any = await usersService.findUserById(userId)
+        console.log(foundUser)
         req.user = {
             email: foundUser!.accountData.email,
             login: foundUser!.accountData.login,
