@@ -22,7 +22,7 @@ addressRouter.get('/', async (req: Request, res: Response) => {
     // res.send(lookup(ipAddress))
     // let interfaces = os.networkInterfaces()
 
- const helo = publicIp()
-res.send(helo)
+ // const helo = publicIp()
+res.send('helo')
 
 })
