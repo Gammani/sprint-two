@@ -1,4 +1,5 @@
 import {createApp} from "./app-config";
+import cookieParser from "cookie-parser";
 
 const port = process.env.PORT || 5000
 

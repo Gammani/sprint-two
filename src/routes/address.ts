@@ -1,5 +1,4 @@
 import {Router, Request, Response} from "express";
-import {publicIp, publicIpv4, publicIpv6} from 'public-ip';
 import IP from 'ip'
 import {lookup} from "geoip-lite";
 import * as os from "os";
@@ -22,7 +21,6 @@ addressRouter.get('/', async (req: Request, res: Response) => {
     // res.send(lookup(ipAddress))
     // let interfaces = os.networkInterfaces()
 
- // const helo = publicIp()
 res.send('helo')
 
 })
