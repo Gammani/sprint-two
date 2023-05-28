@@ -28,6 +28,9 @@ authRouter.post('/login',
         if (user) {
             const accessToken = await jwtServices.createAccessJWT(user)
             const refreshToken = await jwtServices.createRefreshJWT(user)
+
+            res.cookie('cookie_name', refreshToken, {httpOnly: true, secure: true})
+
             res.status(HTTP_STATUSES.OK_200).send({accessToken: accessToken})
         } else {
             res.sendStatus(HTTP_STATUSES.NO_UNAUTHORIZED_401)
