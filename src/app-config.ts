@@ -20,24 +20,13 @@ export const createApp = () => {
 
 
 
-
-    app.post('/auth/example', (req: Request, res: Response) => {
-        res.cookie('cookie_name', 'asd', {httpOnly: true, secure: true})
-        res.status(204).send('Hello samurai from it-incubator!!!')
-    })
-    app.get('/auth/result', async (req: Request, res: Response) => {
-        const cookie_name = req.cookies.cookie_name
-        res.sendStatus(204)
-    })
-
     // create cookie
     app.post('/', async (req: Request, res: Response) => {
-        res.cookie('cookie_name', 'asd', {httpOnly: true, secure: true})
-        console.log(res.cookie)
+        res.cookie('cookie_name', 'test', {httpOnly: true, secure: true})
         res.send('Hello World!')
     })
     app.get('/', async (req: Request, res: Response) => {
-        const cookie_name= req.cookies.cookie_name
+        const cookie_name = req.cookies.cookie_name
         console.log(req.cookies.cookie_name)
         res.send('Hello World!')
     })
