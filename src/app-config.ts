@@ -22,7 +22,7 @@ export const createApp = () => {
 
     // create cookie
     app.post('/', async (req: Request, res: Response) => {
-        res.cookie('cookie_name', 'test', {httpOnly: true, secure: true})
+        res.cookie('cookie_name', 'test', {httpOnly: true, secure: false})
         res.send('Hello World!')
     })
     app.get('/', async (req: Request, res: Response) => {

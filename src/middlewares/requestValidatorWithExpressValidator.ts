@@ -54,15 +54,19 @@ export const checkedConfirmedEmail = async (req: Request, res: Response, next: N
 }
 
 export const checkRefreshToken = async (req: Request, res: Response, next: NextFunction) => {
+    debugger
     if(!req.cookies.refreshToken) {
         res.sendStatus(HTTP_STATUSES.NO_UNAUTHORIZED_401)
         return
     }
+    debugger
     if(await expiredTokensRepository.findToken(req.cookies.refreshToken)) {
         res.sendStatus(HTTP_STATUSES.NO_UNAUTHORIZED_401)
         return
     }
-    const token = req.cookies.refreshToken.split(' ')[1]
+    debugger
+    const token = req.cookies.refreshToken
+    console.log("token = ", token)
     // jwt.verify(token, settings.JWT_SECRET, function(err: any, decoded: any) {
     //     if (err) {
     //         /*
@@ -74,16 +78,17 @@ export const checkRefreshToken = async (req: Request, res: Response, next: NextF
     //         */
     //     }
     // });
-
+debugger
     const isExpiredToken = await expiredTokensRepository.isExpiredToken(token)
     if(isExpiredToken) {
         res.sendStatus(HTTP_STATUSES.NO_UNAUTHORIZED_401)
         return
     }
-    const userId: UserType = await jwtServices.getUserIdByToken(token)
+    debugger
+    const userId: string = await jwtServices.getUserIdByToken(token)
     if(userId) {
         debugger
-        const foundUser = await usersService.findUserById(userId.accountData.id)
+        const foundUser: UserType | null = await usersService.findUserById(userId)
         expiredTokensRepository.addTokenToDB(foundUser!.accountData.id, token)
         console.log(foundUser)
         req.user = {

@@ -13,6 +13,7 @@ export const expiredTokensRepository = {
         return await expiredTokensCollection.findOne({token})
     },
     async isExpiredToken(token: string): Promise<boolean> {
+        debugger
         try {
             const result: any = await jwt.verify(token, settings.JWT_SECRET)
             // console.log("result = ", result)

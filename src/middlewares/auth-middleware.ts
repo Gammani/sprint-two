@@ -46,7 +46,7 @@ debugger
         return
     }
 
-
+debugger
     const token = req.headers.authorization.split(' ')[1]
 
     const userId: any = await jwtServices.getUserIdByToken(token)
