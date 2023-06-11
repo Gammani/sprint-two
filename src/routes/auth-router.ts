@@ -29,7 +29,7 @@ authRouter.post('/login',
             const accessToken = await jwtServices.createAccessJWT(user.accountData.id)
             const refreshToken = await jwtServices.createRefreshJWT(user.accountData.id)
 
-            res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: false})
+            res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true})
 
             res.status(HTTP_STATUSES.OK_200).send({accessToken: accessToken})
         } else {
@@ -96,7 +96,7 @@ authRouter.post('/refresh-token',
             const accessToken = await jwtServices.createAccessJWT(user.userId)
             const refreshToken = await jwtServices.createRefreshJWT(user.userId)
 
-            res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: false})
+            res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true})
 
             res.status(HTTP_STATUSES.OK_200).send({accessToken: accessToken})
         }
