@@ -20,7 +20,7 @@ export const usersRepository = {
         const skipPages: number = (pageNumber - 1) * pageSize
 
         const items = await usersCollection
-            .find({}, {projection: {_id: 0}})
+            .find({}, {projection: {_id: 0, blackListRefreshTokens: 0}})
             .sort({[sortBy]: sortDirection})
             .skip(skipPages)
             .limit(pageSize)

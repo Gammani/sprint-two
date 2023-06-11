@@ -24,6 +24,10 @@ export type PostsType = {
     blogName: string
     createdAt: string
 }
+export type ExpiredTokenType = {
+    userId: string
+    token: string
+}
 // export type UserType = {
 //     id: string
 //     login: string

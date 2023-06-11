@@ -1,11 +1,11 @@
-import {Response, Router} from "express";
+import {Request, Response, Router} from "express";
 import {RequestWithBody, UserType} from "../utils/types";
 import {CreateAuthModel} from "../models/CreateAuthModel";
 import {body} from "express-validator";
 import {
     checkedConfirmedEmail,
     checkedExistsForLoginOrEmail,
-    checkedValidation
+    checkedValidation, checkRefreshToken
 } from "../middlewares/requestValidatorWithExpressValidator";
 import {usersService} from "../domain/users-service";
 import {HTTP_STATUSES} from "../utils/utils";
@@ -26,8 +26,8 @@ authRouter.post('/login',
 
         const user: UserType | null = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
         if (user) {
-            const accessToken = await jwtServices.createAccessJWT(user)
-            const refreshToken = await jwtServices.createRefreshJWT(user)
+            const accessToken = await jwtServices.createAccessJWT(user.accountData.id)
+            const refreshToken = await jwtServices.createRefreshJWT(user.accountData.id)
 
             res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true})
 
@@ -50,20 +50,6 @@ authRouter.post('/registration',
         const newUser: UserViewModel | null = await usersService.createUser(req.body.login, req.body.email, req.body.password)
 
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
-
-        // if(newUser) {
-        //     res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
-        // } else {
-        //     res.status(HTTP_STATUSES.BAD_REQUEST_400).send({
-        //         "errorsMessages": [
-        //             {
-        //                 "message": "не валидное поле code",
-        //                 "field": "code"
-        //             }
-        //         ]
-        //     })
-        // }
-
     })
 
 authRouter.post('/registration-confirmation',
@@ -98,6 +84,21 @@ authRouter.post('/registration-email-resending',
         const result = await authService.resendCode(req.body.email)
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
     })
+
+authRouter.post('/refresh-token',
+    checkRefreshToken,
+
+    async (req: Request, res: Response) => {
+    const user = req.user
+        if(user) {
+            const accessToken = await jwtServices.createAccessJWT(user.userId)
+            const refreshToken = await jwtServices.createRefreshJWT(user.userId)
+
+            res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true})
+
+            res.status(HTTP_STATUSES.OK_200).send({accessToken: accessToken})
+        }
+})
 
 authRouter.get('/me',
     authBearerMiddleware,

@@ -24,7 +24,7 @@ export const usersService = {
         )
     },
     async findUserById(userId: string): Promise<UserType | null> {
-        const user: UserType | null = await usersCollection.findOne({'accountData.id': userId}, {projection: {_id: 0}})
+        const user: UserType | null = await usersCollection.findOne({'accountData.id': userId}, {projection: {_id: 0, blackListRefreshTokens: 0}})
         if (user) {
             return user
         } else {

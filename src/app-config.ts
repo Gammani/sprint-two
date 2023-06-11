@@ -28,7 +28,7 @@ export const createApp = () => {
     app.get('/', async (req: Request, res: Response) => {
         const cookie_name = req.cookies.cookie_name
         console.log(req.cookies.cookie_name)
-        res.send('Hello World!')
+        res.status(200).json('Hello World!').end()
     })
 
 
