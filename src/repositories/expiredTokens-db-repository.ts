@@ -22,5 +22,9 @@ export const expiredTokensRepository = {
             console.log(error.message)
             return true
         }
+    },
+    async deleteAll() {
+        const result = await expiredTokensCollection.deleteMany({})
+        return
     }
 }

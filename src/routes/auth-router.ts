@@ -101,6 +101,13 @@ authRouter.post('/refresh-token',
             res.status(HTTP_STATUSES.OK_200).send({accessToken: accessToken})
         }
 })
+authRouter.post('/logout',
+    checkRefreshToken,
+
+    (req: Request, res: Response) => {
+        res.cookie('refreshToken', "", {httpOnly: true, secure: true})
+    res.send(HTTP_STATUSES.NO_CONTENT_204)
+})
 
 authRouter.get('/me',
     authBearerMiddleware,
