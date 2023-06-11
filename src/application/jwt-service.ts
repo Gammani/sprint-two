@@ -6,11 +6,11 @@ import {expiredTokensRepository} from "../repositories/expiredTokens-db-reposito
 
 export const jwtServices = {
     async createAccessJWT(userId: string) {
-        const token = await jwt.sign({userId}, settings.JWT_SECRET, {expiresIn: '10'})
+        const token = await jwt.sign({userId}, settings.JWT_SECRET, {expiresIn: '10000'})
         return token
     },
     async createRefreshJWT(userId: string) {
-        const token = await jwt.sign({userId}, settings.JWT_SECRET, {expiresIn: '20'})
+        const token = await jwt.sign({userId}, settings.JWT_SECRET, {expiresIn: '20000'})
         return token
     },
     async checkRefreshJWT(token: string) {
