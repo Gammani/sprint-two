@@ -9,6 +9,7 @@ import {authRouter} from "./routes/auth-router";
 import {commentsRouter} from "./routes/comments-router";
 import {addressRouter} from "./routes/address";
 import cookieParser from "cookie-parser";
+import {requestsCounter} from "./middlewares/requestsCounter";
 
 
 export const createApp = () => {
@@ -21,11 +22,14 @@ export const createApp = () => {
 
 
     // create cookie
-    app.post('/', async (req: Request, res: Response) => {
+    app.post('/',
+        requestsCounter,
+
+        async (req: Request, res: Response) => {
         res.cookie('cookie_name', 'test', {httpOnly: true, secure: false})
         res.send('Hello World!')
     })
-    app.get('/', async (req: Request, res: Response) => {
+    app.get('/', requestsCounter, async (req: Request, res: Response) => {
         const cookie_name = req.cookies.cookie_name
         console.log(req.cookies.cookie_name)
         res.status(200).json('Hello World!').end()

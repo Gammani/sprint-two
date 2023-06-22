@@ -1,6 +1,6 @@
 import {MongoClient} from 'mongodb'
 import * as dotenv from 'dotenv'
-import {BloggersType, CommentsType, ExpiredTokenType, PostsType, UserType} from "../utils/types";
+import {BloggersType, CommentsType, ExpiredTokenType, PostsType, RequestForApiType, UserType} from "../utils/types";
 import {settings} from "../settings";
 
 dotenv.config()
@@ -23,6 +23,8 @@ export const postsCollection = db.collection<PostsType>("posts")
 export const usersCollection = db.collection<UserType>("users")
 export const commentsCollection = db.collection<CommentsType>("comments")
 export const expiredTokensCollection = db.collection<ExpiredTokenType>("expiredTokens")
+export const requestForApiCollection = db.collection<RequestForApiType>("requestForApi")
+
 
 
 export async function runDb() {
@@ -35,6 +37,7 @@ export async function runDb() {
         await client.db("users").command({ping: 1})
         await client.db("comments").command({ping: 1})
         await client.db("expiredTokens").command({ping: 1})
+        await client.db("requestForApi").command({ping: 1})
         console.log("Connected successfully to mongo server")
 
 

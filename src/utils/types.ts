@@ -79,3 +79,8 @@ type ErrorsMessageType = {
 export type ErrorsType = {
     errorsMessages: Array<ErrorsMessageType>
 }
+export type RequestForApiType = {
+    IP: string
+    URL: string
+    date: Date
+}
