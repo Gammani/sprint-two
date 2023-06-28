@@ -13,12 +13,12 @@ interface JwtPayload {
 
 export const jwtServices = {
     async createAccessJWT(userId: string) {
-        const token = await jwt.sign({userId}, settings.JWT_SECRET, {expiresIn: '1000000'})
+        const token = await jwt.sign({userId}, settings.JWT_SECRET, {expiresIn: '10000'})
         return token
     },
     async createRefreshJWT(deviceId: string) {
         // const token = await jwt.sign({userId}, settings.JWT_SECRET, {expiresIn: '20000'})
-        const token = await jwt.sign({deviceId: deviceId}, settings.JWT_SECRET, {expiresIn: '2000000'})
+        const token = await jwt.sign({deviceId: deviceId}, settings.JWT_SECRET, {expiresIn: '20000'})
 
 
         return token
