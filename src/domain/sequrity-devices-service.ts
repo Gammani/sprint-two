@@ -12,5 +12,9 @@ export const securityDevicesService = {
     },
     async findAllActiveSessionFromUser(userId: string): Promise<DeviceViewModel[] | undefined> {
         return await devicesRepository.findAllActiveSessionFromUserId(userId)
+    },
+    async deleteAllSessionExcludeCurrent(deviceId: string) {
+        const result = await devicesRepository.deleteAllSessionExcludeCurrent(deviceId)
+        return
     }
 }

@@ -20,6 +20,10 @@ export const devicesRepository = {
         const result =  await devicesCollection.find({userId: userId}, {projection: {_id: 0, userId: 0}}).toArray()
         return result
     },
+    async deleteAllSessionExcludeCurrent(deviceId: string) {
+        const result = await devicesCollection.deleteMany({deviceId: {$ne: deviceId}})
+        return
+    },
     async deleteAll() {
         const result = await devicesCollection.deleteMany({})
         return
