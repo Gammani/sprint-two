@@ -7,6 +7,7 @@ import {UserDBType, UserType} from "../utils/types";
 import {usersCollection} from "../repositories/db";
 import {emailAdapter} from "../adapter/email-adapter";
 import {authService} from "./auth-service";
+import {securityDevicesService} from "./sequrity-devices-service";
 
 
 export const usersService = {
@@ -24,9 +25,19 @@ export const usersService = {
         )
     },
     async findUserById(userId: string): Promise<UserType | null> {
+        debugger
         const user: UserType | null = await usersCollection.findOne({'accountData.id': userId}, {projection: {_id: 0, blackListRefreshTokens: 0}})
         if (user) {
             return user
+        } else {
+            return null
+        }
+    },
+    async findUserByDeviceId(deviceId: string): Promise<UserType | null> {
+        debugger
+        const foundUserId = await securityDevicesService.findUserIdByDeviceId(deviceId)
+        if(foundUserId) {
+            return this.findUserById(foundUserId)
         } else {
             return null
         }

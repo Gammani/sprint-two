@@ -84,3 +84,10 @@ export type RequestForApiType = {
     URL: string
     date: Date
 }
+export type DevicesType = {
+    userId: string
+    ip: string
+    title: string
+    lastActiveDate: string
+    deviceId: string
+}

@@ -49,7 +49,7 @@ debugger
 debugger
     const token = req.headers.authorization.split(' ')[1]
 
-    const userId: any = await jwtServices.getUserIdByToken(token)
+    const userId: any = await jwtServices.getUserIdByAccessToken(token)
     if(userId) {
         debugger
         const foundUser: any = await usersService.findUserById(userId)

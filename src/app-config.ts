@@ -10,6 +10,7 @@ import {commentsRouter} from "./routes/comments-router";
 import {addressRouter} from "./routes/address";
 import cookieParser from "cookie-parser";
 import {requestsCounter} from "./middlewares/requestsCounter";
+import {securityDevicesRouter} from "./routes/security-devices-router";
 
 
 export const createApp = () => {
@@ -51,6 +52,8 @@ export const createApp = () => {
     app.use('/auth', authRouter)
 // Comments
     app.use('/comments', commentsRouter)
+// SecurityDevices
+    app.use('/security/devices', securityDevicesRouter)
     //know my IP
     app.use('/address', addressRouter)
     return app

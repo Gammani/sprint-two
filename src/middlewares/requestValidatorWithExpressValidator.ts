@@ -8,6 +8,7 @@ import {usersRepository} from "../repositories/users-db-repository";
 import {expiredTokensRepository} from "../repositories/expiredTokens-db-repository";
 import {jwtServices} from "../application/jwt-service";
 import {usersService} from "../domain/users-service";
+import {securityDevicesService} from "../domain/sequrity-devices-service";
 
 
 export const checkedValidation = (req: Request, res: Response, next: NextFunction) => {
@@ -53,7 +54,7 @@ export const checkedConfirmedEmail = async (req: Request, res: Response, next: N
     }
 }
 
-export const checkRefreshToken = async (req: Request, res: Response, next: NextFunction) => {
+export const checkAndUpdateRefreshToken = async (req: Request, res: Response, next: NextFunction) => {
     debugger
     if(!req.cookies.refreshToken) {
         res.sendStatus(HTTP_STATUSES.NO_UNAUTHORIZED_401)
@@ -85,11 +86,54 @@ debugger
         return
     }
     debugger
-    const userId: string = await jwtServices.getUserIdByToken(token)
+    const deviceId: string | null = await jwtServices.getDeviceIdByRefreshToken(token)
+    if(deviceId) {
+        debugger
+        // const UserId: string | undefined = await securityDevicesService.findUserIdByDeviceId(deviceId)
+        const foundUser = await usersService.findUserByDeviceId(deviceId)
+        debugger
+        expiredTokensRepository.addTokenToDB(foundUser!.accountData.id, token)
+        console.log(foundUser)
+        req.user = {
+            email: foundUser!.accountData.email,
+            login: foundUser!.accountData.login,
+            userId: foundUser!.accountData.id,
+            deviceId: deviceId
+        }
+        next()
+    } else {
+        res.send(HTTP_STATUSES.NO_UNAUTHORIZED_401)
+        return
+    }
+}
+
+
+export const checkRefreshToken = async (req: Request, res: Response, next: NextFunction) => {
+    debugger
+    if(!req.cookies.refreshToken) {
+        res.sendStatus(HTTP_STATUSES.NO_UNAUTHORIZED_401)
+        return
+    }
+    debugger
+    if(await expiredTokensRepository.findToken(req.cookies.refreshToken)) {
+        res.sendStatus(HTTP_STATUSES.NO_UNAUTHORIZED_401)
+        return
+    }
+    debugger
+    const token = req.cookies.refreshToken
+    console.log("token = ", token)
+
+    debugger
+    const isExpiredToken = await expiredTokensRepository.isExpiredToken(token)
+    if(isExpiredToken) {
+        res.sendStatus(HTTP_STATUSES.NO_UNAUTHORIZED_401)
+        return
+    }
+    debugger
+    const userId: string = await jwtServices.getUserIdByRefreshToken(token)
     if(userId) {
         debugger
         const foundUser: UserType | null = await usersService.findUserById(userId)
-        expiredTokensRepository.addTokenToDB(foundUser!.accountData.id, token)
         console.log(foundUser)
         req.user = {
             email: foundUser!.accountData.email,
@@ -102,6 +146,7 @@ debugger
         return
     }
 }
+
 
 export const isValidId: CustomValidator = async (blogId) => {
     const foundBlogger: BloggerViewModel | null = await bloggersRepository.findBloggerById(blogId)

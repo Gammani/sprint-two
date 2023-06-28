@@ -8,6 +8,7 @@ export type RequestUserViewModel = {
     email: string
     login: string
     userId: string
+    deviceId?: string
 }
 export type UserWithPaginationViewModel = {
     pagesCount: number

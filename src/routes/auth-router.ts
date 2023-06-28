@@ -1,11 +1,11 @@
 import {Request, Response, Router} from "express";
-import {RequestWithBody, UserType} from "../utils/types";
+import {DevicesType, RequestWithBody, UserType} from "../utils/types";
 import {CreateAuthModel} from "../models/CreateAuthModel";
 import {body} from "express-validator";
 import {
     checkedConfirmedEmail,
     checkedExistsForLoginOrEmail,
-    checkedValidation, checkRefreshToken
+    checkedValidation, checkAndUpdateRefreshToken
 } from "../middlewares/requestValidatorWithExpressValidator";
 import {usersService} from "../domain/users-service";
 import {HTTP_STATUSES} from "../utils/utils";
@@ -14,6 +14,8 @@ import {authBearerMiddleware} from "../middlewares/auth-middleware";
 import {RequestUserViewModel, UserViewModel} from "../models/UserViewModel";
 import {CreateUserModel} from "../models/CreateUserModel";
 import {authService} from "../domain/auth-service";
+import {DeviceViewModel} from "../models/DeviceViewModel";
+import {securityDevicesService} from "../domain/sequrity-devices-service";
 
 export const authRouter = Router({})
 
@@ -26,10 +28,20 @@ authRouter.post('/login',
 
         const user: UserType | null = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
         if (user) {
+            const device: DevicesType = {
+                userId: user.accountData.id,
+                ip: req.ip,
+                title: req.headers['user-agent'] || "user-agent unknown",
+                lastActiveDate: new Date().toString(),
+                deviceId: (+new Date()).toString()
+            }
+            debugger
+            await securityDevicesService.addDevice(device)
             const accessToken = await jwtServices.createAccessJWT(user.accountData.id)
-            const refreshToken = await jwtServices.createRefreshJWT(user.accountData.id)
+            const refreshToken = await jwtServices.createRefreshJWT(device.deviceId)
 
-            res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true})
+            // res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true})
+            res.cookie('refreshToken', refreshToken, {httpOnly: false, secure: false})
 
             res.status(HTTP_STATUSES.OK_200).send({accessToken: accessToken})
         } else {
@@ -86,7 +98,7 @@ authRouter.post('/registration-email-resending',
     })
 
 authRouter.post('/refresh-token',
-    checkRefreshToken,
+    checkAndUpdateRefreshToken,
 
     async (req: Request, res: Response) => {
     debugger
@@ -94,15 +106,16 @@ authRouter.post('/refresh-token',
         if(user) {
             debugger
             const accessToken = await jwtServices.createAccessJWT(user.userId)
-            const refreshToken = await jwtServices.createRefreshJWT(user.userId)
+            const refreshToken = await jwtServices.createRefreshJWT(user.deviceId!)
 
-            res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true})
+            // res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true})
+            res.cookie('refreshToken', refreshToken, {httpOnly: false, secure: false})
 
             res.status(HTTP_STATUSES.OK_200).send({accessToken: accessToken})
         }
 })
 authRouter.post('/logout',
-    checkRefreshToken,
+    checkAndUpdateRefreshToken,
 
     (req: Request, res: Response) => {
         res.cookie('refreshToken', "", {httpOnly: true, secure: true})

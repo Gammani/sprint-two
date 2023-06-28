@@ -8,6 +8,7 @@ import {usersRepository} from "../repositories/users-db-repository";
 import {commentsRepository} from "../repositories/comments-db-repository";
 import {expiredTokensRepository} from "../repositories/expiredTokens-db-repository";
 import {requestForApiRepository} from "../repositories/requestsForApi-db-repository";
+import {devicesRepository} from "../repositories/devices-db-repository";
 
 
 export const HTTP_STATUSES = {
@@ -57,6 +58,7 @@ export const removeAllDataBase = async () => {
     await commentsRepository.deleteAll()
     await expiredTokensRepository.deleteAll()
     await requestForApiRepository.deleteAll()
+    await devicesRepository.deleteAll()
     return
 }
 
