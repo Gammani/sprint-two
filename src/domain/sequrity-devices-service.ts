@@ -9,5 +9,8 @@ export const securityDevicesService = {
     async findUserIdByDeviceId(deviseId: string): Promise<string | undefined> {
         debugger
         return await devicesRepository.findUserIdByDeviceId(deviseId)
+    },
+    async findAllActiveSessionFromUser(userId: string): Promise<DeviceViewModel[] | undefined> {
+        return await devicesRepository.findAllActiveSessionFromUserId(userId)
     }
 }

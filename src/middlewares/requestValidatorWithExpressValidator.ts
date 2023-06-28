@@ -130,15 +130,18 @@ export const checkRefreshToken = async (req: Request, res: Response, next: NextF
         return
     }
     debugger
-    const userId: string = await jwtServices.getUserIdByRefreshToken(token)
-    if(userId) {
+    const deviceId: string | null = await jwtServices.getDeviceIdByRefreshToken(token)
+    if(deviceId) {
         debugger
-        const foundUser: UserType | null = await usersService.findUserById(userId)
+        // const UserId: string | undefined = await securityDevicesService.findUserIdByDeviceId(deviceId)
+        const foundUser = await usersService.findUserByDeviceId(deviceId)
+        debugger
         console.log(foundUser)
         req.user = {
             email: foundUser!.accountData.email,
             login: foundUser!.accountData.login,
-            userId: foundUser!.accountData.id
+            userId: foundUser!.accountData.id,
+            deviceId: deviceId
         }
         next()
     } else {

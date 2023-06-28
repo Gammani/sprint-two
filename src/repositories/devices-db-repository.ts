@@ -16,6 +16,10 @@ export const devicesRepository = {
         const result = await devicesCollection.findOne({deviceId: deviseId})
         return result?.userId
     },
+    async findAllActiveSessionFromUserId(userId: string): Promise<DeviceViewModel[] | undefined> {
+        const result =  await devicesCollection.find({userId: userId}, {projection: {_id: 0, userId: 0}}).toArray()
+        return result
+    },
     async deleteAll() {
         const result = await devicesCollection.deleteMany({})
         return
