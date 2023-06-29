@@ -32,7 +32,7 @@ authRouter.post('/login',
                 userId: user.accountData.id,
                 ip: req.ip,
                 title: req.headers['user-agent'] || "user-agent unknown",
-                lastActiveDate: new Date().toString(),
+                lastActiveDate: new Date(),
                 deviceId: (+new Date()).toString()
             }
             debugger

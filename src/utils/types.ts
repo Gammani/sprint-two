@@ -88,6 +88,6 @@ export type DevicesType = {
     userId: string
     ip: string
     title: string
-    lastActiveDate: string
+    lastActiveDate: Date
     deviceId: string
 }
