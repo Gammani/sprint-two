@@ -1,5 +1,9 @@
 import {Router, Request, Response} from "express";
-import {checkAndUpdateRefreshToken, checkRefreshToken} from "../middlewares/requestValidatorWithExpressValidator";
+import {
+    checkAndRemoveRefreshTokenById,
+    checkAndUpdateRefreshToken,
+    checkRefreshToken
+} from "../middlewares/requestValidatorWithExpressValidator";
 import {securityDevicesService} from "../domain/sequrity-devices-service";
 import {HTTP_STATUSES} from "../utils/utils";
 import {expiredTokensRepository} from "../repositories/expiredTokens-db-repository";
@@ -24,7 +28,7 @@ securityDevicesRouter.delete('/',
     })
 
 securityDevicesRouter.delete('/:deviceId',
-    checkAndUpdateRefreshToken,
+    checkAndRemoveRefreshTokenById,
 
     async (req: Request, res: Response) => {
     const device = await securityDevicesService.findDeviceByDeviceId(req.params.deviceId)

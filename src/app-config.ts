@@ -27,7 +27,7 @@ export const createApp = () => {
         requestsCounter,
 
         async (req: Request, res: Response) => {
-        res.cookie('cookie_name', 'test', {httpOnly: true, secure: false})
+        res.cookie('cookie_name', 'test', {httpOnly: true, secure: true})
         res.send('Hello World!')
     })
     app.get('/', requestsCounter, async (req: Request, res: Response) => {

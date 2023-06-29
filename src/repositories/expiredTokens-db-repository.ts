@@ -10,7 +10,8 @@ export const expiredTokensRepository = {
         return
     },
     async findToken(token: string): Promise<ExpiredTokenType | null> {
-        return await expiredTokensCollection.findOne({token})
+        debugger
+        return await expiredTokensCollection.findOne({token: token})
     },
     async isExpiredToken(token: string): Promise<boolean> {
         debugger

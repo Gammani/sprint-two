@@ -61,6 +61,7 @@ export const checkAndUpdateRefreshToken = async (req: Request, res: Response, ne
         return
     }
     debugger
+
     if(await expiredTokensRepository.findToken(req.cookies.refreshToken)) {
         res.sendStatus(HTTP_STATUSES.NO_UNAUTHORIZED_401)
         return
@@ -87,6 +88,52 @@ debugger
     }
     debugger
     const deviceId: string | null = await jwtServices.getDeviceIdByRefreshToken(token)
+    if(deviceId) {
+        debugger
+        // const UserId: string | undefined = await securityDevicesService.findUserIdByDeviceId(deviceId)
+        const foundUser = await usersService.findUserByDeviceId(deviceId)
+        debugger
+        expiredTokensRepository.addTokenToDB(foundUser!.accountData.id, token)
+        console.log(foundUser)
+        req.user = {
+            email: foundUser!.accountData.email,
+            login: foundUser!.accountData.login,
+            userId: foundUser!.accountData.id,
+            deviceId: deviceId
+        }
+        next()
+    } else {
+        res.send(HTTP_STATUSES.NO_UNAUTHORIZED_401)
+        return
+    }
+}
+export const checkAndRemoveRefreshTokenById = async (req: Request, res: Response, next: NextFunction) => {
+    debugger
+    if(!req.cookies.refreshToken) {
+        res.sendStatus(HTTP_STATUSES.NO_UNAUTHORIZED_401)
+        return
+    }
+    debugger
+
+    if(await expiredTokensRepository.findToken(req.cookies.refreshToken)) {
+        res.sendStatus(HTTP_STATUSES.NO_UNAUTHORIZED_401)
+        return
+    }
+    debugger
+    const token = req.cookies.refreshToken
+    console.log("token = ", token)
+    debugger
+    const isExpiredToken = await expiredTokensRepository.isExpiredToken(token)
+    if(isExpiredToken) {
+        res.sendStatus(HTTP_STATUSES.NO_UNAUTHORIZED_401)
+        return
+    }
+    debugger
+    const deviceId: string | null = await jwtServices.getDeviceIdByRefreshToken(token)
+    if(deviceId !== req.params.deviceId) {
+        res.sendStatus(HTTP_STATUSES.FORBIDDEN_403)
+        return
+    }
     if(deviceId) {
         debugger
         // const UserId: string | undefined = await securityDevicesService.findUserIdByDeviceId(deviceId)
