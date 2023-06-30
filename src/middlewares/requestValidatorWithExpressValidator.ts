@@ -152,7 +152,7 @@ export const checkAndRemoveRefreshTokenById = async (req: Request, res: Response
             // токен который указан в id
 
             if(isFoundDeviceFromUserId) {
-                expiredTokensRepository.addTokenToDB(foundUser.accountData.id, token)
+                // expiredTokensRepository.addTokenToDB(foundUser.accountData.id, token) КОММЕНТ
                 console.log(foundUser)
                 req.user = {
                     email: foundUser.accountData.email,
