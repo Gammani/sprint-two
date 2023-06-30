@@ -20,6 +20,10 @@ export const devicesRepository = {
         const result = await devicesCollection.findOne({deviceId: deviseId})
         return result?.userId
     },
+    async findAndUpdateDeviceAfterRefresh(deviceId: string) {
+        const result = devicesCollection.findOneAndUpdate({deviceId: deviceId}, {$set: {lastActiveDate: new Date()}})
+        return result
+    },
     async findAllActiveSessionFromUserId(userId: string): Promise<DeviceViewModel[] | undefined> {
         const result =  await devicesCollection.find({userId: userId}, {projection: {_id: 0, userId: 0}}).toArray()
         return result

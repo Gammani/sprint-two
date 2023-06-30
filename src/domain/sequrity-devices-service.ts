@@ -13,6 +13,9 @@ export const securityDevicesService = {
         debugger
         return await devicesRepository.findUserIdByDeviceId(deviseId)
     },
+    async findAndUpdateDeviceAfterRefresh(deviceId: string) {
+        return await devicesRepository.findAndUpdateDeviceAfterRefresh(deviceId)
+    },
     async findAllActiveSessionFromUser(userId: string): Promise<DeviceViewModel[] | undefined> {
         return await devicesRepository.findAllActiveSessionFromUserId(userId)
     },

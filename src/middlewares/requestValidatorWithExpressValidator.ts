@@ -92,6 +92,7 @@ debugger
         debugger
         // const UserId: string | undefined = await securityDevicesService.findUserIdByDeviceId(deviceId)
         const foundUser = await usersService.findUserByDeviceId(deviceId)
+        await securityDevicesService.findAndUpdateDeviceAfterRefresh(deviceId)
         debugger
         expiredTokensRepository.addTokenToDB(foundUser!.accountData.id, token)
         console.log(foundUser)
