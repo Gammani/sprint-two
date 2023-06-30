@@ -30,6 +30,7 @@ export const devicesRepository = {
     },
     async deleteCurrentSessionById(deviceId: string): Promise<boolean> {
         const result = await devicesCollection.deleteOne({deviceId: deviceId})
+        debugger
         return result.deletedCount === 1;
     },
     async deleteAllSessionExcludeCurrent(deviceId: string) {

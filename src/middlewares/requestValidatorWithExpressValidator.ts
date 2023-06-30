@@ -110,6 +110,7 @@ debugger
 }
 export const checkAndRemoveRefreshTokenById = async (req: Request, res: Response, next: NextFunction) => {
     debugger
+    // userId вместо device
     const device = await securityDevicesService.findUserIdByDeviceId(req.params.deviceId)
     if(!device) {
         res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
