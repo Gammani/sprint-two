@@ -50,7 +50,7 @@ securityDevicesRouter.delete('/:deviceId',
 
 
         await securityDevicesService.deleteCurrentSessionById(req.params.deviceId)
-        res.cookie('refreshToken', "", {httpOnly: false, secure: false})
+        res.cookie('refreshToken', "", {httpOnly: true, secure: true})
         debugger
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
 
