@@ -146,7 +146,7 @@ export const checkAndRemoveRefreshTokenById = async (req: Request, res: Response
         const foundUser = await usersService.findUserByDeviceId(deviceId)
         debugger
         if(foundUser) {
-            const isFoundDeviceFromUserId = await securityDevicesService.findDeviceFromUserId(req.params.deviceId, foundUser.accountData.id)
+            const isFoundDeviceFromUserId = await securityDevicesService.findDeviceFromUserId(deviceId, foundUser.accountData.id)
             // мне приходит токен а в парамс приходит deviceId, нужно узнать является ли deviceId тому же юзеру что и токен. DeviceId
             // вытащили из токена.
             // токен который указан в id

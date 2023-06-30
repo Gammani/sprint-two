@@ -41,7 +41,7 @@ authRouter.post('/login',
             const refreshToken = await jwtServices.createRefreshJWT(device.deviceId)
 
             // res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true})
-            res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true})
+            res.cookie('refreshToken', refreshToken, {httpOnly: false, secure: false})
 
             res.status(HTTP_STATUSES.OK_200).send({accessToken: accessToken})
         } else {
@@ -109,7 +109,7 @@ authRouter.post('/refresh-token',
             const refreshToken = await jwtServices.createRefreshJWT(user.deviceId!)
 
             // res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true})
-            res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true})
+            res.cookie('refreshToken', refreshToken, {httpOnly: false, secure: false})
 
             res.status(HTTP_STATUSES.OK_200).send({accessToken: accessToken})
         }
@@ -118,7 +118,7 @@ authRouter.post('/logout',
     checkAndUpdateRefreshToken,
 
     (req: Request, res: Response) => {
-        res.cookie('refreshToken', "", {httpOnly: true, secure: true})
+        res.cookie('refreshToken', "", {httpOnly: false, secure: false})
     res.send(HTTP_STATUSES.NO_CONTENT_204)
 })
 
