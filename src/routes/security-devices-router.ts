@@ -31,7 +31,27 @@ securityDevicesRouter.delete('/:deviceId',
     checkAndRemoveRefreshTokenById,
 
     async (req: Request, res: Response) => {
+        // const device = await securityDevicesService.findDeviceByDeviceId(req.params.deviceId)
+        //     debugger
+        //     if(device) {
+        //         if(req.params.deviceId === req.user!.deviceId) {
+        //             debugger
+        //             await securityDevicesService.deleteCurrentSessionById(req.params.id)
+        //             res.cookie('refreshToken', "", {httpOnly: true, secure: true})
+        //             debugger
+        //             res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+        //         } else {
+        //             debugger
+        //             res.sendStatus(HTTP_STATUSES.FORBIDDEN_403)
+        //         }
+        //     } else {
+        //         res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
+        //     }
+
+
+        await securityDevicesService.deleteCurrentSessionById(req.params.deviceId)
+        res.cookie('refreshToken', "", {httpOnly: true, secure: true})
         debugger
-        await securityDevicesService.deleteCurrentSessionById(req.user!.deviceId!)
-        res.cookie('refreshToken', "", {httpOnly: false, secure: false})
+        res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+
     })
