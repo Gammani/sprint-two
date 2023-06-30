@@ -29,7 +29,7 @@ export const devicesRepository = {
         return result
     },
     async findDeviceFromUserId(deviceId: string, userId: string): Promise<boolean> {
-        const result = await devicesCollection.find({deviceId: deviceId, userId: userId})
+        const result = await devicesCollection.findOne({deviceId: deviceId, userId: userId})
         if(result) {
             return true
         } else {
