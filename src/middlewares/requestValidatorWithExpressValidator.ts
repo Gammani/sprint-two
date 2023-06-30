@@ -110,9 +110,8 @@ debugger
 }
 export const checkAndRemoveRefreshTokenById = async (req: Request, res: Response, next: NextFunction) => {
     debugger
-    // userId вместо device
-    const device = await securityDevicesService.findUserIdByDeviceId(req.params.deviceId)
-    if(!device) {
+    const userId = await securityDevicesService.findUserIdByDeviceId(req.params.deviceId)
+    if(!userId) {
         res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
         return
     }
@@ -137,24 +136,41 @@ export const checkAndRemoveRefreshTokenById = async (req: Request, res: Response
     }
     debugger
     const deviceId: string | null = await jwtServices.getDeviceIdByRefreshToken(token)
-    if(deviceId !== req.params.deviceId) {
-        res.sendStatus(HTTP_STATUSES.FORBIDDEN_403)
-        return
-    }
+    // if(deviceId !== req.params.deviceId) {
+    //     res.sendStatus(HTTP_STATUSES.FORBIDDEN_403)
+    //     return
+    // }
     if(deviceId) {
         debugger
         // const UserId: string | undefined = await securityDevicesService.findUserIdByDeviceId(deviceId)
         const foundUser = await usersService.findUserByDeviceId(deviceId)
         debugger
-        expiredTokensRepository.addTokenToDB(foundUser!.accountData.id, token)
-        console.log(foundUser)
-        req.user = {
-            email: foundUser!.accountData.email,
-            login: foundUser!.accountData.login,
-            userId: foundUser!.accountData.id,
-            deviceId: deviceId
+        if(foundUser) {
+            const isFoundDeviceFromUserId = await securityDevicesService.findDeviceFromUserId(req.params.deviceId, foundUser.accountData.id)
+            // мне приходит токен а в парамс приходит deviceId, нужно узнать является ли deviceId тому же юзеру что и токен. DeviceId
+            // вытащили из токена.
+            // токен который указан в id
+
+            if(isFoundDeviceFromUserId) {
+                expiredTokensRepository.addTokenToDB(foundUser.accountData.id, token)
+                console.log(foundUser)
+                req.user = {
+                    email: foundUser.accountData.email,
+                    login: foundUser.accountData.login,
+                    userId: foundUser.accountData.id,
+                    deviceId: req.params.deviceId
+                }
+                next()
+            } else {
+                res.send(HTTP_STATUSES.FORBIDDEN_403)
+                return
+            }
+
+        } else {
+            res.send(HTTP_STATUSES.FORBIDDEN_403)
+            return
         }
-        next()
+
     } else {
         res.send(HTTP_STATUSES.NO_UNAUTHORIZED_401)
         return

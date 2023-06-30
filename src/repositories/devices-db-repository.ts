@@ -28,6 +28,14 @@ export const devicesRepository = {
         const result =  await devicesCollection.find({userId: userId}, {projection: {_id: 0, userId: 0}}).toArray()
         return result
     },
+    async findDeviceFromUserId(deviceId: string, userId: string): Promise<boolean> {
+        const result = await devicesCollection.find({deviceId: deviceId, userId: userId})
+        if(result) {
+            return true
+        } else {
+            return false
+        }
+    },
     async deleteCurrentSessionById(deviceId: string): Promise<boolean> {
         const result = await devicesCollection.deleteOne({deviceId: deviceId})
         debugger
