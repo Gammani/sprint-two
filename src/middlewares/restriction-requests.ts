@@ -6,7 +6,7 @@ import {HTTP_STATUSES} from "../utils/utils";
 export const restrictionRequests = async (req: Request, res: Response, next: NextFunction) => {
     const requestForIpi: RequestForApiType = {
         IP: req.ip,
-        URL: req.baseUrl,
+        URL: req.originalUrl,
         date: new Date()
     }
     await requestForApiRepository.addRequest(requestForIpi)
