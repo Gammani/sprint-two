@@ -121,7 +121,8 @@ authRouter.post('/refresh-token',
 authRouter.post('/logout',
     checkAndUpdateRefreshToken,
 
-    (req: Request, res: Response) => {
+    async (req: Request, res: Response) => {
+        await securityDevicesService.deleteCurrentSessionById(req.user!.deviceId!)
         res.cookie('refreshToken', "", {httpOnly: true, secure: true})
     res.send(HTTP_STATUSES.NO_CONTENT_204)
 })
