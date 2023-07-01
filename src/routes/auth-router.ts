@@ -16,12 +16,14 @@ import {CreateUserModel} from "../models/CreateUserModel";
 import {authService} from "../domain/auth-service";
 import {DeviceViewModel} from "../models/DeviceViewModel";
 import {securityDevicesService} from "../domain/sequrity-devices-service";
+import {restrictionRequests} from "../middlewares/restriction-requests";
 
 export const authRouter = Router({})
 
 authRouter.post('/login',
     body('loginOrEmail').isString().trim().notEmpty(),
     body('password').isString().trim().notEmpty(),
+    restrictionRequests,
     checkedValidation,
 
     async (req: RequestWithBody<CreateAuthModel>, res) => {
@@ -53,7 +55,7 @@ authRouter.post('/registration',
     body('login').isString().trim().isLength({min: 3, max: 10}).notEmpty().matches(/^[a-zA-Z0-9_-]*$/),
     body('password').isString().trim().isLength({min: 6, max: 20}).notEmpty().exists(),
     body('email').isString().trim().notEmpty().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/).exists(),
-
+    restrictionRequests,
     checkedValidation,
     checkedExistsForLoginOrEmail,
 
@@ -66,6 +68,7 @@ authRouter.post('/registration',
 
 authRouter.post('/registration-confirmation',
     body('code').isString().trim().notEmpty(),
+    restrictionRequests,
     checkedValidation,
 
 
@@ -88,6 +91,7 @@ authRouter.post('/registration-confirmation',
 
 authRouter.post('/registration-email-resending',
     body('email').isString().trim().notEmpty().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/),
+    restrictionRequests,
     checkedValidation,
     checkedConfirmedEmail,
 

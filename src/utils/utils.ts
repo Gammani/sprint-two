@@ -19,7 +19,8 @@ export const HTTP_STATUSES = {
     BAD_REQUEST_400: 400,
     NO_UNAUTHORIZED_401: 401,
     FORBIDDEN_403: 403,
-    NOT_FOUND_404: 404
+    NOT_FOUND_404: 404,
+    TOO_MANY_REQUESTS_429: 429
 }
 
 export const getBloggerViewModel = (blogger: BloggersType): BloggerViewModel => {
