@@ -2,7 +2,7 @@ import {NextFunction, Request, Response} from "express";
 import {Buffer} from "buffer";
 import {HTTP_STATUSES} from "../utils/utils";
 import {jwtServices} from "../application/jwt-service";
-import {usersService} from "../domain/users-service";
+import {usersService} from "../application/users-service";
 import {RequestUserViewModel, UserViewModel} from "../models/UserViewModel";
 import {UserType} from "../utils/types";
 

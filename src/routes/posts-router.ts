@@ -15,10 +15,10 @@ import {UpdatePostModel} from "../models/UpdatePostModel";
 import {authBasicMiddleware, authBearerMiddleware} from "../middlewares/auth-middleware";
 import {checkedValidation, isValidId} from "../middlewares/requestValidatorWithExpressValidator";
 import {body} from "express-validator";
-import {postsService} from "../domain/posts-service";
+import {postsService} from "../application/posts-service";
 import {QueryCommentsModel} from "../models/QueryCommentsModel";
 import {CommentsWithPaginationViewModel, CommentViewModel} from "../models/CommentViewModel";
-import {commentsService} from "../domain/comments-service";
+import {commentsService} from "../application/comments-service";
 import {RequestCommentWithContent} from "../models/CreateCommentModel";
 
 

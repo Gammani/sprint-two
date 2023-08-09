@@ -4,7 +4,7 @@ import {
     checkAndUpdateRefreshToken,
     checkRefreshToken
 } from "../middlewares/requestValidatorWithExpressValidator";
-import {securityDevicesService} from "../domain/sequrity-devices-service";
+import {securityDevicesService} from "../application/sequrity-devices-service";
 import {HTTP_STATUSES} from "../utils/utils";
 import {expiredTokensRepository} from "../repositories/expiredTokens-db-repository";
 

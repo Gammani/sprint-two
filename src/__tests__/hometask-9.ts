@@ -1,27 +1,26 @@
 import request from 'supertest'
+import mongoose from 'mongoose'
+import { app } from './../app-settings'
 
-import {createApp} from "../app-config";
-import {HTTP_STATUSES} from "../utils/utils";
-import {client} from "../repositories/db";
+describe('Mongoose integration', () => {
+    const mongoURI = 'mongodb://0.0.0.0:27017/home_works'
 
-const app = createApp()
-
-describe('jestTests', () => {
     beforeAll(async () => {
-        await request(app).delete('/testing/all-data')
-        expect(HTTP_STATUSES.NO_CONTENT_204)
+        /* Connecting to the database. */
+        await mongoose.connect(mongoURI)
     })
+
     afterAll(async () => {
-        await client.close()
+        /* Closing database connection after each test. */
+        await mongoose.connection.close()
     })
-})
 
-let createdDevice = null
-
-describe('device', () => {
-    it('should return 200 and empty array', async () => {
-        await request(app)
-            .get('/security/devices')
-            .expect(HTTP_STATUSES.OK_200, [])
+    describe('GET blogs', () => {
+        it('+ GET blogs', async () => {
+            const res_ = await request(app)
+                .get('/blogs')
+                .expect(200)
+            expect(res_.body.items.length).toBe(0)
+        })
     })
 })

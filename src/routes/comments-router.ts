@@ -1,7 +1,7 @@
 import {Router, Request, Response} from "express";
 import {RequestWithParams, RequestWithParamsAndBody} from "../utils/types";
 import {URIParamsCommentComIdModel, URIParamsCommentIdModel} from "../models/URIParamsCommentIdModel";
-import {commentsService} from "../domain/comments-service";
+import {commentsService} from "../application/comments-service";
 import {HTTP_STATUSES} from "../utils/utils";
 import {authBearerMiddleware} from "../middlewares/auth-middleware";
 import {RequestCommentWithContent} from "../models/CreateCommentModel";

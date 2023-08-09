@@ -4,7 +4,7 @@ import {settings} from "../settings";
 import {expiredTokensCollection} from "../repositories/db";
 import {expiredTokensRepository} from "../repositories/expiredTokens-db-repository";
 import {securityDevicesRouter} from "../routes/security-devices-router";
-import {securityDevicesService} from "../domain/sequrity-devices-service";
+import {securityDevicesService} from "./sequrity-devices-service";
 import {DeviceViewModel, SimpleDeviceViewModel} from "../models/DeviceViewModel";
 
 interface JwtPayload {

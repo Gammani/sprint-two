@@ -5,7 +5,7 @@ import {QueryUsersModel} from "../models/QueryUsersModel";
 import {UserViewModel, UserWithPaginationViewModel} from "../models/UserViewModel";
 import {HTTP_STATUSES} from "../utils/utils";
 import {usersQueryDbRepository} from "../repositories/users-query-db-repository";
-import {usersService} from "../domain/users-service";
+import {usersService} from "../application/users-service";
 import {CreateUserModel} from "../models/CreateUserModel";
 import {body} from "express-validator";
 import {checkedValidation} from "../middlewares/requestValidatorWithExpressValidator";

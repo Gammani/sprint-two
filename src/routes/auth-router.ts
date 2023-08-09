@@ -7,15 +7,15 @@ import {
     checkedExistsForLoginOrEmail,
     checkedValidation, checkAndUpdateRefreshToken
 } from "../middlewares/requestValidatorWithExpressValidator";
-import {usersService} from "../domain/users-service";
+import {usersService} from "../application/users-service";
 import {HTTP_STATUSES} from "../utils/utils";
 import {jwtServices} from "../application/jwt-service";
 import {authBearerMiddleware} from "../middlewares/auth-middleware";
 import {RequestUserViewModel, UserViewModel} from "../models/UserViewModel";
 import {CreateUserModel} from "../models/CreateUserModel";
-import {authService} from "../domain/auth-service";
+import {authService} from "../application/auth-service";
 import {DeviceViewModel} from "../models/DeviceViewModel";
-import {securityDevicesService} from "../domain/sequrity-devices-service";
+import {securityDevicesService} from "../application/sequrity-devices-service";
 import {restrictionRequests} from "../middlewares/restriction-requests";
 
 export const authRouter = Router({})

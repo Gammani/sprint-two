@@ -15,9 +15,9 @@ import {UpdateBloggerModel} from "../models/UpdateBloggerModel";
 import {authBasicMiddleware} from "../middlewares/auth-middleware";
 import {checkedValidation} from "../middlewares/requestValidatorWithExpressValidator";
 import {body} from "express-validator";
-import {bloggerService} from "../domain/bloggers-service";
+import {bloggerService} from "../application/bloggers-service";
 import {bloggersQueryDbRepository} from "../repositories/bloggers-query-db-repository";
-import {postsService} from "../domain/posts-service";
+import {postsService} from "../application/posts-service";
 import {PostsWithPaginationViewModel, PostViewModel} from "../models/PostViewModel";
 import {CreatePostModelWithBlogId} from "../models/CreatePostModelWithBlogId";
 

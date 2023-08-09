@@ -7,8 +7,8 @@ import {HTTP_STATUSES} from "../utils/utils";
 import {usersRepository} from "../repositories/users-db-repository";
 import {expiredTokensRepository} from "../repositories/expiredTokens-db-repository";
 import {jwtServices} from "../application/jwt-service";
-import {usersService} from "../domain/users-service";
-import {securityDevicesService} from "../domain/sequrity-devices-service";
+import {usersService} from "../application/users-service";
+import {securityDevicesService} from "../application/sequrity-devices-service";
 
 
 export const checkedValidation = (req: Request, res: Response, next: NextFunction) => {

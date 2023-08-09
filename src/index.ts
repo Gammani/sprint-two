@@ -1,12 +1,27 @@
-import {createApp} from "./app-config";
-import cookieParser from "cookie-parser";
+// import {createApp} from "./app-config";
+// import cookieParser from "cookie-parser";
+//
+// const port = process.env.PORT || 5000
+//
+//
+// const app = createApp()
+// app.set('trust proxy', true)
+//
+// app.listen(port, () => {
+//     console.log(`Example app listening on port ${port}`)
+// })
 
-const port = process.env.PORT || 5000
+import { app } from './app-settings'
+import { runDb } from './repositories/db'
 
-
-const app = createApp()
+const port = process.env.PORT || 3999
 app.set('trust proxy', true)
 
-app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
-})
+const startApp = async () => {
+    await runDb()
+    app.listen(port, () => {
+        console.log(`Example app listening on port ${port}`)
+    })
+}
+
+startApp()
