@@ -7,16 +7,14 @@ export type RequestWithParamsAndQuery<T, Y> = Request<T, {}, {}, Y>
 export type RequestWithParamsAndBody<T, Y> = Request<T, {}, Y>
 
 
-export type BloggersType = {
-    id: string,
-    name: string,
+export type BlogType = {
+    name: string
     description: string
     websiteUrl: string
     createdAt: string
     isMembership: boolean
 }
-export type PostsType = {
-    id: string,
+export type PostType = {
     title: string
     shortDescription: string
     content: string

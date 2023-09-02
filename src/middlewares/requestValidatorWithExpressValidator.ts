@@ -1,15 +1,32 @@
 import {NextFunction, Request, Response} from "express";
-import {CustomValidator, validationResult} from "express-validator";
+import {body, CustomValidator, validationResult} from "express-validator";
 import {ErrorsType, UserType} from "../utils/types";
-import {BloggerViewModel} from "../models/BloggerViewModel";
-import {bloggersRepository} from "../repositories/bloggers-db-repository";
+import {BlogViewModel} from "../models/BlogViewModel";
+
 import {HTTP_STATUSES} from "../utils/utils";
 import {usersRepository} from "../repositories/users-db-repository";
 import {expiredTokensRepository} from "../repositories/expiredTokens-db-repository";
 import {jwtServices} from "../application/jwt-service";
 import {usersService} from "../application/users-service";
 import {securityDevicesService} from "../application/sequrity-devices-service";
+import {blogsRepository} from "../repositories/blogs-mongoose-repository";
 
+
+export const authRegistrationValidation = [
+    body('login').isString().trim().isLength({min: 3, max: 10}).notEmpty().matches(/^[a-zA-Z0-9_-]*$/),
+    body('password').isString().trim().isLength({min: 6, max: 20}).notEmpty().exists(),
+    body('email').isString().trim().notEmpty().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/).exists()
+]
+export const authLoginValidation = [
+    body('loginOrEmail').isString().trim().notEmpty(),
+    body('password').isString().trim().notEmpty(),
+]
+export const authRegistrationConfirmationValidation = [
+    body('code').isString().trim().notEmpty(),
+]
+export const authRegistrationEmailResendingValidation = [
+    body('email').isString().trim().notEmpty().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/),
+]
 
 export const checkedValidation = (req: Request, res: Response, next: NextFunction) => {
     const error = validationResult(req).mapped();
@@ -222,7 +239,7 @@ export const checkRefreshToken = async (req: Request, res: Response, next: NextF
 
 
 export const isValidId: CustomValidator = async (blogId) => {
-    const foundBlogger: BloggerViewModel | null = await bloggersRepository.findBloggerById(blogId)
+    const foundBlogger: BlogViewModel | null = await blogsRepository.findBlogById(blogId)
     if(!foundBlogger) {
         return Promise.reject('blogId не валидный')
     } else {

@@ -2,7 +2,7 @@ import express, {Request, RequestHandler, Response} from 'express'
 import bodyParser from "body-parser";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import {bloggersRouter} from "./routes/bloggers-router";
+import {blogsRouter} from "./routes/blogs-router";
 import {postsRouter} from "./routes/posts-router";
 import {usersRouter} from "./routes/users-router";
 import {authRouter} from "./routes/auth-router";
@@ -17,7 +17,7 @@ app.use(cors())
 app.use(cookieParser() as RequestHandler)
 
 // Bloggers
-app.use('/blogs', bloggersRouter)
+app.use('/blogs', blogsRouter)
 // Posts
 app.use('/posts', postsRouter)
 // Users
@@ -33,5 +33,5 @@ app.use('/address', addressRouter)
 
 
 app.get('/', (req: Request, res: Response) => {
-    res.send('Hello back-end HomeWorks in it-incubator!!!')
+    res.send('Hello World!!!!!!111')
 })

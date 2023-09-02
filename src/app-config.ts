@@ -1,7 +1,7 @@
 import express, {Request, Response, RequestHandler} from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
-import {bloggersRouter} from "./routes/bloggers-router";
+import {blogsRouter} from "./routes/blogs-router";
 import {postsRouter} from "./routes/posts-router";
 import {HTTP_STATUSES, removeAllDataBase} from "./utils/utils";
 import {usersRouter} from "./routes/users-router";
@@ -43,7 +43,7 @@ export const createApp = () => {
     })
 
 // Bloggers
-    app.use('/blogs', bloggersRouter)
+    app.use('/blogs', blogsRouter)
 // Posts
     app.use('/posts', postsRouter)
 // Users

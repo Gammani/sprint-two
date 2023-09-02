@@ -1,7 +1,7 @@
-import {BloggerWithPaginationViewModel} from "../models/BloggerViewModel";
-import {bloggersCollection} from "./db";
+import {BloggerWithPaginationViewModel} from "../models/BlogViewModel";
+import {blogsCollection} from "./db";
 
-export const bloggersQueryDbRepository = {
+export const blogsQueryDbRepository = {
     async findBloggers(
         searchNameTermQuery: string | undefined,
         pageNumberQuery: string,
@@ -15,7 +15,8 @@ export const bloggersQueryDbRepository = {
         const pageSize = isNaN(Number(pageSizeQuery)) ? 10 : Number(pageSizeQuery)
         const sortBy = sortByQuery ? sortByQuery : 'createdAt'
         const sortDirection = sortDirectionQuery === 'asc' ? 1 : -1
-
+//users?filter=name&filter=age
+        //{filter: [name, age]}
 
         const filter: any = {}
 
@@ -24,13 +25,13 @@ export const bloggersQueryDbRepository = {
         }
         const skipPages: number = (pageNumber - 1) * pageSize
 
-        const items = await bloggersCollection
+        const items = await blogsCollection
             .find(filter, {projection: {_id: 0}})
             .sort({[sortBy]: sortDirection})
             .skip(skipPages)
             .limit(pageSize)
             .toArray()
-        const totalCount = await bloggersCollection.find(filter).count({})
+        const totalCount = await blogsCollection.find(filter).count({})
         const pageCount = Math.ceil(totalCount/pageSize)
 
         return {
@@ -38,7 +39,14 @@ export const bloggersQueryDbRepository = {
             page: pageNumber,
             pageSize: pageSize,
             totalCount: totalCount,
-            items: items
+            items: items.map(i => ({
+                id: i._id.toString(),
+                name: i.name,
+                description: i.description,
+                websiteUrl: i.websiteUrl,
+                createdAt: i.createdAt,
+                isMembership: i.isMembership
+            }))
         }
     },
 }

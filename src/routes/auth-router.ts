@@ -1,11 +1,15 @@
 import {Request, Response, Router} from "express";
 import {DevicesType, RequestWithBody, UserType} from "../utils/types";
 import {CreateAuthModel} from "../models/CreateAuthModel";
-import {body} from "express-validator";
 import {
+    authLoginValidation,
+    authRegistrationConfirmationValidation,
+    authRegistrationEmailResendingValidation,
+    authRegistrationValidation,
+    checkAndUpdateRefreshToken,
     checkedConfirmedEmail,
     checkedExistsForLoginOrEmail,
-    checkedValidation, checkAndUpdateRefreshToken
+    checkedValidation
 } from "../middlewares/requestValidatorWithExpressValidator";
 import {usersService} from "../application/users-service";
 import {HTTP_STATUSES} from "../utils/utils";
@@ -14,19 +18,17 @@ import {authBearerMiddleware} from "../middlewares/auth-middleware";
 import {RequestUserViewModel, UserViewModel} from "../models/UserViewModel";
 import {CreateUserModel} from "../models/CreateUserModel";
 import {authService} from "../application/auth-service";
-import {DeviceViewModel} from "../models/DeviceViewModel";
 import {securityDevicesService} from "../application/sequrity-devices-service";
 import {restrictionRequests} from "../middlewares/restriction-requests";
 
 export const authRouter = Router({})
 
 authRouter.post('/login',
-    body('loginOrEmail').isString().trim().notEmpty(),
-    body('password').isString().trim().notEmpty(),
+    authLoginValidation,
     restrictionRequests,
     checkedValidation,
 
-    async (req: RequestWithBody<CreateAuthModel>, res) => {
+    async (req: RequestWithBody<CreateAuthModel>, res: Response) => {
 
         const user: UserType | null = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
         if (user) {
@@ -52,9 +54,7 @@ authRouter.post('/login',
     })
 
 authRouter.post('/registration',
-    body('login').isString().trim().isLength({min: 3, max: 10}).notEmpty().matches(/^[a-zA-Z0-9_-]*$/),
-    body('password').isString().trim().isLength({min: 6, max: 20}).notEmpty().exists(),
-    body('email').isString().trim().notEmpty().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/).exists(),
+    authRegistrationValidation,
     restrictionRequests,
     checkedValidation,
     checkedExistsForLoginOrEmail,
@@ -67,7 +67,7 @@ authRouter.post('/registration',
     })
 
 authRouter.post('/registration-confirmation',
-    body('code').isString().trim().notEmpty(),
+    authRegistrationConfirmationValidation,
     restrictionRequests,
     checkedValidation,
 
@@ -90,7 +90,7 @@ authRouter.post('/registration-confirmation',
     })
 
 authRouter.post('/registration-email-resending',
-    body('email').isString().trim().notEmpty().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/),
+    authRegistrationEmailResendingValidation,
     restrictionRequests,
     checkedValidation,
     checkedConfirmedEmail,
