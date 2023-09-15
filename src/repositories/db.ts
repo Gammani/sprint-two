@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
-//import * as dotenv from 'dotenv'
-import dotenv from 'dotenv'
+import * as dotenv from 'dotenv'
+// import dotenv from 'dotenv'
 import {settings} from "../settings";
 
 dotenv.config()
