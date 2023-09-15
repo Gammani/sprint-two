@@ -1,14 +1,11 @@
-import {BlogType, PostType, UserType} from "./types";
 import {BlogDBType, BlogViewModel} from "../models/BlogViewModel";
-import {PostViewModel} from "../models/PostViewModel";
-import {UserViewModel} from "../models/UserViewModel";
-import {usersRepository} from "../repositories/users-db-repository";
-import {commentsRepository} from "../repositories/comments-db-repository";
-import {expiredTokensRepository} from "../repositories/expiredTokens-db-repository";
-import {requestForApiRepository} from "../repositories/requestsForApi-db-repository";
-import {devicesRepository} from "../repositories/devices-db-repository";
 import {blogsRepository} from "../repositories/blogs-mongoose-repository";
 import {postsRepository} from "../repositories/posts-mongoose-repository";
+import {usersRepository} from "../repositories/users-mongoose-repository";
+import {commentsRepository} from "../repositories/comments-mongoose-repository";
+import {requestForApiRepository} from "../repositories/requestForApi-mongoose-repository";
+import {expiredTokensRepository} from "../repositories/expiredToken-mongoose-repository";
+import {devicesRepository} from "../repositories/devices-mongoose-repository";
 
 
 export const HTTP_STATUSES = {
@@ -33,25 +30,17 @@ export const getBlogViewModel = (blog: BlogDBType): BlogViewModel => {
         isMembership: false
     }
 }
-export const getPostsViewModel = (post: any): PostViewModel => {
-    return {
-        id: post.id,
-        title: post.title,
-        shortDescription: post.shortDescription,
-        content: post.content,
-        blogId: post.blogId,
-        blogName: post.blogName,
-        createdAt: post.createdAt
-    }
-}
-export const getUsersViewModel = (user: UserType): UserViewModel => {
-    return {
-        id: user.accountData.id,
-        login: user.accountData.login,
-        email: user.accountData.email,
-        createdAt: user.accountData.createdAt
-    }
-}
+// export const getPostsViewModel = (post: PostDBType): PostViewModel => {
+//     return {
+//         id: post._id.toString(),
+//         title: post.title,
+//         shortDescription: post.shortDescription,
+//         content: post.content,
+//         blogId: post.blogId,
+//         blogName: post.blogName,
+//         createdAt: post.createdAt
+//     }
+// }
 export const removeAllDataBase = async () => {
     await blogsRepository.deleteAll()
     await postsRepository.deleteAll()

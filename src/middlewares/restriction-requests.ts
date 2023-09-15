@@ -1,7 +1,7 @@
 import {Response, Request, NextFunction} from "express";
 import {RequestForApiType} from "../utils/types";
-import {requestForApiRepository} from "../repositories/requestsForApi-db-repository";
 import {HTTP_STATUSES} from "../utils/utils";
+import {requestForApiRepository} from "../repositories/requestForApi-mongoose-repository";
 
 export const restrictionRequests = async (req: Request, res: Response, next: NextFunction) => {
     const requestForIpi: RequestForApiType = {

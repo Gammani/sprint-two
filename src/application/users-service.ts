@@ -1,13 +1,12 @@
 import {UserViewModel, UserWithPaginationViewModel} from "../models/UserViewModel";
-import {usersRepository} from "../repositories/users-db-repository";
 import bcrypt from 'bcrypt'
 import {v4 as uuidv4} from "uuid";
 import add from "date-fns/add";
-import {UserDBType, UserType} from "../utils/types";
-import {usersCollection} from "../repositories/db";
 import {emailAdapter} from "../adapter/email-adapter";
-import {authService} from "./auth-service";
 import {securityDevicesService} from "./sequrity-devices-service";
+import {usersRepository} from "../repositories/users-mongoose-repository";
+import {User, UserTypeDbModel} from "../utils/types";
+import {UserModel} from "../mongo/user/user.model";
 
 
 export const usersService = {
@@ -24,16 +23,15 @@ export const usersService = {
             sortDirectionQuery
         )
     },
-    async findUserById(userId: string): Promise<UserType | null> {
-        debugger
-        const user: UserType | null = await usersCollection.findOne({'accountData.id': userId}, {projection: {_id: 0, blackListRefreshTokens: 0}})
+    async findUserById(userId: string): Promise<UserTypeDbModel | null> {
+        const user: UserTypeDbModel | null = await UserModel.findOne({'accountData.id': userId}, {projection: {_id: 0, blackListRefreshTokens: 0}})
         if (user) {
             return user
         } else {
             return null
         }
     },
-    async findUserByDeviceId(deviceId: string): Promise<UserType | null> {
+    async findUserByDeviceId(deviceId: string): Promise<UserTypeDbModel | null> {
         debugger
         const foundUserId = await securityDevicesService.findUserIdByDeviceId(deviceId)
         if(foundUserId) {
@@ -47,9 +45,8 @@ export const usersService = {
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this._generateHash(password, passwordSalt)
 
-        const newUser: UserType = {
+        const newUser: User = {
             accountData: {
-                id: (+new Date()).toString(),
                 login,
                 email,
                 createdAt: new Date().toISOString(),
@@ -81,9 +78,8 @@ export const usersService = {
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this._generateHash(password, passwordSalt)
 
-        const newUser: UserType = {
+        const newUser: User = {
             accountData: {
-                id: (+new Date()).toString(),
                 login,
                 email,
                 createdAt: new Date().toISOString(),
@@ -106,8 +102,8 @@ export const usersService = {
     async deleteAll() {
         return await usersRepository.deleteAll()
     },
-    async checkCredentials(loginOrEmail: string, password: string): Promise<UserType | null> {
-        const user: UserType | null = await usersRepository.findUserByLoginOrEmail(loginOrEmail)
+    async checkCredentials(loginOrEmail: string, password: string): Promise<UserTypeDbModel | null> {
+        const user: UserTypeDbModel | null = await usersRepository.findUserByLoginOrEmail(loginOrEmail)
 
         if (!user) return null
         if (!user.emailConfirmation.isConfirmed) return null

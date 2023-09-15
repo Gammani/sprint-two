@@ -1,15 +1,14 @@
 import {NextFunction, Request, Response} from "express";
 import {body, CustomValidator, validationResult} from "express-validator";
-import {ErrorsType, UserType} from "../utils/types";
+import {ErrorsType} from "../utils/types";
 import {BlogViewModel} from "../models/BlogViewModel";
-
 import {HTTP_STATUSES} from "../utils/utils";
-import {usersRepository} from "../repositories/users-db-repository";
-import {expiredTokensRepository} from "../repositories/expiredTokens-db-repository";
 import {jwtServices} from "../application/jwt-service";
 import {usersService} from "../application/users-service";
 import {securityDevicesService} from "../application/sequrity-devices-service";
 import {blogsRepository} from "../repositories/blogs-mongoose-repository";
+import {usersRepository} from "../repositories/users-mongoose-repository";
+import {expiredTokensRepository} from "../repositories/expiredToken-mongoose-repository";
 
 
 export const authRegistrationValidation = [
@@ -111,12 +110,12 @@ debugger
         const foundUser = await usersService.findUserByDeviceId(deviceId)
         await securityDevicesService.findAndUpdateDeviceAfterRefresh(deviceId)
         debugger
-        expiredTokensRepository.addTokenToDB(foundUser!.accountData.id, token)
+        expiredTokensRepository.addTokenToDB(foundUser!._id.toString(), token)
         console.log(foundUser)
         req.user = {
             email: foundUser!.accountData.email,
             login: foundUser!.accountData.login,
-            userId: foundUser!.accountData.id,
+            userId: foundUser!._id.toString(),
             deviceId: deviceId
         }
         next()
@@ -174,7 +173,7 @@ export const checkAndRemoveRefreshTokenById = async (req: Request, res: Response
                 req.user = {
                     email: foundUser.accountData.email,
                     login: foundUser.accountData.login,
-                    userId: foundUser.accountData.id,
+                    userId: foundUser._id.toString(),
                     deviceId: req.params.deviceId
                 }
                 next()
@@ -227,7 +226,7 @@ export const checkRefreshToken = async (req: Request, res: Response, next: NextF
         req.user = {
             email: foundUser!.accountData.email,
             login: foundUser!.accountData.login,
-            userId: foundUser!.accountData.id,
+            userId: foundUser!._id.toString(),
             deviceId: deviceId
         }
         next()

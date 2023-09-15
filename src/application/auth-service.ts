@@ -1,6 +1,7 @@
-import {usersRepository} from "../repositories/users-db-repository";
+
 import {emailAdapter} from "../adapter/email-adapter";
 import {v4 as uuidv4} from "uuid";
+import {usersRepository} from "../repositories/users-mongoose-repository";
 
 export const authService = {
     async confirmEmail(code: string) {
@@ -10,7 +11,7 @@ export const authService = {
         if (user.emailConfirmation.confirmationCode !== code) return false
         if (user.emailConfirmation.expirationDate < new Date().toString()) return false
 
-        let result = await usersRepository.updateConfirmation(user._id)
+        let result = await usersRepository.updateConfirmation(user._id.toString())
         return result
     },
     async resendCode(email: string) {

@@ -1,17 +1,21 @@
 import {ExpiredTokenType} from "../utils/types";
-import {expiredTokensCollection} from "./db";
 import jwt from "jsonwebtoken";
 import {settings} from "../settings";
+import {ExpiredTokenModel} from "../mongo/expiredToken/expiredToken.model";
 
 export const expiredTokensRepository = {
     async addTokenToDB(userId: string, token: string) {
-        const expiredToken: ExpiredTokenType = {userId, token}
-        await expiredTokensCollection.insertOne(expiredToken)
+        const expiredTokenInstance = new ExpiredTokenModel({})
+
+        expiredTokenInstance.userId = userId
+        expiredTokenInstance.token = token
+        await expiredTokenInstance.save()
+
         return
     },
     async findToken(token: string): Promise<ExpiredTokenType | null> {
         debugger
-        return await expiredTokensCollection.findOne({token: token})
+        return await ExpiredTokenModel.findOne({token: token})
     },
     async isExpiredToken(token: string): Promise<boolean> {
         debugger
@@ -25,7 +29,7 @@ export const expiredTokensRepository = {
         }
     },
     async deleteAll() {
-        const result = await expiredTokensCollection.deleteMany({})
+        const result = await ExpiredTokenModel.deleteMany({})
         return
     }
 }

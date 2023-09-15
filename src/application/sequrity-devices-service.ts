@@ -1,9 +1,10 @@
-import {devicesRepository} from "../repositories/devices-db-repository";
-import {DevicesType} from "../utils/types";
+
+import {DeviceType} from "../utils/types";
 import {DeviceViewModel} from "../models/DeviceViewModel";
+import {devicesRepository} from "../repositories/devices-mongoose-repository";
 
 export const securityDevicesService = {
-    async addDevice(device: DevicesType): Promise<DeviceViewModel> {
+    async addDevice(device: DeviceType): Promise<DeviceViewModel> {
         return await devicesRepository.addDevice(device)
     },
     async findDeviceByDeviceId(deviceId: string) {

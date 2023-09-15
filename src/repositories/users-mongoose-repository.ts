@@ -1,8 +1,7 @@
 import {UserViewModel, UserWithPaginationViewModel} from "../models/UserViewModel";
-import {usersCollection} from "./db";
-import {UserType} from "../utils/types";
-import {getUsersViewModel} from "../utils/utils";
-import {ObjectId} from "mongodb";
+import {User, UserTypeDbModel} from "../utils/types";
+import {UserModel} from "../mongo/user/user.model";
+
 
 export const usersRepository = {
     async findUsers(
@@ -19,92 +18,103 @@ export const usersRepository = {
 
         const skipPages: number = (pageNumber - 1) * pageSize
 
-        const items = await usersCollection
-            .find({}, {projection: {_id: 0, blackListRefreshTokens: 0}})
+        const items: UserTypeDbModel[] = await UserModel
+            .find({}, { blackListRefreshTokens: 0})
             .sort({[sortBy]: sortDirection})
             .skip(skipPages)
             .limit(pageSize)
-            .toArray()
+            .lean()
+        // const items = await UserModel.find().lean()
+
+        console.log('items', items)
         // const totalCount = await usersCollection.find({}).count({})
-        const totalCount = await usersCollection.countDocuments({})
+        const totalCount = await UserModel.countDocuments({})
         const pageCount = Math.ceil(totalCount / pageSize)
         console.log(items)
+
+        debugger
 
         return {
             pagesCount: pageCount,
             page: pageNumber,
             pageSize: pageSize,
             totalCount: totalCount,
-            items: items.map(getUsersViewModel)
-            // items: items.map(item => {
-            //     return {
-            //         id: item.accountData.id,
-            //         login: item.accountData.login,
-            //         email: item.accountData.email,
-            //         createdAt: item.accountData.createdAt
-            //     }
-            // })
+            // items: items.map(getUsersViewModel)
+            items: items.map(item => {
+                return {
+                    id: item._id.toString(),
+                    login: item.accountData.login,
+                    email: item.accountData.email,
+                    createdAt: item.accountData.createdAt
+                }
+            })
         }
     },
-    async findUserByLogin(login: string): Promise<UserType | null> {
-        const foundUser = await usersCollection.findOne({'accountData.login': login})
+    async findUserByLogin(login: string): Promise<UserTypeDbModel | null> {
+        const foundUser = await UserModel.findOne({'accountData.login': login})
         if(foundUser) {
             return foundUser
         } else {
             return null
         }
     },
-    async findUserByEmail(email: string): Promise<UserType | null> {
-        const foundUser = await usersCollection.findOne({'accountData.email': email})
+    async findUserByEmail(email: string): Promise<UserTypeDbModel | null> {
+        const foundUser = await UserModel.findOne({'accountData.email': email})
         if(foundUser) {
             return foundUser
         } else {
             return null
         }
     },
-    async findUserByLoginOrEmail(loginOrEmail: string): Promise<UserType | null> {
-        const foundUser = await usersCollection.findOne({$or: [{'accountData.email': loginOrEmail}, {'accountData.login': loginOrEmail}]})
+    async findUserByLoginOrEmail(loginOrEmail: string): Promise<UserTypeDbModel | null> {
+        const foundUser = await UserModel.findOne({$or: [{'accountData.email': loginOrEmail}, {'accountData.login': loginOrEmail}]})
         return foundUser
     },
     async findUserByLoginAndEmail(email: string, login: string) {
-        const foundUser = await usersCollection.findOne({$or: [{'accountData.email': email}, {'accountData.login': login}]})
+        const foundUser = await UserModel.findOne({$or: [{'accountData.email': email}, {'accountData.login': login}]})
         return foundUser
     },
-    async createUser(newUser: UserType): Promise<UserViewModel> {
-        await usersCollection.insertOne({...newUser})
+    async createUser(newUser: User): Promise<UserViewModel> {
+        const userInstance = new UserModel
+
+        userInstance.accountData = newUser.accountData
+        userInstance.emailConfirmation = newUser.emailConfirmation
+
+        const res = await userInstance.save()
+
         return {
-            id: newUser.accountData.id,
+            id: res._id.toString(),
             login: newUser.accountData.login,
             email: newUser.accountData.email,
             createdAt: newUser.accountData.createdAt
         }
     },
     async deleteUser(id: string): Promise<boolean> {
-        const result = await usersCollection.deleteOne({id: id})
+        const result = await UserModel.deleteOne({id: id})
         return result.deletedCount === 1
     },
 
 
     async findUserByConfirmationCode(confirmationCode: string) {
-        const user = await usersCollection.findOne({"emailConfirmation.confirmationCode": confirmationCode})
+        const user = await UserModel.findOne({"emailConfirmation.confirmationCode": confirmationCode})
         // const user = await usersCollection.findOne({$or: [{"emailConfirmation.email": email}, {"emailConfirmation.email": email}]})
         return user
     },
-    async updateConfirmation(_id: ObjectId) {
-        let result = await usersCollection
+    async updateConfirmation(_id: string) {
+        let result = await UserModel
             .updateOne({_id}, {$set: {'emailConfirmation.isConfirmed': true}})
         return result.modifiedCount === 1
     },
     async updateCode(email: string, code: string) {
         debugger
-        let result = await usersCollection
+        let result = await UserModel
             .updateOne({'accountData.email': email}, {$set: {'emailConfirmation.confirmationCode': code}})
         debugger
         return result.modifiedCount === 1
     },
 
     async deleteAll() {
-        const result = await usersCollection.deleteMany({})
+        const result = await UserModel.deleteMany({})
         return
     }
 }

@@ -1,11 +1,7 @@
-import {UserType} from "../utils/types";
 import jwt from 'jsonwebtoken'
 import {settings} from "../settings";
-import {expiredTokensCollection} from "../repositories/db";
-import {expiredTokensRepository} from "../repositories/expiredTokens-db-repository";
-import {securityDevicesRouter} from "../routes/security-devices-router";
 import {securityDevicesService} from "./sequrity-devices-service";
-import {DeviceViewModel, SimpleDeviceViewModel} from "../models/DeviceViewModel";
+import {expiredTokensRepository} from "../repositories/expiredToken-mongoose-repository";
 
 interface JwtPayload {
     deviceId: string;

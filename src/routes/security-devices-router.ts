@@ -1,12 +1,7 @@
-import {Router, Request, Response} from "express";
-import {
-    checkAndRemoveRefreshTokenById,
-    checkAndUpdateRefreshToken,
-    checkRefreshToken
-} from "../middlewares/requestValidatorWithExpressValidator";
+import {Request, Response, Router} from "express";
+import {checkAndRemoveRefreshTokenById, checkRefreshToken} from "../middlewares/requestValidatorWithExpressValidator";
 import {securityDevicesService} from "../application/sequrity-devices-service";
 import {HTTP_STATUSES} from "../utils/utils";
-import {expiredTokensRepository} from "../repositories/expiredTokens-db-repository";
 
 export const securityDevicesRouter = Router({})
 

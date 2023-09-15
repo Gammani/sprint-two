@@ -1,5 +1,5 @@
 import {Request, Response, Router} from "express";
-import {DevicesType, RequestWithBody, UserType} from "../utils/types";
+import {DeviceType, RequestWithBody, UserTypeDbModel} from "../utils/types";
 import {CreateAuthModel} from "../models/CreateAuthModel";
 import {
     authLoginValidation,
@@ -30,10 +30,10 @@ authRouter.post('/login',
 
     async (req: RequestWithBody<CreateAuthModel>, res: Response) => {
 
-        const user: UserType | null = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
+        const user: UserTypeDbModel | null = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
         if (user) {
-            const device: DevicesType = {
-                userId: user.accountData.id,
+            const device: DeviceType = {
+                userId: user._id.toString(),
                 ip: req.ip,
                 title: req.headers['user-agent'] || "user-agent unknown",
                 lastActiveDate: new Date(),
@@ -41,7 +41,7 @@ authRouter.post('/login',
             }
             debugger
             await securityDevicesService.addDevice(device)
-            const accessToken = await jwtServices.createAccessJWT(user.accountData.id)
+            const accessToken = await jwtServices.createAccessJWT(user._id.toString())
             const refreshToken = await jwtServices.createRefreshJWT(device.deviceId)
 
             // res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true})

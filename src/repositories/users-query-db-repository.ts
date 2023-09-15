@@ -1,6 +1,6 @@
-import {UserWithPaginationViewModel} from "../models/UserViewModel";
-import {usersCollection} from "./db";
-import {getUsersViewModel} from "../utils/utils";
+import {UserWithPaginationViewModel} from "../models/UserViewModel"
+import {UserModel} from "../mongo/user/user.model";
+import {UserTypeDbModel} from "../utils/types";
 
 export const usersQueryDbRepository = {
     async findUsers(
@@ -35,13 +35,15 @@ export const usersQueryDbRepository = {
         //filter.login = {$regex: searchLoginTerm, $options: "i"}
         const skipPages: number = (pageNumber - 1) * pageSize
 
-        const items = await usersCollection
-            .find(filter, {projection: {_id: 0}})
-            .sort({[sortBy]: sortDirection})
-            .skip(skipPages)
-            .limit(pageSize)
-            .toArray()
-        const totalCount = await usersCollection.find(filter).count({})
+        // const items = await UserModel
+        //     .find(filter, {projection: {_id: 0}})
+        //     .sort({[sortBy]: sortDirection})
+        //     .skip(skipPages)
+        //     .limit(pageSize)
+        //     .lean()
+        const items: UserTypeDbModel[] = await UserModel.find({}).lean()
+        console.log(items)
+        const totalCount = await UserModel.find(filter).count({}).lean()
         const pageCount = Math.ceil(totalCount/pageSize)
 
         return {
@@ -49,7 +51,13 @@ export const usersQueryDbRepository = {
             page: pageNumber,
             pageSize: pageSize,
             totalCount: totalCount,
-            items: items.map(getUsersViewModel)
+             // items: items.map(getUsersViewModel)
+            items: items.map(i => ({
+                id: i._id.toString(),
+                login: i.accountData.login,
+                email: i.accountData.email,
+                createdAt: i.accountData.createdAt
+            }))
         }
     }
 }

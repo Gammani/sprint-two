@@ -1,6 +1,5 @@
 import {BlogDBType, BloggerWithPaginationViewModel, BlogViewModel} from "../models/BlogViewModel";
 import {BlogModel} from "../mongo/blog/blog.model";
-import {HydratedDocument} from "mongoose";
 import {BlogType} from "../utils/types";
 import {getBlogViewModel} from "../utils/utils";
 
@@ -44,7 +43,7 @@ export const blogsRepository = {
         }
     },
     async findBlogById(id: string): Promise<BlogViewModel | null> {
-        const blog: BlogDBType | null = await BlogModel.findOne({id: id})
+        const blog: BlogDBType | null = await BlogModel.findOne({_id: id})
         if (blog) {
             return getBlogViewModel(blog)
         } else {
@@ -74,7 +73,7 @@ export const blogsRepository = {
         // return result
     },
     async updateBlog(id: string, description: string, name: string, websiteUrl: string): Promise<boolean> {
-        const result = await BlogModel.updateOne({id: id}, {
+        const result = await BlogModel.updateOne({_id: id}, {
             $set: {
                 name: name,
                 description: description,
@@ -84,7 +83,7 @@ export const blogsRepository = {
         return result.matchedCount === 1;
     },
     async deleteBlog(id: string): Promise<boolean> {
-        const result = await BlogModel.deleteOne({id: id})
+        const result = await BlogModel.deleteOne({_id: id})
         return result.deletedCount === 1;
     },
     async deleteAll() {

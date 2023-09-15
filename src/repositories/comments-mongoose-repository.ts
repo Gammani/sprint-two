@@ -1,5 +1,7 @@
 import {CommentsWithPaginationViewModel, CommentViewModel} from "../models/CommentViewModel";
-import {commentsCollection, postsCollection} from "./db";
+import {CommentModel} from "../mongo/comment/comment.model";
+import {CommentType} from "../utils/types";
+
 
 export const commentsRepository = {
     async findComments(
@@ -16,13 +18,12 @@ export const commentsRepository = {
 
         const skipPages: number = (pageNumber - 1) * pageSize
 
-        const items = await commentsCollection
-            .find({_postId: postId}, {projection: {_id: 0, _postId: 0}})
+        const items = await CommentModel
+            .find({_postId: postId})
             .sort({[sortBy]: sortDirection})
             .skip(skipPages)
             .limit(pageSize)
-            .toArray()
-        const totalCount = await commentsCollection.find({_postId: postId}).count({})
+        const totalCount = await CommentModel.find({_postId: postId}).count({})
         const pageCount = Math.ceil(totalCount / pageSize)
 
         return {
@@ -30,31 +31,47 @@ export const commentsRepository = {
             page: pageNumber,
             pageSize: pageSize,
             totalCount: totalCount,
-            items: items
+            items: items.map(i => ({
+                id: i._id.toString(),
+                content: i.content,
+                commentatorInfo: i.commentatorInfo,
+                createdAt: i.createdAt
+            }))
         }
     },
     async findCommentById(id: string): Promise<CommentViewModel | null> {
-        const foundComment: CommentViewModel | null = await commentsCollection.findOne({id: id}, {projection: {_id: 0, _postId: 0}})
+        const foundComment: CommentViewModel | null = await CommentModel.findOne({id: id}, {
+            projection: {
+                _postId: 0
+            }
+        })
         if (foundComment) {
             return foundComment
         } else {
             return null
         }
     },
-    async createComment(createdComment: CommentViewModel): Promise<CommentViewModel> {
-        const result = await commentsCollection.insertOne({...createdComment})
+    async createComment(createdComment: CommentType): Promise<CommentViewModel> {
+        const commentInstance = new CommentModel({})
+
+        commentInstance.content = createdComment.content
+        commentInstance.commentatorInfo = createdComment.commentatorInfo
+        commentInstance.createdAt = createdComment.createdAt
+        commentInstance._postId = createdComment._postId
+
+        const result = await commentInstance.save()
         return {
-            id: createdComment.id,
-            content: createdComment.content,
+            id: result._id.toString(),
+            content: result.content,
             commentatorInfo: {
-                userId: createdComment.commentatorInfo.userId,
-                userLogin: createdComment.commentatorInfo.userLogin
+                userId: result.commentatorInfo.userId,
+                userLogin: result.commentatorInfo.userLogin
             },
-            createdAt: createdComment.createdAt
+            createdAt: result.createdAt
         }
     },
     async updateComment(commentId: string, content: string): Promise<boolean> {
-        const result = await commentsCollection.updateOne({id: commentId}, {
+        const result = await CommentModel.updateOne({id: commentId}, {
             $set: {
                 content: content
             }
@@ -62,11 +79,11 @@ export const commentsRepository = {
         return result.matchedCount === 1
     },
     async deleteComment(id: string): Promise<boolean> {
-        const result = await commentsCollection.deleteOne({id: id})
+        const result = await CommentModel.deleteOne({id: id})
         return result.deletedCount === 1
     },
     async deleteAll() {
-        const result = await commentsCollection.deleteMany({})
+        const result = await CommentModel.deleteMany({})
         return
     }
 }

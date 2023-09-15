@@ -1,4 +1,5 @@
 import {Request} from 'express'
+import {WithId} from "mongodb";
 
 export type RequestWithBody<T> = Request<{}, {}, T>
 export type RequestWithQuery<T> = Request<{}, {}, {}, T>
@@ -34,41 +35,40 @@ export type ExpiredTokenType = {
 //     passwordHash: string
 //     passwordSalt: string
 // }
-type AccountDataType = {
-    id: string
+export type AccountDataType = {
     login: string
     email: string
     createdAt: string
     passwordHash: string
 }
-type EmailConfirmationType = {
+export type EmailConfirmationType = {
     confirmationCode: string
     expirationDate: string
     isConfirmed: boolean
 }
-export type UserType = {
+export type UserTypeDbModel = WithId<User>
+
+export type User = {
     accountData: AccountDataType
     emailConfirmation: EmailConfirmationType
 }
-export type UserDBType = {
-    _id: string
-    id: string
-    login: string
-    email: string
-    createdAt: string
-    passwordHash: string
-    passwordSalt: string
-}
-type CommentatorInfoType = {
+
+export type CommentatorInfoType = {
     userId: string
     userLogin: string
 }
-export type CommentsType = {
-    id: string
+export type CommentType = {
     content: string
     commentatorInfo: CommentatorInfoType
     createdAt: string
+    _postId: string
 }
+export type CommentDBType = WithId<{
+    content: string
+    commentatorInfo: CommentatorInfoType
+    createdAt: string
+    _postId: string
+}>
 
 type ErrorsMessageType = {
     message: string
@@ -82,7 +82,7 @@ export type RequestForApiType = {
     URL: string
     date: Date
 }
-export type DevicesType = {
+export type DeviceType = {
     userId: string
     ip: string
     title: string

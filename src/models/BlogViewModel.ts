@@ -1,4 +1,4 @@
-import {ObjectId, WithId} from "mongodb";
+import {WithId} from "mongodb";
 
 export type BlogViewModel = {
     id: string

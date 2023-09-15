@@ -1,5 +1,5 @@
 import {BloggerWithPaginationViewModel} from "../models/BlogViewModel";
-import {blogsCollection} from "./db";
+import {BlogModel} from "../mongo/blog/blog.model";
 
 export const blogsQueryDbRepository = {
     async findBloggers(
@@ -25,13 +25,12 @@ export const blogsQueryDbRepository = {
         }
         const skipPages: number = (pageNumber - 1) * pageSize
 
-        const items = await blogsCollection
+        const items = await BlogModel
             .find(filter, {projection: {_id: 0}})
             .sort({[sortBy]: sortDirection})
             .skip(skipPages)
             .limit(pageSize)
-            .toArray()
-        const totalCount = await blogsCollection.find(filter).count({})
+        const totalCount = await BlogModel.find(filter).count({})
         const pageCount = Math.ceil(totalCount/pageSize)
 
         return {
