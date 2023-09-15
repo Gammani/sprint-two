@@ -9,11 +9,8 @@ export const dbName = process.env.mongoDBName || "friendlyWorlds"
 export const mongoURI = settings.MONGO_URI
 
 // const mongoURI = "mongodb://0.0.0.0:27017"
-
 //export const client = new MongoClient(mongoURI + "/" + dbName)
-
 //const db = client.db("friendlyWorlds")
-
 // export const blogsCollection = db.collection<BlogType>("bloggers")
 // export const postsCollection = db.collection<PostType>("posts")
 // export const usersCollection = db.collection<UserTypeDbModel>("users")
