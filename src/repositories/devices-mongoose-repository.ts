@@ -9,6 +9,7 @@ export const devicesRepository = {
         deviceModelInstance.ip = device.ip
         deviceModelInstance.title = device.title
         deviceModelInstance.lastActiveDate = device.lastActiveDate
+        deviceModelInstance.deviceId = device.deviceId
         await deviceModelInstance.save()
 
 

@@ -69,6 +69,17 @@ export const checkedConfirmedEmail = async (req: Request, res: Response, next: N
         next()
     }
 }
+export const checkedEmail = async (req: Request, res: Response, next: NextFunction) => {
+    const error = validationResult(req).mapped();
+    let errors: ErrorsType = {errorsMessages: []}
+    Object.keys(error).forEach(a => errors.errorsMessages.push({message: `не валидное поле ${error[a].param}`, field: error[a].param}))
+
+    if(errors.errorsMessages.length > 0) {
+        res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
+    } else {
+        next()
+    }
+}
 
 export const checkAndUpdateRefreshToken = async (req: Request, res: Response, next: NextFunction) => {
     debugger

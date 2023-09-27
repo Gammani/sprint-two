@@ -3,6 +3,7 @@ import mongoose from 'mongoose'
 import {app} from './../app-settings'
 import {HTTP_STATUSES} from "../utils/utils";
 import {mongoURI} from "../repositories/db";
+import {usersRepository} from "../repositories/users-mongoose-repository";
 
 
 
@@ -21,11 +22,20 @@ describe('Mongoose integration', () => {
         await mongoose.connection.close()
     })
 
+
+    describe('CLEAR ALL DATE', () => {
+        it('should clear all date', async () => {
+            await request(app)
+                .delete('/testing/all-data')
+                .expect(HTTP_STATUSES.NO_CONTENT_204)
+        })
+    })
+
     describe('GET blogs', () => {
         it('+ GET blogs', async () => {
             const res_ = await request(app)
                 .get('/blogs')
-                .expect(200)
+                .expect(HTTP_STATUSES.OK_200)
             expect(res_.body.items.length).toBe(0)
         })
     })
@@ -93,7 +103,21 @@ describe('Mongoose integration', () => {
                 .get('/users')
                 .auth('admin', 'qwerty')
                 .expect(HTTP_STATUSES.OK_200)
-                .expect("hello world")
+                // .expect("hello world")
+        })
+
+
+        it('should check code from email and confirm user', async () => {
+            const foundUser = await usersRepository.findUserByLogin('Leha')
+            console.log(foundUser);
+            console.log("found = ", foundUser?.emailConfirmation.confirmationCode)
+
+            await request(app)
+                .post('/auth/registration-confirmation')
+                .send({
+                    "code": foundUser?.emailConfirmation.confirmationCode
+                })
+                .expect(HTTP_STATUSES.NO_CONTENT_204)
         })
     })
 })

@@ -35,5 +35,27 @@ export const authService = {
         } else {
             return null
         }
+    },
+
+    async passwordRecovery(email: string) {
+        const foundUser = await usersRepository.findUserByLoginOrEmail(email)
+
+        if (foundUser) {
+            const code = uuidv4()
+            const createResult = await usersRepository.updateCode(email, code)
+            try {
+                await emailAdapter.sendEmail(email, foundUser.accountData.login, `\` <h1>Password recovery</h1>
+ <p>To finish password recovery please follow the link below:
+     <a href='https://somesite.com/password-recovery?recoveryCode=${code}'>recovery password</a>
+ </p>\``)
+                debugger
+                return createResult
+            } catch (e) {
+                console.log(e)
+                return null
+            }
+        } else {
+            return null
+        }
     }
 }

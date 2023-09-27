@@ -7,7 +7,7 @@ import {
     authRegistrationEmailResendingValidation,
     authRegistrationValidation,
     checkAndUpdateRefreshToken,
-    checkedConfirmedEmail,
+    checkedConfirmedEmail, checkedEmail,
     checkedExistsForLoginOrEmail,
     checkedValidation
 } from "../middlewares/requestValidatorWithExpressValidator";
@@ -29,6 +29,7 @@ authRouter.post('/login',
     checkedValidation,
 
     async (req: RequestWithBody<CreateAuthModel>, res: Response) => {
+    debugger
 
         const user: UserTypeDbModel | null = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
         if (user) {
@@ -66,6 +67,17 @@ authRouter.post('/registration',
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
     })
 
+authRouter.post('/password-recovery',
+    authRegistrationEmailResendingValidation,
+    restrictionRequests,
+    checkedEmail,
+
+
+    async (req: RequestWithBody<{email: string}>, res: Response) => {
+    await authService.passwordRecovery(req.body.email)
+        res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+})
+
 authRouter.post('/registration-confirmation',
     authRegistrationConfirmationValidation,
     restrictionRequests,
@@ -88,6 +100,7 @@ authRouter.post('/registration-confirmation',
             })
         }
     })
+authRouter.post('/')
 
 authRouter.post('/registration-email-resending',
     authRegistrationEmailResendingValidation,
