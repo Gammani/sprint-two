@@ -41,12 +41,12 @@ export const authService = {
         const foundUser = await usersRepository.findUserByLoginOrEmail(email)
 
         if (foundUser) {
-            const code = uuidv4()
-            const createResult = await usersRepository.updateCode(email, code)
+            const recoveryCode = uuidv4()
+            const createResult = await usersRepository.updateRecoveryCode(email, recoveryCode)
             try {
                 await emailAdapter.sendEmail(email, foundUser.accountData.login, `\` <h1>Password recovery</h1>
  <p>To finish password recovery please follow the link below:
-     <a href='https://somesite.com/password-recovery?recoveryCode=${code}'>recovery password</a>
+     <a href='https://somesite.com/password-recovery?recoveryCode=${recoveryCode}'>recovery password</a>
  </p>\``)
                 debugger
                 return createResult

@@ -40,6 +40,10 @@ export const usersService = {
             return null
         }
     },
+    async findUserByRecoveryCode(recoveryCode: string): Promise<User | null> {
+        const foundUser = usersRepository.findUserByRecoveryCode(recoveryCode)
+        return foundUser
+    },
     async createUser(login: string, email: string, password: string): Promise<UserViewModel | null> {
 
         const passwordSalt = await bcrypt.genSalt(10)
@@ -50,7 +54,8 @@ export const usersService = {
                 login,
                 email,
                 createdAt: new Date().toISOString(),
-                passwordHash
+                passwordHash,
+                recoveryCode: ''
             },
             emailConfirmation: {
                 confirmationCode: uuidv4(),
@@ -83,7 +88,8 @@ export const usersService = {
                 login,
                 email,
                 createdAt: new Date().toISOString(),
-                passwordHash
+                passwordHash,
+                recoveryCode: ''
             },
             emailConfirmation: {
                 confirmationCode: uuidv4(),
@@ -124,4 +130,15 @@ export const usersService = {
         const isEqual = await bcrypt.compare(password, hash)
         return isEqual
     },
+    async updatePassword(newPassword: string, recoveryCode: string) {
+        const foundUser = await usersService.findUserByRecoveryCode(recoveryCode)
+        if(foundUser) {
+            const passwordSalt = await bcrypt.genSalt(10)
+            const passwordHash = await this._generateHash(newPassword, passwordSalt)
+
+
+            return usersRepository.updatePassword(passwordHash, recoveryCode)
+        }
+        return
+    }
 }

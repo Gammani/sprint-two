@@ -2,7 +2,7 @@ import {Request, Response, Router} from "express";
 import {DeviceType, RequestWithBody, UserTypeDbModel} from "../utils/types";
 import {CreateAuthModel} from "../models/CreateAuthModel";
 import {
-    authLoginValidation,
+    authLoginValidation, authNewPasswordValidation,
     authRegistrationConfirmationValidation,
     authRegistrationEmailResendingValidation,
     authRegistrationValidation,
@@ -138,6 +138,17 @@ authRouter.post('/logout',
         await securityDevicesService.deleteCurrentSessionById(req.user!.deviceId!)
         res.cookie('refreshToken', "", {httpOnly: true, secure: true})
     res.send(HTTP_STATUSES.NO_CONTENT_204)
+})
+
+authRouter.post('/new-password',
+    authNewPasswordValidation,
+    restrictionRequests,
+    checkedValidation,
+
+    async (req: RequestWithBody<{ newPassword: string, recoveryCode: string }>, res: Response) => {
+
+        const result = await usersService.updatePassword(req.body.newPassword, req.body.recoveryCode)
+        res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
 })
 
 authRouter.get('/me',

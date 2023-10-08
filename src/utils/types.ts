@@ -40,6 +40,7 @@ export type AccountDataType = {
     email: string
     createdAt: string
     passwordHash: string
+    recoveryCode: string
 }
 export type EmailConfirmationType = {
     confirmationCode: string

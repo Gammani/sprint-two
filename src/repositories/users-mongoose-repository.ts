@@ -89,6 +89,10 @@ export const usersRepository = {
             createdAt: newUser.accountData.createdAt
         }
     },
+    async findUserByRecoveryCode(recoveryCode: string): Promise<UserTypeDbModel | null> {
+        const foundUser = UserModel.findOne({recoveryCode: recoveryCode})
+        return foundUser
+    },
     async deleteUser(id: string): Promise<boolean> {
         const result = await UserModel.deleteOne({id: id})
         return result.deletedCount === 1
@@ -105,6 +109,10 @@ export const usersRepository = {
             .updateOne({_id}, {$set: {'emailConfirmation.isConfirmed': true}})
         return result.modifiedCount === 1
     },
+    async updatePassword(passwordHash: string, recoveryCode: string) {
+        let result = await UserModel
+            .updateOne({'accountData.recoveryCode': recoveryCode}, {$set: {'accountData.passwordHash': passwordHash}})
+    },
     async updateCode(email: string, code: string) {
         debugger
         let result = await UserModel
@@ -112,7 +120,12 @@ export const usersRepository = {
         debugger
         return result.modifiedCount === 1
     },
-
+async updateRecoveryCode(email: string, recoveryCode: string) {
+    let result = await UserModel
+        .updateOne({'accountData.email': email}, {$set: {'accountData.recoveryCode': recoveryCode}})
+    debugger
+    return result.modifiedCount === 1
+},
     async deleteAll() {
         const result = await UserModel.deleteMany({})
         return

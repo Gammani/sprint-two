@@ -23,6 +23,10 @@ export const authLoginValidation = [
 export const authRegistrationConfirmationValidation = [
     body('code').isString().trim().notEmpty(),
 ]
+export const authNewPasswordValidation = [
+    body('newPassword').isString().trim().notEmpty(),
+    body('recoveryCode').isString().trim().notEmpty()
+]
 export const authRegistrationEmailResendingValidation = [
     body('email').isString().trim().notEmpty().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/),
 ]
