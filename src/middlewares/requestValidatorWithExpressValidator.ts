@@ -24,7 +24,7 @@ export const authRegistrationConfirmationValidation = [
     body('code').isString().trim().notEmpty(),
 ]
 export const authNewPasswordValidation = [
-    body('newPassword').isString().trim().notEmpty(),
+    body('newPassword').isString().trim().isLength({min: 6, max: 20}).notEmpty().exists(),
     body('recoveryCode').isString().trim().notEmpty()
 ]
 export const authRegistrationEmailResendingValidation = [
