@@ -6,7 +6,8 @@ const AccountDataSchema = new mongoose.Schema<AccountDataType>({
     login: {type: String, required: true},
     email: {type: String, required: true},
     createdAt: {type: String, required: true},
-    passwordHash: {type: String, required: true}
+    passwordHash: {type: String, required: true},
+    recoveryCode: {type: String, required: true}
 })
 const EmailConfirmationSchema = new mongoose.Schema<EmailConfirmationType>({
     confirmationCode: {type: String, required: true},

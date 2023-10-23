@@ -90,7 +90,7 @@ export const usersRepository = {
         }
     },
     async findUserByRecoveryCode(recoveryCode: string): Promise<UserTypeDbModel | null> {
-        const foundUser = UserModel.findOne({recoveryCode: recoveryCode})
+        const foundUser = UserModel.findOne({"accountData.recoveryCode": recoveryCode})
         return foundUser
     },
     async deleteUser(id: string): Promise<boolean> {

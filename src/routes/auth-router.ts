@@ -20,6 +20,7 @@ import {CreateUserModel} from "../models/CreateUserModel";
 import {authService} from "../application/auth-service";
 import {securityDevicesService} from "../application/sequrity-devices-service";
 import {restrictionRequests} from "../middlewares/restriction-requests";
+import {usersRepository} from "../repositories/users-mongoose-repository";
 
 export const authRouter = Router({})
 
@@ -29,7 +30,7 @@ authRouter.post('/login',
     checkedValidation,
 
     async (req: RequestWithBody<CreateAuthModel>, res: Response) => {
-    debugger
+        debugger
 
         const user: UserTypeDbModel | null = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
         if (user) {
@@ -45,8 +46,8 @@ authRouter.post('/login',
             const accessToken = await jwtServices.createAccessJWT(user._id.toString())
             const refreshToken = await jwtServices.createRefreshJWT(device.deviceId)
 
+            res.cookie('refreshToken', refreshToken, {httpOnly: false, secure: false})  // local
             // res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true})
-            res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true})
 
             res.status(HTTP_STATUSES.OK_200).send({accessToken: accessToken})
         } else {
@@ -67,16 +68,17 @@ authRouter.post('/registration',
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
     })
 
+
 authRouter.post('/password-recovery',
     authRegistrationEmailResendingValidation,
     restrictionRequests,
-    checkedEmail,
+    checkedValidation,
 
 
-    async (req: RequestWithBody<{email: string}>, res: Response) => {
-    await authService.passwordRecovery(req.body.email)
+    async (req: RequestWithBody<{ email: string }>, res: Response) => {
+        await authService.passwordRecovery(req.body.email)
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
-})
+    })
 
 authRouter.post('/registration-confirmation',
     authRegistrationConfirmationValidation,
@@ -118,27 +120,28 @@ authRouter.post('/refresh-token',
     checkAndUpdateRefreshToken,
 
     async (req: Request, res: Response) => {
-    debugger
-    const user = req.user
-        if(user) {
+        debugger
+        const user = req.user
+        if (user) {
             debugger
             const accessToken = await jwtServices.createAccessJWT(user.userId)
             const refreshToken = await jwtServices.createRefreshJWT(user.deviceId!)
 
+            res.cookie('refreshToken', refreshToken, {httpOnly: false, secure: false}) // local
             // res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true})
-            res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true})
 
             res.status(HTTP_STATUSES.OK_200).send({accessToken: accessToken})
         }
-})
+    })
 authRouter.post('/logout',
     checkAndUpdateRefreshToken,
 
     async (req: Request, res: Response) => {
         await securityDevicesService.deleteCurrentSessionById(req.user!.deviceId!)
-        res.cookie('refreshToken', "", {httpOnly: true, secure: true})
-    res.send(HTTP_STATUSES.NO_CONTENT_204)
-})
+        res.cookie('refreshToken', "", {httpOnly: false, secure: false})   // local
+        // res.cookie('refreshToken', "", {httpOnly: true, secure: true})
+        res.send(HTTP_STATUSES.NO_CONTENT_204)
+    })
 
 authRouter.post('/new-password',
     authNewPasswordValidation,
@@ -146,10 +149,23 @@ authRouter.post('/new-password',
     checkedValidation,
 
     async (req: RequestWithBody<{ newPassword: string, recoveryCode: string }>, res: Response) => {
+        debugger
+        const foundUser = await usersService.findUserByRecoveryCode(req.body.recoveryCode)
+        if(foundUser) {
+            const result = await usersService.updatePassword(req.body.newPassword, req.body.recoveryCode)
+            res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+        } else {
+            res.status(HTTP_STATUSES.BAD_REQUEST_400).send({
+                "errorsMessages": [
+                    {
+                        "message": "не валидное поле recoveryCode",
+                        "field": "recoveryCode"
+                    }
+                ]
+            })
+        }
 
-        const result = await usersService.updatePassword(req.body.newPassword, req.body.recoveryCode)
-        res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
-})
+    })
 
 authRouter.get('/me',
     authBearerMiddleware,

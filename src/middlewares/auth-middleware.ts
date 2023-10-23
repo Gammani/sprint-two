@@ -47,16 +47,18 @@ debugger
 
 debugger
     const token = req.headers.authorization.split(' ')[1]
-
-    const userId: any = await jwtServices.getUserIdByAccessToken(token)
-    if(userId) {
+debugger
+    const user: any = await jwtServices.getUserIdByAccessToken(token)
+    debugger
+    if(user) {
         debugger
-        const foundUser: any = await usersService.findUserById(userId)
+        const foundUser: any = await usersService.findUserById(user.userId)
         console.log(foundUser)
+        debugger
         req.user = {
             email: foundUser!.accountData.email,
             login: foundUser!.accountData.login,
-            userId: foundUser!.accountData.id
+            userId: foundUser!._id
         }
         next()
     } else {

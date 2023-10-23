@@ -24,7 +24,8 @@ export const usersService = {
         )
     },
     async findUserById(userId: string): Promise<UserTypeDbModel | null> {
-        const user: UserTypeDbModel | null = await UserModel.findOne({'accountData.id': userId}, {projection: {_id: 0, blackListRefreshTokens: 0}})
+        debugger
+        const user: UserTypeDbModel | null = await UserModel.findOne({'_id': userId}, {projection: {_id: 0, blackListRefreshTokens: 0}})
         if (user) {
             return user
         } else {
@@ -55,7 +56,7 @@ export const usersService = {
                 email,
                 createdAt: new Date().toISOString(),
                 passwordHash,
-                recoveryCode: ''
+                recoveryCode: uuidv4()
             },
             emailConfirmation: {
                 confirmationCode: uuidv4(),
@@ -89,7 +90,7 @@ export const usersService = {
                 email,
                 createdAt: new Date().toISOString(),
                 passwordHash,
-                recoveryCode: ''
+                recoveryCode: uuidv4()
             },
             emailConfirmation: {
                 confirmationCode: uuidv4(),
@@ -131,6 +132,7 @@ export const usersService = {
         return isEqual
     },
     async updatePassword(newPassword: string, recoveryCode: string) {
+        debugger
         const foundUser = await usersService.findUserByRecoveryCode(recoveryCode)
         if(foundUser) {
             const passwordSalt = await bcrypt.genSalt(10)

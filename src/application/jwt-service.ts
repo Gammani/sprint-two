@@ -9,12 +9,12 @@ interface JwtPayload {
 
 export const jwtServices = {
     async createAccessJWT(userId: string) {
-        const token = await jwt.sign({userId}, settings.JWT_SECRET, {expiresIn: '10000'})
+        const token = await jwt.sign({userId}, settings.JWT_SECRET, {expiresIn: '600000'})
         return token
     },
     async createRefreshJWT(deviceId: string) {
         // const token = await jwt.sign({userId}, settings.JWT_SECRET, {expiresIn: '20000'})
-        const token = await jwt.sign({deviceId: deviceId}, settings.JWT_SECRET, {expiresIn: '20000'})
+        const token = await jwt.sign({deviceId: deviceId}, settings.JWT_SECRET, {expiresIn: '1200000'})
 
 
         return token
@@ -26,7 +26,7 @@ export const jwtServices = {
         try {
             const result: any = await jwt.verify(token, settings.JWT_SECRET)
             console.log("result = ", result)
-            return result.userId
+            return result
         } catch (error: any) {
             debugger
             console.log(error.message)

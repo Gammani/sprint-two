@@ -20,7 +20,7 @@ export const blogsRepository = {
         const skipPages: number = (pageNumber - 1) * pageSize
 
         const items = await BlogModel
-            .find({}, {_id: 0})
+            .find({})
             .sort({[sortBy]: sortDirection})
             .skip(skipPages)
             .limit(pageSize)

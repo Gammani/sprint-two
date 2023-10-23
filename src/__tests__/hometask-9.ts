@@ -4,7 +4,7 @@ import {app} from './../app-settings'
 import {HTTP_STATUSES} from "../utils/utils";
 import {mongoURI} from "../repositories/db";
 import {usersRepository} from "../repositories/users-mongoose-repository";
-
+import {jwtServices} from "../application/jwt-service";
 
 
 describe('Mongoose integration', () => {
@@ -103,7 +103,7 @@ describe('Mongoose integration', () => {
                 .get('/users')
                 .auth('admin', 'qwerty')
                 .expect(HTTP_STATUSES.OK_200)
-                // .expect("hello world")
+            // .expect("hello world")
         })
 
 
@@ -118,6 +118,77 @@ describe('Mongoose integration', () => {
                     "code": foundUser?.emailConfirmation.confirmationCode
                 })
                 .expect(HTTP_STATUSES.NO_CONTENT_204)
+        })
+
+        it('should login and return accessToken from correct input date', async () => {
+            const user = await usersRepository.findUserByLoginOrEmail("Leha")
+            const accessTokenByUserId = await jwtServices.createAccessJWT(user!._id.toString())
+
+            await request(app)
+                .post('/auth/login')
+                .send({
+                    "loginOrEmail": "Leha",
+                    "password": "string"
+                })
+                .expect(HTTP_STATUSES.OK_200)
+                .expect({"accessToken": `${accessTokenByUserId}`})
+
+        })
+
+        it('should return my date from accessToken info', async () => {
+            // await setTimeout(async function() {
+            //     const user = await usersRepository.findUserByLoginOrEmail("Leha")
+            //     const accessTokenByUserId = await jwtServices.createAccessJWT(user!._id.toString())
+            //
+            //     await request(app)
+            //         .get('/auth/me')
+            //         .set('Authorization', `Bearer ${accessTokenByUserId}`)
+            //
+            //         .expect(HTTP_STATUSES.OK_200)
+            //         .expect({
+            //             "email": "shtucer31@gmail.com",
+            //             "login": "Lehaa",
+            //             "userId": `${user?._id.toString()}`
+            //         })
+            // }, 10000);
+
+            const user = await usersRepository.findUserByLoginOrEmail("Leha")
+            const accessTokenByUserId = await jwtServices.createAccessJWT(user!._id.toString())
+
+            await request(app)
+                .get('/auth/me')
+                .set('Authorization', `Bearer ${accessTokenByUserId}`)
+
+                .expect(HTTP_STATUSES.OK_200)
+                .expect({
+                    "email": "shtucer31@gmail.com",
+                    "login": "Leha",
+                    "userId": `${user?._id.toString()}`
+                })
+        })
+
+    })
+
+
+    describe('/blogs', () => {
+        it('should create new blog', async () => {
+            await request(app)
+                .post('/blogs')
+                .set('Authorization', 'Basic ' + Buffer.from('admin:qwerty').toString('base64'))
+                .send({
+                    "name": "new blog",
+                    "description": "description for new blog",
+                    "websiteUrl": "https://www.youtube.com/"
+                })
+                .expect(HTTP_STATUSES.CREATED_201)
+
+        })
+
+        it('should return created blog', async () => {
+            const res_ = await request(app)
+                .get('/blogs')
+                .expect(HTTP_STATUSES.OK_200)
+            expect(res_.body.items.length).toBe(1)
         })
     })
 })

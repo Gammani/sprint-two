@@ -1,5 +1,5 @@
 import {Request} from 'express'
-import {WithId} from "mongodb";
+import {ObjectId, WithId} from "mongodb";
 
 export type RequestWithBody<T> = Request<{}, {}, T>
 export type RequestWithQuery<T> = Request<{}, {}, {}, T>
@@ -8,13 +8,25 @@ export type RequestWithParamsAndQuery<T, Y> = Request<T, {}, {}, Y>
 export type RequestWithParamsAndBody<T, Y> = Request<T, {}, Y>
 
 
-export type BlogType = {
-    name: string
-    description: string
-    websiteUrl: string
-    createdAt: string
-    isMembership: boolean
+// export type BlogType = {
+//     name: string
+//     description: string
+//     websiteUrl: string
+//     createdAt: string
+//     isMembership: boolean
+// }
+export class BlogType {
+    constructor(
+        public _id: ObjectId,
+        public name: string,
+        public description: string,
+        public websiteUrl: string,
+        public createdAt: string,
+        public isMembership: boolean
+    ) {
+    }
 }
+
 export type PostType = {
     title: string
     shortDescription: string
