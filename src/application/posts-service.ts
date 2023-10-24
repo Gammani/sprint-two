@@ -3,6 +3,7 @@ import {BlogViewModel} from "../models/BlogViewModel";
 import {blogService} from "./blogs-service";
 import {PostType} from "../utils/types";
 import {postsRepository} from "../repositories/posts-mongoose-repository";
+import {ObjectId} from "mongodb";
 
 export const postsService = {
     // async findPosts(title: string | undefined | null): Promise<PostViewModel[]> {
@@ -28,14 +29,15 @@ export const postsService = {
     async createPost(title: string, shortDescription: string, content: string, blogId: string): Promise<PostViewModel | null> {
         const foundBlogger: BlogViewModel | null = await blogService.findBlogById(blogId)
         if (foundBlogger) {
-            const createdPost: PostType = {
+            const createdPost = new PostType(
+                new ObjectId,
                 title,
                 shortDescription,
                 content,
                 blogId,
-                blogName: foundBlogger.name,
-                createdAt: new Date().toISOString()
-            }
+                foundBlogger.name,
+                new Date().toISOString()
+            )
             return await postsRepository.createPost(createdPost)
         }
         return null

@@ -50,6 +50,10 @@ export const blogsRepository = {
             return null
         }
     },
+    async findBlogByName(blogName: string) {
+        const foundBlog = await BlogModel.findOne({name: blogName})
+        return foundBlog
+    },
     async createBlog(newBlog: BlogType): Promise<BlogViewModel> {
         const blogInstance = new BlogModel({name: newBlog.name})
 

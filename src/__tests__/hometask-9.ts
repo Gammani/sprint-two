@@ -5,6 +5,7 @@ import {HTTP_STATUSES} from "../utils/utils";
 import {mongoURI} from "../repositories/db";
 import {usersRepository} from "../repositories/users-mongoose-repository";
 import {jwtServices} from "../application/jwt-service";
+import {blogsRepository} from "../repositories/blogs-mongoose-repository";
 
 
 describe('Mongoose integration', () => {
@@ -187,6 +188,31 @@ describe('Mongoose integration', () => {
         it('should return created blog', async () => {
             const res_ = await request(app)
                 .get('/blogs')
+                .expect(HTTP_STATUSES.OK_200)
+            expect(res_.body.items.length).toBe(1)
+        })
+    })
+
+
+    describe('/posts', () => {
+        it('should create new post', async () => {
+            const foundBlog = await blogsRepository.findBlogByName("new blog")
+
+            await request(app)
+                .post('/posts')
+                .set('Authorization', 'Basic ' + Buffer.from('admin:qwerty').toString('base64'))
+                .send({
+                "title": "new title post",
+                "shortDescription": "new description for post",
+                "content": "content for post",
+                "blogId": foundBlog!._id.toString()
+                })
+                .expect(HTTP_STATUSES.CREATED_201)
+        })
+
+        it('should return created post', async () => {
+            const res_ = await request(app)
+                .get('/posts')
                 .expect(HTTP_STATUSES.OK_200)
             expect(res_.body.items.length).toBe(1)
         })
