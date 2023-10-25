@@ -1,6 +1,6 @@
 import {PostsWithPaginationViewModel, PostViewModel} from "../models/PostViewModel";
 import {PostModel} from "../mongo/post/post.model";
-import {PostType} from "../utils/types";
+import {Post} from "../utils/types";
 
 
 export const postsRepository = {
@@ -72,7 +72,7 @@ export const postsRepository = {
             return null;
         }
     },
-    async createPost(createdPost: PostType): Promise<PostViewModel> {
+    async createPost(createdPost: Post): Promise<PostViewModel> {
         const postInstance = new PostModel()
 
         postInstance.title = createdPost.title,

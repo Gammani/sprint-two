@@ -15,7 +15,7 @@ export type RequestWithParamsAndBody<T, Y> = Request<T, {}, Y>
 //     createdAt: string
 //     isMembership: boolean
 // }
-export class BlogType {
+export class Blog {
     constructor(
         public _id: ObjectId,
         public name: string,
@@ -36,7 +36,7 @@ export class BlogType {
 //     createdAt: string
 // }
 
-export class PostType {
+export class Post {
     constructor(
         public _id: ObjectId,
         public title: string,
@@ -62,6 +62,8 @@ export type ExpiredTokenType = {
 //     passwordHash: string
 //     passwordSalt: string
 // }
+
+
 export type AccountDataType = {
     login: string
     email: string
@@ -74,12 +76,23 @@ export type EmailConfirmationType = {
     expirationDate: string
     isConfirmed: boolean
 }
-export type UserTypeDbModel = WithId<User>
 
-export type User = {
+type UserType   = {
     accountData: AccountDataType
     emailConfirmation: EmailConfirmationType
 }
+
+export type UserTypeDbModel = WithId<UserType>
+
+export class User {
+    constructor(
+        public _id: ObjectId,
+        public accountData: AccountDataType,
+        public emailConfirmation: EmailConfirmationType
+    ) {
+    }
+}
+
 
 export type CommentatorInfoType = {
     userId: string

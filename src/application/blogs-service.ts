@@ -1,6 +1,6 @@
 import {BlogViewModel, BloggerWithPaginationViewModel} from "../models/BlogViewModel";
 import {blogsRepository} from "../repositories/blogs-mongoose-repository";
-import {BlogType} from "../utils/types";
+import {Blog} from "../utils/types";
 import {ObjectId} from "mongodb";
 
 
@@ -25,7 +25,7 @@ export const blogService = {
         return await blogsRepository.findBlogById(id)
     },
     async createBlog(name: string, description: string, websiteUrl: string): Promise<BlogViewModel> {
-        const newBlog = new BlogType(
+        const newBlog = new Blog(
             new ObjectId,
             name,
             description,

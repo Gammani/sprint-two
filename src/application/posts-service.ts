@@ -1,7 +1,7 @@
 import {PostsWithPaginationViewModel, PostViewModel} from "../models/PostViewModel";
 import {BlogViewModel} from "../models/BlogViewModel";
 import {blogService} from "./blogs-service";
-import {PostType} from "../utils/types";
+import {Post} from "../utils/types";
 import {postsRepository} from "../repositories/posts-mongoose-repository";
 import {ObjectId} from "mongodb";
 
@@ -29,7 +29,7 @@ export const postsService = {
     async createPost(title: string, shortDescription: string, content: string, blogId: string): Promise<PostViewModel | null> {
         const foundBlogger: BlogViewModel | null = await blogService.findBlogById(blogId)
         if (foundBlogger) {
-            const createdPost = new PostType(
+            const createdPost = new Post(
                 new ObjectId,
                 title,
                 shortDescription,

@@ -1,6 +1,6 @@
 import {BlogDBType, BloggerWithPaginationViewModel, BlogViewModel} from "../models/BlogViewModel";
 import {BlogModel} from "../mongo/blog/blog.model";
-import {BlogType} from "../utils/types";
+import {Blog} from "../utils/types";
 import {getBlogViewModel} from "../utils/utils";
 
 
@@ -54,7 +54,7 @@ export const blogsRepository = {
         const foundBlog = await BlogModel.findOne({name: blogName})
         return foundBlog
     },
-    async createBlog(newBlog: BlogType): Promise<BlogViewModel> {
+    async createBlog(newBlog: Blog): Promise<BlogViewModel> {
         const blogInstance = new BlogModel({name: newBlog.name})
 
         blogInstance.createdAt = newBlog.createdAt

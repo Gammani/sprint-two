@@ -2,12 +2,13 @@ import {Request, Response, Router} from "express";
 import {DeviceType, RequestWithBody, UserTypeDbModel} from "../utils/types";
 import {CreateAuthModel} from "../models/CreateAuthModel";
 import {
-    authLoginValidation, authNewPasswordValidation,
+    authLoginValidation,
+    authNewPasswordValidation,
     authRegistrationConfirmationValidation,
     authRegistrationEmailResendingValidation,
     authRegistrationValidation,
     checkAndUpdateRefreshToken,
-    checkedConfirmedEmail, checkedEmail,
+    checkedConfirmedEmail,
     checkedExistsForLoginOrEmail,
     checkedValidation
 } from "../middlewares/requestValidatorWithExpressValidator";
@@ -20,7 +21,6 @@ import {CreateUserModel} from "../models/CreateUserModel";
 import {authService} from "../application/auth-service";
 import {securityDevicesService} from "../application/sequrity-devices-service";
 import {restrictionRequests} from "../middlewares/restriction-requests";
-import {usersRepository} from "../repositories/users-mongoose-repository";
 
 export const authRouter = Router({})
 

@@ -7,6 +7,7 @@ import {securityDevicesService} from "./sequrity-devices-service";
 import {usersRepository} from "../repositories/users-mongoose-repository";
 import {User, UserTypeDbModel} from "../utils/types";
 import {UserModel} from "../mongo/user/user.model";
+import {ObjectId} from "mongodb";
 
 
 export const usersService = {
@@ -25,7 +26,12 @@ export const usersService = {
     },
     async findUserById(userId: string): Promise<UserTypeDbModel | null> {
         debugger
-        const user: UserTypeDbModel | null = await UserModel.findOne({'_id': userId}, {projection: {_id: 0, blackListRefreshTokens: 0}})
+        const user: UserTypeDbModel | null = await UserModel.findOne({'_id': userId}, {
+            projection: {
+                _id: 0,
+                blackListRefreshTokens: 0
+            }
+        })
         if (user) {
             return user
         } else {
@@ -35,13 +41,13 @@ export const usersService = {
     async findUserByDeviceId(deviceId: string): Promise<UserTypeDbModel | null> {
         debugger
         const foundUserId = await securityDevicesService.findUserIdByDeviceId(deviceId)
-        if(foundUserId) {
+        if (foundUserId) {
             return this.findUserById(foundUserId)
         } else {
             return null
         }
     },
-    async findUserByRecoveryCode(recoveryCode: string): Promise<User | null> {
+    async findUserByRecoveryCode(recoveryCode: string): Promise<UserTypeDbModel | null> {
         const foundUser = usersRepository.findUserByRecoveryCode(recoveryCode)
         return foundUser
     },
@@ -50,23 +56,26 @@ export const usersService = {
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this._generateHash(password, passwordSalt)
 
-        const newUser: User = {
-            accountData: {
+        const newUser = new User(
+            new ObjectId,
+            {
                 login,
                 email,
                 createdAt: new Date().toISOString(),
                 passwordHash,
-                recoveryCode: uuidv4()
+                recoveryCode: uuidv4(),
             },
-            emailConfirmation: {
+            {
                 confirmationCode: uuidv4(),
-                expirationDate: add(new Date(), {
-                    hours: 1,
-                    minutes: 3
-                }).toString(),
+                expirationDate: add(new Date(),
+                    {
+                        hours: 1,
+                        minutes: 3
+                    }
+                ).toString(),
                 isConfirmed: false
             }
-        }
+        )
         const createResult = await usersRepository.createUser(newUser)
 
         try {
@@ -84,23 +93,26 @@ export const usersService = {
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this._generateHash(password, passwordSalt)
 
-        const newUser: User = {
-            accountData: {
+        const newUser = new User(
+            new ObjectId,
+            {
                 login,
                 email,
                 createdAt: new Date().toISOString(),
                 passwordHash,
-                recoveryCode: uuidv4()
+                recoveryCode: uuidv4(),
             },
-            emailConfirmation: {
+            {
                 confirmationCode: uuidv4(),
-                expirationDate: add(new Date(), {
-                    hours: 1,
-                    minutes: 3
-                }).toString(),
+                expirationDate: add(new Date(),
+                    {
+                        hours: 1,
+                        minutes: 3
+                    }
+                ).toString(),
                 isConfirmed: true
             }
-        }
+        )
         return await usersRepository.createUser(newUser)
     },
     async deleteUser(id: string): Promise<boolean> {
@@ -134,7 +146,7 @@ export const usersService = {
     async updatePassword(newPassword: string, recoveryCode: string) {
         debugger
         const foundUser = await usersService.findUserByRecoveryCode(recoveryCode)
-        if(foundUser) {
+        if (foundUser) {
             const passwordSalt = await bcrypt.genSalt(10)
             const passwordHash = await this._generateHash(newPassword, passwordSalt)
 

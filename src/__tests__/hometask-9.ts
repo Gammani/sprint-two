@@ -99,11 +99,24 @@ describe('Mongoose integration', () => {
                 .expect(HTTP_STATUSES.NO_CONTENT_204)
         })
 
-        it('should return all users', async () => {
+        it('should create new user by admin', async () => {
             await request(app)
+                .post('/users')
+                .set('Authorization', 'Basic ' + Buffer.from('admin:qwerty').toString('base64'))
+                .send({
+                    "login": "admin",
+                    "password": "qwerty",
+                    "email": "shtucer34@gmail.com"
+                })
+            expect(HTTP_STATUSES.CREATED_201)
+        })
+
+        it('should return all users', async () => {
+            const _res = await request(app)
                 .get('/users')
                 .auth('admin', 'qwerty')
                 .expect(HTTP_STATUSES.OK_200)
+            expect(_res.body.items.length).toBe(2)
             // .expect("hello world")
         })
 
@@ -137,22 +150,6 @@ describe('Mongoose integration', () => {
         })
 
         it('should return my date from accessToken info', async () => {
-            // await setTimeout(async function() {
-            //     const user = await usersRepository.findUserByLoginOrEmail("Leha")
-            //     const accessTokenByUserId = await jwtServices.createAccessJWT(user!._id.toString())
-            //
-            //     await request(app)
-            //         .get('/auth/me')
-            //         .set('Authorization', `Bearer ${accessTokenByUserId}`)
-            //
-            //         .expect(HTTP_STATUSES.OK_200)
-            //         .expect({
-            //             "email": "shtucer31@gmail.com",
-            //             "login": "Lehaa",
-            //             "userId": `${user?._id.toString()}`
-            //         })
-            // }, 10000);
-
             const user = await usersRepository.findUserByLoginOrEmail("Leha")
             const accessTokenByUserId = await jwtServices.createAccessJWT(user!._id.toString())
 
@@ -202,10 +199,10 @@ describe('Mongoose integration', () => {
                 .post('/posts')
                 .set('Authorization', 'Basic ' + Buffer.from('admin:qwerty').toString('base64'))
                 .send({
-                "title": "new title post",
-                "shortDescription": "new description for post",
-                "content": "content for post",
-                "blogId": foundBlog!._id.toString()
+                    "title": "new title post",
+                    "shortDescription": "new description for post",
+                    "content": "content for post",
+                    "blogId": foundBlog!._id.toString()
                 })
                 .expect(HTTP_STATUSES.CREATED_201)
         })
