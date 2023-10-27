@@ -13,8 +13,11 @@ import {URIParamsPostIdModel, URIParamsPostIdPostModel} from "../models/URIParam
 import {CreatePostModel} from "../models/CreatePostModel";
 import {UpdatePostModel} from "../models/UpdatePostModel";
 import {authBasicMiddleware, authBearerMiddleware} from "../middlewares/auth-middleware";
-import {checkedValidation, isValidId} from "../middlewares/requestValidatorWithExpressValidator";
-import {body} from "express-validator";
+import {
+    checkedValidation,
+    commentValidation,
+    postValidation
+} from "../middlewares/requestValidatorWithExpressValidator";
 import {postsService} from "../application/posts-service";
 import {QueryCommentsModel} from "../models/QueryCommentsModel";
 import {CommentsWithPaginationViewModel, CommentViewModel} from "../models/CommentViewModel";
@@ -51,26 +54,21 @@ postsRouter.get('/:id', async (req: RequestWithParams<URIParamsPostIdModel>, res
     }
 })
 postsRouter.post('/', authBasicMiddleware,
-    body('title').isString().trim().notEmpty().isLength({max: 30}),
-    body('shortDescription').isString().trim().notEmpty().isLength({max: 100}),
-    body('content').isString().trim().notEmpty().isLength({max: 1000}),
-    body('blogId').custom(isValidId),
+    postValidation,
     checkedValidation,
     async (req: RequestWithBody<CreatePostModel>, res: Response<PostViewModel>) => {
-        const newPost: PostViewModel | null = await postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, req.body.blogId)
-        if (newPost) {
-            res.status(HTTP_STATUSES.CREATED_201).send(newPost)
+        const newPostId: string | null = await postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, req.body.blogId)
+        if (newPostId) {
+            const newPost: PostViewModel = postQueryRepo.getPostById(newPostId)
+            res.status(HTTP_STATUSES.CREATED_201).send(newPostId)
         } else {
             res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
         }
     })
 postsRouter.put('/:id', authBasicMiddleware,
-    body('title').isString().trim().notEmpty().isLength({max: 30}),
-    body('shortDescription').isString().trim().notEmpty().isLength({max: 100}),
-    body('content').isString().trim().notEmpty().isLength({max: 1000}),
-    body('blogId').custom(isValidId),
+    postValidation,
     checkedValidation,
-    async (req: RequestWithParamsAndBody<URIParamsPostIdModel, UpdatePostModel>, res) => {
+    async (req: RequestWithParamsAndBody<URIParamsPostIdModel, UpdatePostModel>, res: Response) => {
         const isUpdate: boolean = await postsService.updatePost(req.params.id, req.body.title, req.body.shortDescription, req.body.content, req.body.blogId)
         if (isUpdate) {
             const blog = await postsService.findPostById(req.params.id)
@@ -107,7 +105,7 @@ postsRouter.get('/:postId/comments', async (req: RequestWithParamsAndQuery<URIPa
 })
 postsRouter.post('/:postId/comments',
     authBearerMiddleware,
-    body('content').isString().trim().notEmpty().isLength({max: 300, min: 20}),
+    commentValidation,
     checkedValidation,
 
     async (req: RequestWithParamsAndBody<URIParamsPostIdPostModel, RequestCommentWithContent>, res: Response) => {

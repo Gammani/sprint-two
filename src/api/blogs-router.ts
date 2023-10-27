@@ -7,14 +7,17 @@ import {
     RequestWithQuery
 } from "../utils/types";
 import {QueryBloggersModel, QueryBloggersModelWithId} from "../models/QueryBloggersModel";
-import {BlogViewModel, BloggerWithPaginationViewModel, BlogDBType} from "../models/BlogViewModel";
-import {getBlogViewModel, HTTP_STATUSES} from "../utils/utils";
+import {BloggerWithPaginationViewModel, BlogViewModel} from "../models/BlogViewModel";
+import {HTTP_STATUSES} from "../utils/utils";
 import {URIParamsBloggerIdModel, URIParamsBlogIdModel} from "../models/URIParamsBloggerIdModel";
 import {CreateBloggerModel} from "../models/CreateBloggerModel";
 import {UpdateBloggerModel} from "../models/UpdateBloggerModel";
 import {authBasicMiddleware} from "../middlewares/auth-middleware";
-import {checkedValidation} from "../middlewares/requestValidatorWithExpressValidator";
-import {body} from "express-validator";
+import {
+    blogValidation,
+    checkedValidation,
+    createPostWithoutBlogIdValidation
+} from "../middlewares/requestValidatorWithExpressValidator";
 import {blogService} from "../application/blogs-service";
 import {blogsQueryDbRepository} from "../repositories/blogs-query-db-repository";
 import {postsService} from "../application/posts-service";
@@ -72,9 +75,7 @@ blogsRouter.get('/:blogId/posts', async (req: RequestWithParamsAndQuery<URIParam
 })
 blogsRouter.post('/',
     authBasicMiddleware,
-    body('name').isString().trim().isLength({max: 15}).notEmpty(),
-    body('description').isString().trim().isLength({max: 500}).notEmpty(),
-    body('websiteUrl').isString().trim().isLength({max: 100}).matches(/^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/),
+    blogValidation,
     checkedValidation,
     async (req: RequestWithBody<CreateBloggerModel>, res: Response<BlogViewModel>) => {
         const newBlog: BlogViewModel = await blogService.createBlog(req.body.name, req.body.description, req.body.websiteUrl)
@@ -83,11 +84,8 @@ blogsRouter.post('/',
     })
 
 blogsRouter.post('/:blogId/posts', authBasicMiddleware,
-    body('title').isString().trim().notEmpty().isLength({max: 30}),
-    body('shortDescription').isString().trim().notEmpty().isLength({max: 100}),
-    body('content').isString().trim().notEmpty().isLength({max: 1000}),
+    createPostWithoutBlogIdValidation,
     checkedValidation,
-
     async (req: RequestWithParamsAndBody<URIParamsBlogIdModel, CreatePostModelWithBlogId>, res: Response<PostViewModel>) => {
         const foundBlogger = await blogService.findBlogById(req.params.blogId)
         const newPost: PostViewModel | null = await postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, req.params.blogId)
@@ -103,13 +101,10 @@ blogsRouter.post('/:blogId/posts', authBasicMiddleware,
     })
 
 blogsRouter.put('/:id', authBasicMiddleware,
-    body('name').isString().trim().isLength({max: 15}).notEmpty(),
-    body('description').isString().trim().isLength({max: 500}).notEmpty(),
-    body('websiteUrl').isString().trim().isLength({max: 100}).matches(/^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/),
+    blogValidation,
     checkedValidation,
 
-
-    async (req: RequestWithParamsAndBody<URIParamsBloggerIdModel, UpdateBloggerModel>, res) => {
+    async (req: RequestWithParamsAndBody<URIParamsBloggerIdModel, UpdateBloggerModel>, res: Response) => {
         const isUpdateBlogger: boolean = await blogService.updateBlog(req.params.id, req.body.description, req.body.name, req.body.websiteUrl)
         if (isUpdateBlogger) {
             res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
@@ -118,7 +113,7 @@ blogsRouter.put('/:id', authBasicMiddleware,
         }
     })
 
-blogsRouter.delete('/:id', authBasicMiddleware, async (req: RequestWithParams<URIParamsBloggerIdModel>, res) => {
+blogsRouter.delete('/:id', authBasicMiddleware, async (req: RequestWithParams<URIParamsBloggerIdModel>, res: Response) => {
     const isDeleteBlogger: boolean = await blogService.deleteBlog(req.params.id)
     if (isDeleteBlogger) {
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)

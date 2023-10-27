@@ -31,6 +31,39 @@ export const authRegistrationEmailResendingValidation = [
     body('email').isString().trim().notEmpty().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/),
 ]
 
+export const blogValidation = [
+    body('name').isString().trim().isLength({max: 15}).notEmpty(),
+    body('description').isString().trim().isLength({max: 500}).notEmpty(),
+    body('websiteUrl').isString().trim().isLength({max: 100}).matches(/^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/)
+]
+
+
+export const isValidId: CustomValidator = async (blogId) => {
+    const foundBlogger: BlogViewModel | null = await blogsRepository.findBlogById(blogId)
+    if(!foundBlogger) {
+        return Promise.reject('blogId не валидный')
+    } else {
+        return true
+    }
+}
+
+export const postValidation = [
+    body('title').isString().trim().notEmpty().isLength({max: 30}),
+    body('shortDescription').isString().trim().notEmpty().isLength({max: 100}),
+    body('content').isString().trim().notEmpty().isLength({max: 1000}),
+    body('blogId').custom(isValidId)
+]
+
+export const createPostWithoutBlogIdValidation = [
+    body('title').isString().trim().notEmpty().isLength({max: 30}),
+    body('shortDescription').isString().trim().notEmpty().isLength({max: 100}),
+    body('content').isString().trim().notEmpty().isLength({max: 1000})
+]
+
+export const commentValidation = [
+    body('content').isString().trim().notEmpty().isLength({max: 300, min: 20})
+]
+
 export const checkedValidation = (req: Request, res: Response, next: NextFunction) => {
     const error = validationResult(req).mapped();
     let errors: ErrorsType = {errorsMessages: []}
@@ -248,15 +281,5 @@ export const checkRefreshToken = async (req: Request, res: Response, next: NextF
     } else {
         res.send(HTTP_STATUSES.NO_UNAUTHORIZED_401)
         return
-    }
-}
-
-
-export const isValidId: CustomValidator = async (blogId) => {
-    const foundBlogger: BlogViewModel | null = await blogsRepository.findBlogById(blogId)
-    if(!foundBlogger) {
-        return Promise.reject('blogId не валидный')
-    } else {
-        return true
     }
 }

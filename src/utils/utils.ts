@@ -27,7 +27,7 @@ export const getBlogViewModel = (blog: BlogDBType): BlogViewModel => {
         description: blog.description,
         websiteUrl: blog.websiteUrl,
         createdAt: blog.createdAt,
-        isMembership: false
+        isMembership: blog.isMembership
     }
 }
 // export const getPostsViewModel = (post: PostDBType): PostViewModel => {

@@ -72,6 +72,12 @@ export const postsRepository = {
             return null;
         }
     },
+
+    async findPostByName(postName: string) {
+        const foundPost = await PostModel.findOne({name: postName})
+        return foundPost
+    },
+
     async createPost(createdPost: Post): Promise<PostViewModel> {
         const postInstance = new PostModel()
 

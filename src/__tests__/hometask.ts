@@ -6,8 +6,16 @@ import {mongoURI} from "../repositories/db";
 import {usersRepository} from "../repositories/users-mongoose-repository";
 import {jwtServices} from "../application/jwt-service";
 import {blogsRepository} from "../repositories/blogs-mongoose-repository";
+const loginUser = async (): Promise<{accessToken: string}> => {
+    const response = await request(app)
+        .post('/auth/login')
+        .send({
+            "loginOrEmail": "Leha",
+            "password": "string"
+        })
 
-
+    return response.body
+}
 describe('Mongoose integration', () => {
 
     beforeAll(async () => {
@@ -16,6 +24,8 @@ describe('Mongoose integration', () => {
         // await request(app)
         //     .delete('/testing/all-data')
         //     .expect(HTTP_STATUSES.NO_CONTENT_204)
+        //const tokens = createSeverUsers()
+
     })
 
     afterAll(async () => {
@@ -42,6 +52,11 @@ describe('Mongoose integration', () => {
     })
 
     describe('/auth', () => {
+        let token
+        beforeAll(async () => {
+            token = await loginUser()
+            //clear All data
+        })
         it(`should\'nt create user with incorrect's input data`, async () => {
             await request(app)
                 .post('/auth/registration')
@@ -138,7 +153,7 @@ describe('Mongoose integration', () => {
             const user = await usersRepository.findUserByLoginOrEmail("Leha")
             const accessTokenByUserId = await jwtServices.createAccessJWT(user!._id.toString())
 
-            await request(app)
+           const response = await request(app)
                 .post('/auth/login')
                 .send({
                     "loginOrEmail": "Leha",
@@ -188,6 +203,28 @@ describe('Mongoose integration', () => {
                 .expect(HTTP_STATUSES.OK_200)
             expect(res_.body.items.length).toBe(1)
         })
+
+        it('should update blog with input data', async () => {
+            const foundBlog = await blogsRepository.findBlogByName("new blog")
+            await request(app)
+                .put(`/blogs/${foundBlog!._id}`)
+                .auth('admin', 'qwerty')
+                .send({
+                    "name": "new blog",
+                    "description": "description for new blog!",
+                    "websiteUrl": "https://www.youtube.com/"
+                })
+                .expect(HTTP_STATUSES.NO_CONTENT_204)
+        })
+
+        it('should return update date', async () => {
+            const foundBlog = await blogsRepository.findBlogByName("new blog")
+            const _res = await request(app)
+                .get(`/blogs/${foundBlog!._id}`)
+                .expect(HTTP_STATUSES.OK_200)
+                expect(_res.body.description).toBe("description for new blog!")
+
+        })
     })
 
 
@@ -203,6 +240,7 @@ describe('Mongoose integration', () => {
                     "shortDescription": "new description for post",
                     "content": "content for post",
                     "blogId": foundBlog!._id.toString()
+                    // "blogId": "123"
                 })
                 .expect(HTTP_STATUSES.CREATED_201)
         })

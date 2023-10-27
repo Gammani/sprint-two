@@ -26,7 +26,9 @@ export const postsService = {
     async findPostById(id: string): Promise<PostViewModel | null> {
         return await postsRepository.findPostById(id)
     },
-    async createPost(title: string, shortDescription: string, content: string, blogId: string): Promise<PostViewModel | null> {
+    async createPost(title: string, shortDescription: string, content: string, blogId: string): Promise<string | null> {
+        //const blog: Blog = blogRepo.getBlogById(blogId)
+        //subscriptionService.createSubscribe('auto subscribe')
         const foundBlogger: BlogViewModel | null = await blogService.findBlogById(blogId)
         if (foundBlogger) {
             const createdPost = new Post(
@@ -38,10 +40,13 @@ export const postsService = {
                 foundBlogger.name,
                 new Date().toISOString()
             )
-            return await postsRepository.createPost(createdPost)
+            const result = await postsRepository.createPost(createdPost)
+
+            return result.id
         }
         return null
     },
+
     async updatePost(postId: string, title: string, shortDescription: string, content: string, blogId: string): Promise<boolean> {
         return await postsRepository.updatePost(postId, title, shortDescription, content, blogId)
     },

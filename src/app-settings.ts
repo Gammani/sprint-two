@@ -2,13 +2,13 @@ import express, {Request, RequestHandler, Response} from 'express'
 import bodyParser from "body-parser";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import {blogsRouter} from "./routes/blogs-router";
-import {postsRouter} from "./routes/posts-router";
-import {usersRouter} from "./routes/users-router";
-import {authRouter} from "./routes/auth-router";
-import {commentsRouter} from "./routes/comments-router";
-import {securityDevicesRouter} from "./routes/security-devices-router";
-import {addressRouter} from "./routes/address";
+import {blogsRouter} from "./api/blogs-router";
+import {postsRouter} from "./api/posts-router";
+import {usersRouter} from "./api/users-router";
+import {authRouter} from "./api/auth-router";
+import {commentsRouter} from "./api/comments-router";
+import {securityDevicesRouter} from "./api/security-devices-router";
+import {addressRouter} from "./api/address";
 import {HTTP_STATUSES, removeAllDataBase} from "./utils/utils";
 
 export const app = express()

@@ -1,12 +1,11 @@
-import {Router, Request, Response} from "express";
+import {Response, Router} from "express";
 import {RequestWithParams, RequestWithParamsAndBody} from "../utils/types";
 import {URIParamsCommentComIdModel, URIParamsCommentIdModel} from "../models/URIParamsCommentIdModel";
 import {commentsService} from "../application/comments-service";
 import {HTTP_STATUSES} from "../utils/utils";
 import {authBearerMiddleware} from "../middlewares/auth-middleware";
 import {RequestCommentWithContent} from "../models/CreateCommentModel";
-import {body} from "express-validator";
-import {checkedValidation} from "../middlewares/requestValidatorWithExpressValidator";
+import {checkedValidation, commentValidation} from "../middlewares/requestValidatorWithExpressValidator";
 import {CommentViewModel} from "../models/CommentViewModel";
 
 export const commentsRouter = Router({})
@@ -20,13 +19,10 @@ commentsRouter.get('/:id', async (req: RequestWithParams<URIParamsCommentIdModel
     }
 })
 commentsRouter.put('/:commentId', authBearerMiddleware,
-    body('content').isString().trim().notEmpty().isLength({max: 300, min: 20}),
+    commentValidation,
     checkedValidation,
 
-
-    async (req: RequestWithParamsAndBody<URIParamsCommentComIdModel, RequestCommentWithContent>, res) => {
-
-
+    async (req: RequestWithParamsAndBody<URIParamsCommentComIdModel, RequestCommentWithContent>, res: Response) => {
         // console.log("req.user = ", +req.user!.userId)
         // console.log("idUserByComment?.commentatorInfo.userId = ", +idUserByComment!.commentatorInfo.userId)
         // console.log(+req.user!.userId === +idUserByComment!.commentatorInfo.userId)
