@@ -1,4 +1,4 @@
-export type QueryBloggersModel = {
+export type QueryBlogModel = {
     /**
      * This name should be included in searching for found Bloggers
      */
@@ -8,7 +8,7 @@ export type QueryBloggersModel = {
     sortBy: string
     sortDirection: string
 }
-export type QueryBloggersModelWithId = {
+export type QueryBlogModelWithId = {
     pageNumber: string
     pageSize: string
     sortBy: string

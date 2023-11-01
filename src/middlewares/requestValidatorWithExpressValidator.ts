@@ -1,7 +1,7 @@
 import {NextFunction, Request, Response} from "express";
 import {body, CustomValidator, validationResult} from "express-validator";
 import {ErrorsType} from "../utils/types";
-import {BlogViewModel} from "../models/BlogViewModel";
+import {BlogViewModel} from "../api/viewModels/BlogViewModel";
 import {HTTP_STATUSES} from "../utils/utils";
 import {jwtServices} from "../application/jwt-service";
 import {usersService} from "../application/users-service";

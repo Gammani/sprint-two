@@ -1,17 +1,16 @@
 import {Response, Router} from "express";
 import {
     RequestWithBody,
-    RequestWithParams,
-    RequestWithParamsAndBody,
+    RequestWithParams, RequestWithParamsAndBody,
     RequestWithParamsAndQuery,
     RequestWithQuery
-} from "../utils/types";
-import {QueryBloggersModel, QueryBloggersModelWithId} from "../models/QueryBloggersModel";
-import {BloggerWithPaginationViewModel, BlogViewModel} from "../models/BlogViewModel";
+} from "./inputModels/inputModels";
+import {QueryBlogModel, QueryBlogModelWithId} from "../models/QueryBlogModel";
+import {BloggerWithPaginationViewModel, BlogViewModel} from "./viewModels/BlogViewModel";
 import {HTTP_STATUSES} from "../utils/utils";
-import {URIParamsBloggerIdModel, URIParamsBlogIdModel} from "../models/URIParamsBloggerIdModel";
-import {CreateBloggerModel} from "../models/CreateBloggerModel";
-import {UpdateBloggerModel} from "../models/UpdateBloggerModel";
+import {URIParamsBlogIdModel, URIParamsIdModel} from "./inputModels/URIParamsBlogModel";
+import {CreateBlogModel} from "../models/CreateBlogModel";
+import {UpdateBlogModel} from "../models/UpdateBlogModel";
 import {authBasicMiddleware} from "../middlewares/auth-middleware";
 import {
     blogValidation,
@@ -19,18 +18,19 @@ import {
     createPostWithoutBlogIdValidation
 } from "../middlewares/requestValidatorWithExpressValidator";
 import {blogService} from "../application/blogs-service";
-import {blogsQueryDbRepository} from "../repositories/blogs-query-db-repository";
+import {blogsQueryMongooseRepository} from "../repositories/blogs-query-mongoose-repository";
 import {postsService} from "../application/posts-service";
 import {PostsWithPaginationViewModel, PostViewModel} from "../models/PostViewModel";
 import {CreatePostModelWithBlogId} from "../models/CreatePostModelWithBlogId";
 
 
+
 export const blogsRouter = Router({})
 
-blogsRouter.get('/', async (req: RequestWithQuery<QueryBloggersModel>, res: Response<BloggerWithPaginationViewModel>) => {
+blogsRouter.get('/', async (req: RequestWithQuery<QueryBlogModel>, res: Response<BloggerWithPaginationViewModel>) => {
 
     if (req.query.searchNameTerm) {
-        const foundBloggers: BloggerWithPaginationViewModel = await blogsQueryDbRepository.findBloggers(
+        const foundBloggers: BloggerWithPaginationViewModel = await blogsQueryMongooseRepository.findBloggers(
             req.query.searchNameTerm,
             req.query.pageNumber,
             req.query.pageSize,
@@ -48,7 +48,7 @@ blogsRouter.get('/', async (req: RequestWithQuery<QueryBloggersModel>, res: Resp
         res.status(HTTP_STATUSES.OK_200).send(foundBlogs)
     }
 })
-blogsRouter.get('/:id', async (req: RequestWithParams<URIParamsBloggerIdModel>, res: Response<BlogViewModel>) => {
+blogsRouter.get('/:id', async (req: RequestWithParams<URIParamsIdModel>, res: Response<BlogViewModel>) => {
     const foundBlog: BlogViewModel | null = await blogService.findBlogById(req.params.id)
     if (foundBlog) {
         res.send(foundBlog)
@@ -57,7 +57,7 @@ blogsRouter.get('/:id', async (req: RequestWithParams<URIParamsBloggerIdModel>, 
     }
 })
 
-blogsRouter.get('/:blogId/posts', async (req: RequestWithParamsAndQuery<URIParamsBlogIdModel, QueryBloggersModelWithId>, res: Response<PostsWithPaginationViewModel>) => {
+blogsRouter.get('/:blogId/posts', async (req: RequestWithParamsAndQuery<URIParamsBlogIdModel, QueryBlogModelWithId>, res: Response<PostsWithPaginationViewModel>) => {
     const foundBlog: BlogViewModel | null = await blogService.findBlogById(req.params.blogId!)
     if (foundBlog) {
         const foundPosts: PostsWithPaginationViewModel = await postsService.findPosts(
@@ -77,7 +77,7 @@ blogsRouter.post('/',
     authBasicMiddleware,
     blogValidation,
     checkedValidation,
-    async (req: RequestWithBody<CreateBloggerModel>, res: Response<BlogViewModel>) => {
+    async (req: RequestWithBody<CreateBlogModel>, res: Response<BlogViewModel>) => {
         const newBlog: BlogViewModel = await blogService.createBlog(req.body.name, req.body.description, req.body.websiteUrl)
         // const token: any = req.headers.authorization
         res.status(HTTP_STATUSES.CREATED_201).send(newBlog)
@@ -104,7 +104,7 @@ blogsRouter.put('/:id', authBasicMiddleware,
     blogValidation,
     checkedValidation,
 
-    async (req: RequestWithParamsAndBody<URIParamsBloggerIdModel, UpdateBloggerModel>, res: Response) => {
+    async (req: RequestWithParamsAndBody<URIParamsIdModel, UpdateBlogModel>, res: Response) => {
         const isUpdateBlogger: boolean = await blogService.updateBlog(req.params.id, req.body.description, req.body.name, req.body.websiteUrl)
         if (isUpdateBlogger) {
             res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
@@ -113,7 +113,7 @@ blogsRouter.put('/:id', authBasicMiddleware,
         }
     })
 
-blogsRouter.delete('/:id', authBasicMiddleware, async (req: RequestWithParams<URIParamsBloggerIdModel>, res: Response) => {
+blogsRouter.delete('/:id', authBasicMiddleware, async (req: RequestWithParams<URIParamsIdModel>, res: Response) => {
     const isDeleteBlogger: boolean = await blogService.deleteBlog(req.params.id)
     if (isDeleteBlogger) {
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)

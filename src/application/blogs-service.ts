@@ -1,4 +1,4 @@
-import {BlogViewModel, BloggerWithPaginationViewModel} from "../models/BlogViewModel";
+import {BlogViewModel, BloggerWithPaginationViewModel} from "../api/viewModels/BlogViewModel";
 import {blogsRepository} from "../repositories/blogs-mongoose-repository";
 import {Blog} from "../utils/types";
 import {ObjectId} from "mongodb";
@@ -19,7 +19,7 @@ export const blogService = {
             sortDirectionQuery)
     },
     // async findBloggersByQuery(name: string | null | undefined): Promise<BlogViewModel[]> {
-    //     return await blogsQueryDbRepository.findBloggers(name)
+    //     return await blogsQueryMongooseRepository.findBloggers(name)
     // },
     async findBlogById(id: string): Promise<BlogViewModel | null> {
         return await blogsRepository.findBlogById(id)

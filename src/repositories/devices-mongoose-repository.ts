@@ -1,5 +1,5 @@
 import {DeviceType} from "../utils/types";
-import {DeviceViewModel} from "../models/DeviceViewModel";
+import {DeviceViewModel} from "../api/viewModels/DeviceViewModel";
 import {DeviceModel} from "../mongo/device/device.model";
 
 export const devicesRepository = {

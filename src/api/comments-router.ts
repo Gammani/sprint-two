@@ -1,12 +1,12 @@
 import {Response, Router} from "express";
-import {RequestWithParams, RequestWithParamsAndBody} from "../utils/types";
-import {URIParamsCommentComIdModel, URIParamsCommentIdModel} from "../models/URIParamsCommentIdModel";
+import {RequestWithParams, RequestWithParamsAndBody} from "./inputModels/inputModels";
+import {URIParamsCommentComIdModel, URIParamsCommentIdModel} from "./inputModels/URIParamsCommentIdModel";
 import {commentsService} from "../application/comments-service";
 import {HTTP_STATUSES} from "../utils/utils";
 import {authBearerMiddleware} from "../middlewares/auth-middleware";
 import {RequestCommentWithContent} from "../models/CreateCommentModel";
 import {checkedValidation, commentValidation} from "../middlewares/requestValidatorWithExpressValidator";
-import {CommentViewModel} from "../models/CommentViewModel";
+import {CommentViewModel} from "./viewModels/CommentViewModel";
 
 export const commentsRouter = Router({})
 
@@ -29,10 +29,13 @@ commentsRouter.put('/:commentId', authBearerMiddleware,
         const foundComment: CommentViewModel | null = await commentsService.findCommentById(req.params.commentId)
         if (foundComment) {
             const idUserByComment = await commentsService.findCommentById(req.params.commentId)
-            if (+req.user!.userId === +idUserByComment!.commentatorInfo.userId) {
+            debugger
+            if (req.user!.userId === idUserByComment!.commentatorInfo.userId) {
+                debugger
                 const isUpdate: boolean = await commentsService.updateComment(req.params.commentId, req.body.content)
                 res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
             } else {
+                debugger
                 res.sendStatus(HTTP_STATUSES.FORBIDDEN_403)
             }
         } else {
@@ -47,7 +50,7 @@ commentsRouter.delete('/:commentId', authBearerMiddleware,
         const foundComment: CommentViewModel | null = await commentsService.findCommentById(req.params.commentId)
         if (foundComment) {
             const idUserByComment = await commentsService.findCommentById(req.params.commentId)
-            if (+req.user!.userId === +idUserByComment!.commentatorInfo.userId) {
+            if (req.user!.userId === idUserByComment!.commentatorInfo.userId) {
                 const isDeleteComment: boolean = await commentsService.deleteComment(req.params.commentId)
                 res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
             } else {

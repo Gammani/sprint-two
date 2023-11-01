@@ -1,5 +1,5 @@
 import {Request, Response, Router} from "express";
-import {DeviceType, RequestWithBody, UserTypeDbModel} from "../utils/types";
+import {DeviceType, UserTypeDbModel} from "../utils/types";
 import {CreateAuthModel} from "../models/CreateAuthModel";
 import {
     authLoginValidation,
@@ -16,11 +16,12 @@ import {usersService} from "../application/users-service";
 import {HTTP_STATUSES} from "../utils/utils";
 import {jwtServices} from "../application/jwt-service";
 import {authBearerMiddleware} from "../middlewares/auth-middleware";
-import {RequestUserViewModel, UserViewModel} from "../models/UserViewModel";
+import {RequestUserViewModel, UserViewModel} from "./viewModels/UserViewModel";
 import {CreateUserModel} from "../models/CreateUserModel";
 import {authService} from "../application/auth-service";
 import {securityDevicesService} from "../application/sequrity-devices-service";
 import {restrictionRequests} from "../middlewares/restriction-requests";
+import {RequestWithBody} from "./inputModels/inputModels";
 
 export const authRouter = Router({})
 

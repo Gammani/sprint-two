@@ -1,8 +1,8 @@
-import {UserWithPaginationViewModel} from "../models/UserViewModel"
+import {UserWithPaginationViewModel} from "../api/viewModels/UserViewModel"
 import {UserModel} from "../mongo/user/user.model";
 import {UserTypeDbModel} from "../utils/types";
 
-export const usersQueryDbRepository = {
+export const usersQueryMongooseRepository = {
     async findUsers(
         searchLoginTermQuery: string | undefined,
         searchEmailTermQuery: string | undefined,

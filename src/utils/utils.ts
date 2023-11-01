@@ -1,4 +1,4 @@
-import {BlogDBType, BlogViewModel} from "../models/BlogViewModel";
+import {BlogDBType, BlogViewModel} from "../api/viewModels/BlogViewModel";
 import {blogsRepository} from "../repositories/blogs-mongoose-repository";
 import {postsRepository} from "../repositories/posts-mongoose-repository";
 import {usersRepository} from "../repositories/users-mongoose-repository";

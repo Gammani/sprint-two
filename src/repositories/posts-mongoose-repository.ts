@@ -65,7 +65,7 @@ export const postsRepository = {
     },
 
     async findPostById(id: string): Promise<PostViewModel | null> {
-        const post: PostViewModel | null = await PostModel.findOne({id: id}, {projection: {_id: 0}})
+        const post: PostViewModel | null = await PostModel.findOne({_id: id})
         if (post) {
             return post;
         } else {
@@ -102,7 +102,7 @@ export const postsRepository = {
         }
     },
     async updatePost(postId: string, title: string, shortDescription: string, content: string, blogId: string): Promise<boolean> {
-        const result = await PostModel.updateOne({id: postId}, {
+        const result = await PostModel.updateOne({_id: postId}, {
             $set: {
                 title: title,
                 shortDescription: shortDescription,
@@ -114,7 +114,7 @@ export const postsRepository = {
 
     },
     async deletePost(id: string): Promise<boolean> {
-        const result = await PostModel.deleteOne({id: id})
+        const result = await PostModel.deleteOne({_id: id})
         return result.deletedCount === 1;
     },
     async deleteAll() {

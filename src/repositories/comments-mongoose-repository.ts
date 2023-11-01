@@ -1,4 +1,4 @@
-import {CommentsWithPaginationViewModel, CommentViewModel} from "../models/CommentViewModel";
+import {CommentsWithPaginationViewModel, CommentViewModel} from "../api/viewModels/CommentViewModel";
 import {CommentModel} from "../mongo/comment/comment.model";
 import {CommentType} from "../utils/types";
 
@@ -40,11 +40,7 @@ export const commentsRepository = {
         }
     },
     async findCommentById(id: string): Promise<CommentViewModel | null> {
-        const foundComment: CommentViewModel | null = await CommentModel.findOne({id: id}, {
-            projection: {
-                _postId: 0
-            }
-        })
+        const foundComment: CommentViewModel | null = await CommentModel.findOne({_id: id})
         if (foundComment) {
             return foundComment
         } else {
@@ -70,8 +66,16 @@ export const commentsRepository = {
             createdAt: result.createdAt
         }
     },
+    async findCommentByPostId(postId: string) {
+        const result = await CommentModel.findOne({_postId: postId})
+        return result
+    },
+    async findCommentByContent(content: string) {
+        const result = await CommentModel.findOne({content: content})
+        return result
+    },
     async updateComment(commentId: string, content: string): Promise<boolean> {
-        const result = await CommentModel.updateOne({id: commentId}, {
+        const result = await CommentModel.updateOne({_id: commentId}, {
             $set: {
                 content: content
             }
@@ -79,7 +83,7 @@ export const commentsRepository = {
         return result.matchedCount === 1
     },
     async deleteComment(id: string): Promise<boolean> {
-        const result = await CommentModel.deleteOne({id: id})
+        const result = await CommentModel.deleteOne({_id: id})
         return result.deletedCount === 1
     },
     async deleteAll() {

@@ -1,6 +1,6 @@
 
 import {DeviceType} from "../utils/types";
-import {DeviceViewModel} from "../models/DeviceViewModel";
+import {DeviceViewModel} from "../api/viewModels/DeviceViewModel";
 import {devicesRepository} from "../repositories/devices-mongoose-repository";
 
 export const securityDevicesService = {

@@ -2,14 +2,13 @@ import {Response, Router} from "express";
 import {
     RequestWithBody,
     RequestWithParams,
-    RequestWithParamsAndBody,
-    RequestWithParamsAndQuery,
+    RequestWithParamsAndBody, RequestWithParamsAndQuery,
     RequestWithQuery
-} from "../utils/types";
+} from "./inputModels/inputModels";
 import {QueryPostsModel} from "../models/QueryPostsModel";
 import {PostsWithPaginationViewModel, PostViewModel} from "../models/PostViewModel";
 import {HTTP_STATUSES} from "../utils/utils";
-import {URIParamsPostIdModel, URIParamsPostIdPostModel} from "../models/URIParamsPostIdModel";
+import {URIParamsPostIdModel, URIParamsPostIdPostModel} from "./inputModels/URIParamsPostIdModel";
 import {CreatePostModel} from "../models/CreatePostModel";
 import {UpdatePostModel} from "../models/UpdatePostModel";
 import {authBasicMiddleware, authBearerMiddleware} from "../middlewares/auth-middleware";
@@ -20,7 +19,7 @@ import {
 } from "../middlewares/requestValidatorWithExpressValidator";
 import {postsService} from "../application/posts-service";
 import {QueryCommentsModel} from "../models/QueryCommentsModel";
-import {CommentsWithPaginationViewModel, CommentViewModel} from "../models/CommentViewModel";
+import {CommentsWithPaginationViewModel, CommentViewModel} from "./viewModels/CommentViewModel";
 import {commentsService} from "../application/comments-service";
 import {RequestCommentWithContent} from "../models/CreateCommentModel";
 
@@ -57,10 +56,11 @@ postsRouter.post('/', authBasicMiddleware,
     postValidation,
     checkedValidation,
     async (req: RequestWithBody<CreatePostModel>, res: Response<PostViewModel>) => {
-        const newPostId: string | null = await postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, req.body.blogId)
-        if (newPostId) {
-            const newPost: PostViewModel = postQueryRepo.getPostById(newPostId)
-            res.status(HTTP_STATUSES.CREATED_201).send(newPostId)
+        // const newPostId: string | null = await postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, req.body.blogId)
+        const newPost: PostViewModel | null = await postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, req.body.blogId)
+        if (newPost) {
+            // const newPost: PostViewModel = postQueryRepo.getPostById(newPostId)
+            res.status(HTTP_STATUSES.CREATED_201).send(newPost)
         } else {
             res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
         }

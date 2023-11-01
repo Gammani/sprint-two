@@ -1,7 +1,7 @@
-import {BloggerWithPaginationViewModel} from "../models/BlogViewModel";
+import {BloggerWithPaginationViewModel} from "../api/viewModels/BlogViewModel";
 import {BlogModel} from "../mongo/blog/blog.model";
 
-export const blogsQueryDbRepository = {
+export const blogsQueryMongooseRepository = {
     async findBloggers(
         searchNameTermQuery: string | undefined,
         pageNumberQuery: string,

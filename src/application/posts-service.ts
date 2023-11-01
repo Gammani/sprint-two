@@ -1,5 +1,5 @@
 import {PostsWithPaginationViewModel, PostViewModel} from "../models/PostViewModel";
-import {BlogViewModel} from "../models/BlogViewModel";
+import {BlogViewModel} from "../api/viewModels/BlogViewModel";
 import {blogService} from "./blogs-service";
 import {Post} from "../utils/types";
 import {postsRepository} from "../repositories/posts-mongoose-repository";
@@ -26,7 +26,7 @@ export const postsService = {
     async findPostById(id: string): Promise<PostViewModel | null> {
         return await postsRepository.findPostById(id)
     },
-    async createPost(title: string, shortDescription: string, content: string, blogId: string): Promise<string | null> {
+    async createPost(title: string, shortDescription: string, content: string, blogId: string): Promise<PostViewModel | null> {
         //const blog: Blog = blogRepo.getBlogById(blogId)
         //subscriptionService.createSubscribe('auto subscribe')
         const foundBlogger: BlogViewModel | null = await blogService.findBlogById(blogId)
@@ -42,7 +42,8 @@ export const postsService = {
             )
             const result = await postsRepository.createPost(createdPost)
 
-            return result.id
+            // return result.id
+            return result
         }
         return null
     },

@@ -1,13 +1,6 @@
 import {Request} from 'express'
 import {ObjectId, WithId} from "mongodb";
 
-export type RequestWithBody<T> = Request<{}, {}, T>
-export type RequestWithQuery<T> = Request<{}, {}, {}, T>
-export type RequestWithParams<T> = Request<T>
-export type RequestWithParamsAndQuery<T, Y> = Request<T, {}, {}, Y>
-export type RequestWithParamsAndBody<T, Y> = Request<T, {}, Y>
-
-
 // export type BlogType = {
 //     name: string
 //     description: string
@@ -27,14 +20,15 @@ export class Blog {
     }
 }
 
-// export type PostType = {
-//     title: string
-//     shortDescription: string
-//     content: string
-//     blogId: string
-//     blogName: string
-//     createdAt: string
-// }
+export type PostDbType = {
+    _id: string
+    title: string
+    shortDescription: string
+    content: string
+    blogId: string
+    blogName: string
+    createdAt: string
+}
 
 export class Post {
     constructor(

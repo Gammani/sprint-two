@@ -1,15 +1,15 @@
 import {Response, Router} from "express";
 import {authBasicMiddleware} from "../middlewares/auth-middleware";
-import {RequestWithBody, RequestWithParams, RequestWithQuery} from "../utils/types";
 import {QueryUsersModel} from "../models/QueryUsersModel";
-import {UserViewModel, UserWithPaginationViewModel} from "../models/UserViewModel";
+import {UserViewModel, UserWithPaginationViewModel} from "./viewModels/UserViewModel";
 import {HTTP_STATUSES} from "../utils/utils";
-import {usersQueryDbRepository} from "../repositories/users-query-db-repository";
+import {usersQueryMongooseRepository} from "../repositories/users-query-mongoose-repository";
 import {usersService} from "../application/users-service";
 import {CreateUserModel} from "../models/CreateUserModel";
 import {body} from "express-validator";
 import {checkedValidation} from "../middlewares/requestValidatorWithExpressValidator";
-import {URIParamsUserIdModel} from "../models/URIParamsUserIdModel";
+import {URIParamsUserIdModel} from "./inputModels/URIParamsUserIdModel";
+import {RequestWithBody, RequestWithParams, RequestWithQuery} from "./inputModels/inputModels";
 
 export const usersRouter = Router({})
 
@@ -18,7 +18,7 @@ usersRouter.get('/', authBasicMiddleware,
         console.log('get users')
         if (req.query.searchEmailTerm || req.query.searchLoginTerm) {
             console.log('query')
-            const foundUsers: UserWithPaginationViewModel = await usersQueryDbRepository.findUsers(
+            const foundUsers: UserWithPaginationViewModel = await usersQueryMongooseRepository.findUsers(
                 req.query.searchLoginTerm,
                 req.query.searchEmailTerm,
                 req.query.pageNumber,

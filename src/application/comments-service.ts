@@ -1,5 +1,5 @@
-import {RequestUserViewModel} from "../models/UserViewModel";
-import {CommentDbViewModel, CommentsWithPaginationViewModel, CommentViewModel} from "../models/CommentViewModel";
+import {RequestUserViewModel} from "../api/viewModels/UserViewModel";
+import {CommentDbViewModel, CommentsWithPaginationViewModel, CommentViewModel} from "../api/viewModels/CommentViewModel";
 import {PostViewModel} from "../models/PostViewModel";
 import {postsService} from "./posts-service";
 import {commentsRepository} from "../repositories/comments-mongoose-repository";

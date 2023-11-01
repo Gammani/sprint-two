@@ -1,4 +1,4 @@
-import {UserViewModel, UserWithPaginationViewModel} from "../models/UserViewModel";
+import {UserViewModel, UserWithPaginationViewModel} from "../api/viewModels/UserViewModel";
 import {User, UserTypeDbModel} from "../utils/types";
 import {UserModel} from "../mongo/user/user.model";
 

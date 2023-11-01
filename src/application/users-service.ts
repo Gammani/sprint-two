@@ -1,4 +1,4 @@
-import {UserViewModel, UserWithPaginationViewModel} from "../models/UserViewModel";
+import {UserViewModel, UserWithPaginationViewModel} from "../api/viewModels/UserViewModel";
 import bcrypt from 'bcrypt'
 import {v4 as uuidv4} from "uuid";
 import add from "date-fns/add";

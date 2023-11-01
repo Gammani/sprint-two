@@ -1,4 +1,4 @@
-import {BlogDBType, BloggerWithPaginationViewModel, BlogViewModel} from "../models/BlogViewModel";
+import {BlogDBType, BloggerWithPaginationViewModel, BlogViewModel} from "../api/viewModels/BlogViewModel";
 import {BlogModel} from "../mongo/blog/blog.model";
 import {Blog} from "../utils/types";
 import {getBlogViewModel} from "../utils/utils";

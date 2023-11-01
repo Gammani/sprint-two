@@ -1,4 +1,4 @@
-export type URIParamsBloggerIdModel = {
+export type URIParamsIdModel = {
     /**
      * id of existing blogger
      */

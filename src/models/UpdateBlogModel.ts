@@ -1,4 +1,4 @@
-export type UpdateBloggerModel = {
+export type UpdateBlogModel = {
     name: string
     description: string
     websiteUrl: string

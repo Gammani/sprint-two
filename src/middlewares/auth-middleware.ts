@@ -3,7 +3,7 @@ import {Buffer} from "buffer";
 import {HTTP_STATUSES} from "../utils/utils";
 import {jwtServices} from "../application/jwt-service";
 import {usersService} from "../application/users-service";
-import {RequestUserViewModel} from "../models/UserViewModel";
+import {RequestUserViewModel} from "../api/viewModels/UserViewModel";
 
 // local?
 // export interface userByRequest extends Request {
@@ -58,7 +58,7 @@ debugger
         req.user = {
             email: foundUser!.accountData.email,
             login: foundUser!.accountData.login,
-            userId: foundUser!._id
+            userId: foundUser!._id.toString()
         }
         next()
     } else {
