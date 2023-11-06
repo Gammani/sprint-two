@@ -1,5 +1,5 @@
 import {Request, Response, Router} from "express";
-import {DeviceDbType, UserTypeDbModel} from "../utils/types";
+import {UserTypeDbModel} from "../utils/types";
 import {CreateAuthModel} from "../models/CreateAuthModel";
 import {
     authLoginValidation,
@@ -26,17 +26,13 @@ import {DeviceViewModel} from "./viewModels/DeviceViewModel";
 
 export const authRouter = Router({})
 
-authRouter.post('/login',
-    authLoginValidation,
-    restrictionRequests,
-    checkedValidation,
-
-    async (req: RequestWithBody<CreateAuthModel>, res: Response) => {
+class AuthController {
+    async login(req: RequestWithBody<CreateAuthModel>, res: Response) {
         debugger
 
         const user: UserTypeDbModel | null = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
         if (user) {
-            const device: DeviceViewModel = await securityDevicesService.addDevice(user._id, req.ip, req.headers['user-agent'] || "user-agent unknown", )
+            const device: DeviceViewModel = await securityDevicesService.addDevice(user._id, req.ip, req.headers['user-agent'] || "user-agent unknown",)
 
             debugger
             const accessToken = await jwtServices.createAccessJWT(user._id.toString())
@@ -49,40 +45,20 @@ authRouter.post('/login',
         } else {
             res.sendStatus(HTTP_STATUSES.NO_UNAUTHORIZED_401)
         }
-    })
+    }
 
-authRouter.post('/registration',
-    authRegistrationValidation,
-    restrictionRequests,
-    checkedValidation,
-    checkedExistsForLoginOrEmail,
-
-
-    async (req: RequestWithBody<CreateUserModel>, res: Response) => {
+    async registration(req: RequestWithBody<CreateUserModel>, res: Response) {
         const newUser: UserViewModel | null = await usersService.createUser(req.body.login, req.body.email, req.body.password)
 
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
-    })
+    }
 
-
-authRouter.post('/password-recovery',
-    authRegistrationEmailResendingValidation,
-    restrictionRequests,
-    checkedValidation,
-
-
-    async (req: RequestWithBody<{ email: string }>, res: Response) => {
+    async passwordRecovery(req: RequestWithBody<{ email: string }>, res: Response) {
         await authService.passwordRecovery(req.body.email)
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
-    })
+    }
 
-authRouter.post('/registration-confirmation',
-    authRegistrationConfirmationValidation,
-    restrictionRequests,
-    checkedValidation,
-
-
-    async (req: RequestWithBody<{ code: string }>, res: Response) => {
+    async registrationConfirmation(req: RequestWithBody<{ code: string }>, res: Response) {
         const result = await authService.confirmEmail(req.body.code)
         if (result) {
             res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
@@ -96,25 +72,15 @@ authRouter.post('/registration-confirmation',
                 ]
             })
         }
-    })
-authRouter.post('/')
+    }
 
-authRouter.post('/registration-email-resending',
-    authRegistrationEmailResendingValidation,
-    restrictionRequests,
-    checkedValidation,
-    checkedConfirmedEmail,
-
-    async (req: RequestWithBody<{ email: string }>, res: Response) => {
+    async registrationEmailResending(req: RequestWithBody<{ email: string }>, res: Response) {
 
         const result = await authService.resendCode(req.body.email)
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
-    })
+    }
 
-authRouter.post('/refresh-token',
-    checkAndUpdateRefreshToken,
-
-    async (req: Request, res: Response) => {
+    async refreshToken(req: Request, res: Response) {
         debugger
         const user = req.user
         if (user) {
@@ -127,26 +93,19 @@ authRouter.post('/refresh-token',
 
             res.status(HTTP_STATUSES.OK_200).send({accessToken: accessToken})
         }
-    })
-authRouter.post('/logout',
-    checkAndUpdateRefreshToken,
+    }
 
-    async (req: Request, res: Response) => {
+    async logout(req: Request, res: Response) {
         await securityDevicesService.deleteCurrentSessionById(req.user!.deviceId!)
         res.cookie('refreshToken', "", {httpOnly: false, secure: false})   // local
         // res.cookie('refreshToken', "", {httpOnly: true, secure: true})
         res.send(HTTP_STATUSES.NO_CONTENT_204)
-    })
+    }
 
-authRouter.post('/new-password',
-    authNewPasswordValidation,
-    restrictionRequests,
-    checkedValidation,
-
-    async (req: RequestWithBody<{ newPassword: string, recoveryCode: string }>, res: Response) => {
+    async newPassword(req: RequestWithBody<{ newPassword: string, recoveryCode: string }>, res: Response) {
         debugger
         const foundUser = await usersService.findUserByRecoveryCode(req.body.recoveryCode)
-        if(foundUser) {
+        if (foundUser) {
             const result = await usersService.updatePassword(req.body.newPassword, req.body.recoveryCode)
             res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
         } else {
@@ -160,12 +119,207 @@ authRouter.post('/new-password',
             })
         }
 
-    })
+    }
 
-authRouter.get('/me',
-    authBearerMiddleware,
-
-    async (req: RequestWithBody<RequestUserViewModel>, res: Response) => {
+    async me(req: RequestWithBody<RequestUserViewModel>, res: Response) {
         const foundUser = req.user
         res.send(foundUser)
-    })
+    }
+}
+
+const authController = new AuthController()
+
+authRouter.post('/login',
+    authLoginValidation,
+    restrictionRequests,
+    checkedValidation,
+    authController.login
+)
+authRouter.post('/registration',
+    authRegistrationValidation,
+    restrictionRequests,
+    checkedValidation,
+    checkedExistsForLoginOrEmail,
+    authController.registration
+)
+authRouter.post('/password-recovery',
+    authRegistrationEmailResendingValidation,
+    restrictionRequests,
+    checkedValidation,
+    authController.passwordRecovery
+)
+authRouter.post('/registration-confirmation',
+    authRegistrationConfirmationValidation,
+    restrictionRequests,
+    checkedValidation,
+    authController.registrationConfirmation
+)
+authRouter.post('/registration-email-resending',
+    authRegistrationEmailResendingValidation,
+    restrictionRequests,
+    checkedValidation,
+    checkedConfirmedEmail,
+    authController.registrationEmailResending
+)
+authRouter.post('/refresh-token',
+    checkAndUpdateRefreshToken,
+    authController.refreshToken
+)
+authRouter.post('/logout',
+    checkAndUpdateRefreshToken,
+    authController.logout
+)
+authRouter.post('/new-password',
+    authNewPasswordValidation,
+    restrictionRequests,
+    checkedValidation,
+    authController.newPassword
+)
+authRouter.get('/me',
+    authBearerMiddleware,
+    authController.me
+)
+
+
+// authRouter.post('/login',
+//     authLoginValidation,
+//     restrictionRequests,
+//     checkedValidation,
+//
+//     async (req: RequestWithBody<CreateAuthModel>, res: Response) => {
+//         debugger
+//
+//         const user: UserTypeDbModel | null = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
+//         if (user) {
+//             const device: DeviceViewModel = await securityDevicesService.addDevice(user._id, req.ip, req.headers['user-agent'] || "user-agent unknown",)
+//
+//             debugger
+//             const accessToken = await jwtServices.createAccessJWT(user._id.toString())
+//             const refreshToken = await jwtServices.createRefreshJWT(device.deviceId)
+//
+//             res.cookie('refreshToken', refreshToken, {httpOnly: false, secure: false})  // local
+//             // res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true})
+//
+//             res.status(HTTP_STATUSES.OK_200).send({accessToken: accessToken})
+//         } else {
+//             res.sendStatus(HTTP_STATUSES.NO_UNAUTHORIZED_401)
+//         }
+//     })
+
+// authRouter.post('/registration',
+//     authRegistrationValidation,
+//     restrictionRequests,
+//     checkedValidation,
+//     checkedExistsForLoginOrEmail,
+//
+//
+//     async (req: RequestWithBody<CreateUserModel>, res: Response) => {
+//         const newUser: UserViewModel | null = await usersService.createUser(req.body.login, req.body.email, req.body.password)
+//
+//         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+//     })
+
+
+// authRouter.post('/password-recovery',
+//     authRegistrationEmailResendingValidation,
+//     restrictionRequests,
+//     checkedValidation,
+//
+//
+//     async (req: RequestWithBody<{ email: string }>, res: Response) => {
+//         await authService.passwordRecovery(req.body.email)
+//         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+//     })
+
+// authRouter.post('/registration-confirmation',
+//     authRegistrationConfirmationValidation,
+//     restrictionRequests,
+//     checkedValidation,
+//
+//
+//     async (req: RequestWithBody<{ code: string }>, res: Response) => {
+//         const result = await authService.confirmEmail(req.body.code)
+//         if (result) {
+//             res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+//         } else {
+//             res.status(HTTP_STATUSES.BAD_REQUEST_400).send({
+//                 "errorsMessages": [
+//                     {
+//                         "message": "не валидное поле code",
+//                         "field": "code"
+//                     }
+//                 ]
+//             })
+//         }
+//     })
+
+// authRouter.post('/registration-email-resending',
+//     authRegistrationEmailResendingValidation,
+//     restrictionRequests,
+//     checkedValidation,
+//     checkedConfirmedEmail,
+//
+//     async (req: RequestWithBody<{ email: string }>, res: Response) => {
+//
+//         const result = await authService.resendCode(req.body.email)
+//         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+//     })
+
+// authRouter.post('/refresh-token',
+//     checkAndUpdateRefreshToken,
+//
+//     async (req: Request, res: Response) => {
+//         debugger
+//         const user = req.user
+//         if (user) {
+//             debugger
+//             const accessToken = await jwtServices.createAccessJWT(user.userId)
+//             const refreshToken = await jwtServices.createRefreshJWT(user.deviceId!)
+//
+//             res.cookie('refreshToken', refreshToken, {httpOnly: false, secure: false}) // local
+//             // res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true})
+//
+//             res.status(HTTP_STATUSES.OK_200).send({accessToken: accessToken})
+//         }
+//     })
+// authRouter.post('/logout',
+//     checkAndUpdateRefreshToken,
+//
+//     async (req: Request, res: Response) => {
+//         await securityDevicesService.deleteCurrentSessionById(req.user!.deviceId!)
+//         res.cookie('refreshToken', "", {httpOnly: false, secure: false})   // local
+//         // res.cookie('refreshToken', "", {httpOnly: true, secure: true})
+//         res.send(HTTP_STATUSES.NO_CONTENT_204)
+//     })
+
+// authRouter.post('/new-password',
+//     authNewPasswordValidation,
+//     restrictionRequests,
+//     checkedValidation,
+//
+//     async (req: RequestWithBody<{ newPassword: string, recoveryCode: string }>, res: Response) => {
+//         debugger
+//         const foundUser = await usersService.findUserByRecoveryCode(req.body.recoveryCode)
+//         if (foundUser) {
+//             const result = await usersService.updatePassword(req.body.newPassword, req.body.recoveryCode)
+//             res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+//         } else {
+//             res.status(HTTP_STATUSES.BAD_REQUEST_400).send({
+//                 "errorsMessages": [
+//                     {
+//                         "message": "не валидное поле recoveryCode",
+//                         "field": "recoveryCode"
+//                     }
+//                 ]
+//             })
+//         }
+//
+//     })
+
+// authRouter.get('/me',
+//     authBearerMiddleware,
+//
+//     async (req: RequestWithBody<RequestUserViewModel>, res: Response) => {
+//         const foundUser = req.user
+//         res.send(foundUser)
+//     })
