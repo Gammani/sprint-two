@@ -126,14 +126,14 @@ export const checkAndUpdateRefreshToken = async (req: Request, res: Response, ne
     }
     debugger
 
-    if(await expiredTokensRepository.findToken(req.cookies.refreshToken)) {
+    const expiredToken = await expiredTokensRepository.findToken(req.cookies.refreshToken)
+    if(expiredToken) {
         res.sendStatus(HTTP_STATUSES.NO_UNAUTHORIZED_401)
         return
     }
     debugger
-    const token = req.cookies.refreshToken
-    console.log("token = ", token)
-    // jwt.verify(token, settings.JWT_SECRET, function(err: any, decoded: any) {
+    const refreshToken = req.cookies.refreshToken
+    // jwt.verify(refreshToken, settings.JWT_SECRET, function(err: any, decoded: any) {
     //     if (err) {
     //         /*
     //           err = {
@@ -145,21 +145,20 @@ export const checkAndUpdateRefreshToken = async (req: Request, res: Response, ne
     //     }
     // });
 debugger
-    const isExpiredToken = await expiredTokensRepository.isExpiredToken(token)
+    const isExpiredToken = await expiredTokensRepository.isExpiredToken(refreshToken)
     if(isExpiredToken) {
         res.sendStatus(HTTP_STATUSES.NO_UNAUTHORIZED_401)
         return
     }
     debugger
-    const deviceId: string | null = await jwtServices.getDeviceIdByRefreshToken(token)
+    const deviceId: string | null = await jwtServices.getDeviceIdByRefreshToken(refreshToken)
     if(deviceId) {
         debugger
         // const UserId: string | undefined = await securityDevicesService.findUserIdByDeviceId(deviceId)
         const foundUser = await usersService.findUserByDeviceId(deviceId)
         await securityDevicesService.findAndUpdateDeviceAfterRefresh(deviceId)
         debugger
-        expiredTokensRepository.addTokenToDB(foundUser!._id.toString(), token)
-        console.log(foundUser)
+        expiredTokensRepository.addTokenToDB(foundUser!._id.toString(), refreshToken)
         req.user = {
             email: foundUser!.accountData.email,
             login: foundUser!.accountData.login,
@@ -190,16 +189,15 @@ export const checkAndRemoveRefreshTokenById = async (req: Request, res: Response
         return
     }
     debugger
-    const token = req.cookies.refreshToken
-    console.log("token = ", token)
+    const refreshToken = req.cookies.refreshToken
     debugger
-    const isExpiredToken = await expiredTokensRepository.isExpiredToken(token)
+    const isExpiredToken = await expiredTokensRepository.isExpiredToken(refreshToken)
     if(isExpiredToken) {
         res.sendStatus(HTTP_STATUSES.NO_UNAUTHORIZED_401)
         return
     }
     debugger
-    const deviceId: string | null = await jwtServices.getDeviceIdByRefreshToken(token)
+    const deviceId: string | null = await jwtServices.getDeviceIdByRefreshToken(refreshToken)
     // if(deviceId !== req.params.deviceId) {
     //     res.sendStatus(HTTP_STATUSES.FORBIDDEN_403)
     //     return
@@ -216,7 +214,7 @@ export const checkAndRemoveRefreshTokenById = async (req: Request, res: Response
             // токен который указан в id
 
             if(isFoundDeviceFromUserId) {
-                // expiredTokensRepository.addTokenToDB(foundUser.accountData.id, token) КОММЕНТ
+                // expiredTokensRepository.addTokenToDB(foundUser.accountData.id, refreshToken) КОММЕНТ
                 console.log(foundUser)
                 req.user = {
                     email: foundUser.accountData.email,

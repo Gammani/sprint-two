@@ -1,8 +1,7 @@
 import mongoose from 'mongoose'
-import {WithId} from 'mongodb'
-import {Blog} from '../../utils/types'
+import {BlogDBType} from '../../utils/types'
 
-export const BlogSchema = new mongoose.Schema<WithId<Blog>>({
+export const BlogSchema = new mongoose.Schema<BlogDBType>({
     name: {type: String, required: true},
     description: {type: String, required: true},
     websiteUrl: {type: String, required: true},
@@ -10,4 +9,4 @@ export const BlogSchema = new mongoose.Schema<WithId<Blog>>({
     isMembership: {type: Boolean, required: true}
 })
 
-export const BlogModel = mongoose.model<Blog>('blog', BlogSchema)
+export const BlogModel = mongoose.model<BlogDBType>('blog', BlogSchema)

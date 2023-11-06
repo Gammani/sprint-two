@@ -25,12 +25,10 @@ export const usersRepository = {
             .limit(pageSize)
             .lean()
         // const items = await UserModel.find().lean()
-
-        console.log('items', items)
         // const totalCount = await usersCollection.find({}).count({})
+
         const totalCount = await UserModel.countDocuments({})
         const pageCount = Math.ceil(totalCount / pageSize)
-        console.log(items)
 
         debugger
 
@@ -100,8 +98,11 @@ export const usersRepository = {
 
 
     async findUserByConfirmationCode(confirmationCode: string) {
+        debugger
+        console.log("confirmationCode = ", confirmationCode)
         const user = await UserModel.findOne({"emailConfirmation.confirmationCode": confirmationCode})
         // const user = await usersCollection.findOne({$or: [{"emailConfirmation.email": email}, {"emailConfirmation.email": email}]})
+        console.log('user = ', user)
         return user
     },
     async updateConfirmation(_id: string) {

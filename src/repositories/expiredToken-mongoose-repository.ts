@@ -8,14 +8,14 @@ export const expiredTokensRepository = {
         const expiredTokenInstance = new ExpiredTokenModel({})
 
         expiredTokenInstance.userId = userId
-        expiredTokenInstance.token = token
+        expiredTokenInstance.refreshToken = token
         await expiredTokenInstance.save()
 
         return
     },
     async findToken(token: string): Promise<ExpiredTokenType | null> {
         debugger
-        return await ExpiredTokenModel.findOne({token: token})
+        return await ExpiredTokenModel.findOne({refreshToken: token})
     },
     async isExpiredToken(token: string): Promise<boolean> {
         debugger

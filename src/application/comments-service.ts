@@ -1,9 +1,10 @@
 import {RequestUserViewModel} from "../api/viewModels/UserViewModel";
-import {CommentDbViewModel, CommentsWithPaginationViewModel, CommentViewModel} from "../api/viewModels/CommentViewModel";
+import {CommentsWithPaginationViewModel, CommentViewModel} from "../api/viewModels/CommentViewModel";
 import {PostViewModel} from "../models/PostViewModel";
 import {postsService} from "./posts-service";
 import {commentsRepository} from "../repositories/comments-mongoose-repository";
-import {CommentDBType, CommentType} from "../utils/types";
+import {CommentDBType} from "../utils/types";
+import {ObjectId} from "mongodb";
 
 export const commentsService = {
     async findComments(
@@ -27,7 +28,8 @@ export const commentsService = {
     async createComment(content: string, user: RequestUserViewModel | undefined | null, postId: string): Promise<CommentViewModel | null> {
         const foundPost: PostViewModel | null = await postsService.findPostById(postId)
         if(foundPost) {
-            const createdComment: CommentType = {
+            const createdComment: CommentDBType = {
+                _id: new ObjectId,
                 content: content,
                 commentatorInfo: {
                     userId: user!.userId,

@@ -1,4 +1,4 @@
-import {BlogDBType, BlogViewModel} from "../api/viewModels/BlogViewModel";
+import {BlogViewModel} from "../api/viewModels/BlogViewModel";
 import {blogsRepository} from "../repositories/blogs-mongoose-repository";
 import {postsRepository} from "../repositories/posts-mongoose-repository";
 import {usersRepository} from "../repositories/users-mongoose-repository";
@@ -6,6 +6,7 @@ import {commentsRepository} from "../repositories/comments-mongoose-repository";
 import {requestForApiRepository} from "../repositories/requestForApi-mongoose-repository";
 import {expiredTokensRepository} from "../repositories/expiredToken-mongoose-repository";
 import {devicesRepository} from "../repositories/devices-mongoose-repository";
+import {BlogDBType} from "./types";
 
 
 export const HTTP_STATUSES = {

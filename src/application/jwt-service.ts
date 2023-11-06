@@ -25,7 +25,6 @@ export const jwtServices = {
     async getUserIdByAccessToken(token: string) {
         try {
             const result: any = await jwt.verify(token, settings.JWT_SECRET)
-            console.log("result = ", result)
             return result
         } catch (error: any) {
             debugger
@@ -37,7 +36,6 @@ export const jwtServices = {
         try {
             debugger
             const result: any = await jwt.verify(token, settings.JWT_SECRET)
-            console.log("result = ", result)
             const userId: any = await securityDevicesService.findUserIdByDeviceId(result.deviceId)
             return userId
         } catch (error: any) {
@@ -50,7 +48,6 @@ export const jwtServices = {
         try {
             debugger
             const result = await jwt.verify(token, settings.JWT_SECRET) as JwtPayload
-            console.log("is result = ", result)
             //const user: any = await securityDevicesService.findUserByDeviceId(result.deviceId)
             //return user.userId
             return result.deviceId

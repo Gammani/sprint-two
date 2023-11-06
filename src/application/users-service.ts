@@ -26,12 +26,7 @@ export const usersService = {
     },
     async findUserById(userId: string): Promise<UserTypeDbModel | null> {
         debugger
-        const user: UserTypeDbModel | null = await UserModel.findOne({'_id': userId}, {
-            projection: {
-                _id: 0,
-                blackListRefreshTokens: 0
-            }
-        })
+        const user: UserTypeDbModel | null = await UserModel.findOne({'_id': userId})
         if (user) {
             return user
         } else {
@@ -72,7 +67,7 @@ export const usersService = {
                         hours: 1,
                         minutes: 3
                     }
-                ).toString(),
+                ),
                 isConfirmed: false
             }
         )
@@ -109,7 +104,7 @@ export const usersService = {
                         hours: 1,
                         minutes: 3
                     }
-                ).toString(),
+                ),
                 isConfirmed: true
             }
         )

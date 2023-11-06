@@ -1,11 +1,18 @@
-
-import {DeviceType} from "../utils/types";
 import {DeviceViewModel} from "../api/viewModels/DeviceViewModel";
 import {devicesRepository} from "../repositories/devices-mongoose-repository";
+import {ObjectId} from "mongodb";
+import {Device} from "../utils/types";
 
 export const securityDevicesService = {
-    async addDevice(device: DeviceType): Promise<DeviceViewModel> {
-        return await devicesRepository.addDevice(device)
+    async addDevice(userId: ObjectId, ip: string, headerTitle: string): Promise<DeviceViewModel> {
+        const createDevice = new Device(
+            new ObjectId,
+            userId.toString(),
+            ip,
+            headerTitle,
+            new Date(),)
+        const result =  await devicesRepository.addDevice(createDevice)
+        return result
     },
     async findDeviceByDeviceId(deviceId: string) {
         return await devicesRepository.findDeviceByDeviceId(deviceId)

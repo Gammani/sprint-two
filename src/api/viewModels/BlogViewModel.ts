@@ -1,5 +1,3 @@
-import {WithId} from "mongodb";
-
 export type BlogViewModel = {
     id: string
     name: string
@@ -8,13 +6,6 @@ export type BlogViewModel = {
     createdAt: string
     isMembership: boolean
 }
-export type BlogDBType = WithId<{
-    name: string
-    description: string
-    websiteUrl: string
-    createdAt: string
-    isMembership: boolean
-}>
 
 export type BloggerWithPaginationViewModel = {
     pagesCount: number

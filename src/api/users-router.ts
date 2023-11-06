@@ -15,9 +15,7 @@ export const usersRouter = Router({})
 
 usersRouter.get('/', authBasicMiddleware,
     async (req: RequestWithQuery<QueryUsersModel>, res: Response<UserWithPaginationViewModel>) => {
-        console.log('get users')
         if (req.query.searchEmailTerm || req.query.searchLoginTerm) {
-            console.log('query')
             const foundUsers: UserWithPaginationViewModel = await usersQueryMongooseRepository.findUsers(
                 req.query.searchLoginTerm,
                 req.query.searchEmailTerm,
@@ -28,7 +26,6 @@ usersRouter.get('/', authBasicMiddleware,
             )
             res.status(HTTP_STATUSES.OK_200).send(foundUsers)
         } else {
-            console.log('simple')
             const foundUsers: UserWithPaginationViewModel = await usersService.findUsers(
                 req.query.pageNumber,
                 req.query.pageSize,

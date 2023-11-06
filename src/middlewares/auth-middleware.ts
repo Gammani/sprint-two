@@ -53,7 +53,6 @@ debugger
     if(user) {
         debugger
         const foundUser: any = await usersService.findUserById(user.userId)
-        console.log(foundUser)
         debugger
         req.user = {
             email: foundUser!.accountData.email,

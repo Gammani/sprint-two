@@ -1,6 +1,7 @@
 import {CommentsWithPaginationViewModel, CommentViewModel} from "../api/viewModels/CommentViewModel";
 import {CommentModel} from "../mongo/comment/comment.model";
-import {CommentType} from "../utils/types";
+import {CommentDBType} from "../utils/types";
+
 
 
 export const commentsRepository = {
@@ -47,7 +48,7 @@ export const commentsRepository = {
             return null
         }
     },
-    async createComment(createdComment: CommentType): Promise<CommentViewModel> {
+    async createComment(createdComment: CommentDBType): Promise<CommentViewModel> {
         const commentInstance = new CommentModel({})
 
         commentInstance.content = createdComment.content

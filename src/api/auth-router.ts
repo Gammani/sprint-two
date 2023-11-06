@@ -1,5 +1,5 @@
 import {Request, Response, Router} from "express";
-import {DeviceType, UserTypeDbModel} from "../utils/types";
+import {DeviceDbType, UserTypeDbModel} from "../utils/types";
 import {CreateAuthModel} from "../models/CreateAuthModel";
 import {
     authLoginValidation,
@@ -22,6 +22,7 @@ import {authService} from "../application/auth-service";
 import {securityDevicesService} from "../application/sequrity-devices-service";
 import {restrictionRequests} from "../middlewares/restriction-requests";
 import {RequestWithBody} from "./inputModels/inputModels";
+import {DeviceViewModel} from "./viewModels/DeviceViewModel";
 
 export const authRouter = Router({})
 
@@ -35,15 +36,9 @@ authRouter.post('/login',
 
         const user: UserTypeDbModel | null = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
         if (user) {
-            const device: DeviceType = {
-                userId: user._id.toString(),
-                ip: req.ip,
-                title: req.headers['user-agent'] || "user-agent unknown",
-                lastActiveDate: new Date(),
-                deviceId: (+new Date()).toString()
-            }
+            const device: DeviceViewModel = await securityDevicesService.addDevice(user._id, req.ip, req.headers['user-agent'] || "user-agent unknown", )
+
             debugger
-            await securityDevicesService.addDevice(device)
             const accessToken = await jwtServices.createAccessJWT(user._id.toString())
             const refreshToken = await jwtServices.createRefreshJWT(device.deviceId)
 
@@ -88,7 +83,6 @@ authRouter.post('/registration-confirmation',
 
 
     async (req: RequestWithBody<{ code: string }>, res: Response) => {
-
         const result = await authService.confirmEmail(req.body.code)
         if (result) {
             res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)

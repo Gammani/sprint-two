@@ -11,7 +11,7 @@ const AccountDataSchema = new mongoose.Schema<AccountDataType>({
 })
 const EmailConfirmationSchema = new mongoose.Schema<EmailConfirmationType>({
     confirmationCode: {type: String, required: true},
-    expirationDate: {type: String, required: true},
+    expirationDate: {type: Date, required: true},
     isConfirmed: {type: Boolean, required: true}
 })
 

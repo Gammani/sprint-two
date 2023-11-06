@@ -1,13 +1,16 @@
-import {Request} from 'express'
 import {ObjectId, WithId} from "mongodb";
 
-// export type BlogType = {
-//     name: string
-//     description: string
-//     websiteUrl: string
-//     createdAt: string
-//     isMembership: boolean
-// }
+
+// Blog
+type BlogType = {
+    name: string
+    description: string
+    websiteUrl: string
+    createdAt: string
+    isMembership: boolean
+}
+export type BlogDBType = WithId<BlogType>
+
 export class Blog {
     constructor(
         public _id: ObjectId,
@@ -20,15 +23,16 @@ export class Blog {
     }
 }
 
-export type PostDbType = {
-    _id: string
+
+// Post
+export type PostDbType = WithId<{
     title: string
     shortDescription: string
     content: string
     blogId: string
     blogName: string
     createdAt: string
-}
+}>
 
 export class Post {
     constructor(
@@ -44,9 +48,18 @@ export class Post {
 }
 
 
+// Expired Token
+export class ExpiredToken {
+    constructor(
+        public userId: string,
+        public token: string
+    ) {
+    }
+}
+
 export type ExpiredTokenType = {
     userId: string
-    token: string
+    refreshToken: string
 }
 // export type UserType = {
 //     id: string
@@ -67,11 +80,11 @@ export type AccountDataType = {
 }
 export type EmailConfirmationType = {
     confirmationCode: string
-    expirationDate: string
+    expirationDate: Date
     isConfirmed: boolean
 }
 
-type UserType   = {
+type UserType = {
     accountData: AccountDataType
     emailConfirmation: EmailConfirmationType
 }
@@ -91,18 +104,13 @@ export type CommentatorInfoType = {
     userId: string
     userLogin: string
 }
-export type CommentType = {
-    content: string
-    commentatorInfo: CommentatorInfoType
-    createdAt: string
-    _postId: string
-}
 export type CommentDBType = WithId<{
     content: string
     commentatorInfo: CommentatorInfoType
     createdAt: string
     _postId: string
 }>
+
 
 type ErrorsMessageType = {
     message: string
@@ -116,10 +124,23 @@ export type RequestForApiType = {
     URL: string
     date: Date
 }
-export type DeviceType = {
+
+
+export class Device {
+    constructor(
+        public _id: ObjectId,
+        public userId: string,
+        public ip: string,
+        public title: string,
+        public lastActiveDate: Date,
+    ) {
+    }
+}
+
+type DeviceType = {
     userId: string
     ip: string
     title: string
     lastActiveDate: Date
-    deviceId: string
 }
+export type DeviceDbType = WithId<DeviceType>

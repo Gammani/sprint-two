@@ -8,6 +8,7 @@ import {jwtServices} from "../application/jwt-service";
 import {blogsRepository} from "../repositories/blogs-mongoose-repository";
 import {postsQueryMongooseRepository} from "../repositories/posts-query-mongoose-repository";
 import {commentsRepository} from "../repositories/comments-mongoose-repository";
+import {devicesRepository} from "../repositories/devices-mongoose-repository";
 
 const loginUser = async (): Promise<{ accessToken: string }> => {
     const response = await request(app)
@@ -142,13 +143,11 @@ describe('Mongoose integration', () => {
 
         it('should check code from email and confirm user', async () => {
             const foundUser = await usersRepository.findUserByLogin('Leha')
-            console.log(foundUser);
-            console.log("found = ", foundUser?.emailConfirmation.confirmationCode)
 
             await request(app)
                 .post('/auth/registration-confirmation')
                 .send({
-                    "code": foundUser?.emailConfirmation.confirmationCode
+                    "code": foundUser!.emailConfirmation.confirmationCode
                 })
                 .expect(HTTP_STATUSES.NO_CONTENT_204)
         })
@@ -168,7 +167,22 @@ describe('Mongoose integration', () => {
 
         })
 
-        it('should return my date from accessToken info', async () => {
+        it('should generate new pair of access and refresh tokens, and return new access token', async () => {
+            const foundUser = await usersRepository.findUserByLoginOrEmail("Leha")
+            const device = await devicesRepository.findDeviceTestByUserId(foundUser!._id.toString())
+
+            const refreshTokenByDeviceId = await jwtServices.createRefreshJWT(device!._id.toString())
+            const accessTokenByUserId = await jwtServices.createAccessJWT(foundUser!._id.toString())
+
+            await request(app)
+                .post('/auth/refresh-token')
+                .set('Authorization', `Bearer ${accessTokenByUserId}`)
+                .set('Cookie', `refreshToken=${refreshTokenByDeviceId}`)
+
+                .expect(HTTP_STATUSES.OK_200)
+        })
+
+        it('should return my date from new accessToken info', async () => {
             const user = await usersRepository.findUserByLoginOrEmail("Leha")
             const accessTokenByUserId = await jwtServices.createAccessJWT(user!._id.toString())
 
@@ -293,7 +307,6 @@ describe('Mongoose integration', () => {
 
         it('should return updated post', async () => {
             const foundPost = await postsQueryMongooseRepository.findPostByTitle("new title post")
-            console.log("foundPost = ", foundPost)
             const _res = await request(app)
                 .get(`/posts/${foundPost!._id}`)
                 .expect(HTTP_STATUSES.OK_200)
@@ -351,7 +364,7 @@ describe('Mongoose integration', () => {
             const foundUser = await usersRepository.findUserByLogin("Leha")
             const accessTokenByUserId = await jwtServices.createAccessJWT(foundUser!._id.toString())
             const foundPost = await postsQueryMongooseRepository.findPostByTitle("new title post")
-            const foundComment = await commentsRepository.findCommentByPostId(foundPost!._id)
+            const foundComment = await commentsRepository.findCommentByPostId(foundPost!._id.toString())
 
             await request(app)
                 .put(`/comments/${foundComment!._id}`)
