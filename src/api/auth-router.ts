@@ -205,7 +205,6 @@ authRouter.get('/me',
 //             res.sendStatus(HTTP_STATUSES.NO_UNAUTHORIZED_401)
 //         }
 //     })
-
 // authRouter.post('/registration',
 //     authRegistrationValidation,
 //     restrictionRequests,
@@ -218,8 +217,6 @@ authRouter.get('/me',
 //
 //         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
 //     })
-
-
 // authRouter.post('/password-recovery',
 //     authRegistrationEmailResendingValidation,
 //     restrictionRequests,
@@ -230,7 +227,6 @@ authRouter.get('/me',
 //         await authService.passwordRecovery(req.body.email)
 //         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
 //     })
-
 // authRouter.post('/registration-confirmation',
 //     authRegistrationConfirmationValidation,
 //     restrictionRequests,
@@ -252,7 +248,6 @@ authRouter.get('/me',
 //             })
 //         }
 //     })
-
 // authRouter.post('/registration-email-resending',
 //     authRegistrationEmailResendingValidation,
 //     restrictionRequests,
@@ -264,7 +259,6 @@ authRouter.get('/me',
 //         const result = await authService.resendCode(req.body.email)
 //         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
 //     })
-
 // authRouter.post('/refresh-token',
 //     checkAndUpdateRefreshToken,
 //
@@ -291,7 +285,6 @@ authRouter.get('/me',
 //         // res.cookie('refreshToken', "", {httpOnly: true, secure: true})
 //         res.send(HTTP_STATUSES.NO_CONTENT_204)
 //     })
-
 // authRouter.post('/new-password',
 //     authNewPasswordValidation,
 //     restrictionRequests,
@@ -315,7 +308,6 @@ authRouter.get('/me',
 //         }
 //
 //     })
-
 // authRouter.get('/me',
 //     authBearerMiddleware,
 //
