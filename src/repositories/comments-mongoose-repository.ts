@@ -2,7 +2,7 @@ import {CommentsWithPaginationViewModel, CommentViewModel} from "../api/viewMode
 import {CommentModel} from "../mongo/comment/comment.model";
 import {CommentDBType} from "../utils/types";
 
-class CommentsRepository{
+export class CommentsRepository{
     async findComments(
         pageNumberQuery: string,
         pageSizeQuery: string,
@@ -90,8 +90,6 @@ class CommentsRepository{
         return
     }
 }
-
-export const commentsRepository = new CommentsRepository()
 
 
 

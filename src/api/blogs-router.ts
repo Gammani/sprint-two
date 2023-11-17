@@ -17,20 +17,32 @@ import {
     checkedValidation,
     createPostWithoutBlogIdValidation
 } from "../middlewares/requestValidatorWithExpressValidator";
-import {blogService} from "../application/blogs-service";
-import {blogsQueryMongooseRepository} from "../repositories/blogs-query-mongoose-repository";
-import {postsService} from "../application/posts-service";
+import {BlogsService} from "../application/blogs-service";
+import {
+    BlogsQueryMongooseRepository
+} from "../repositories/blogs-query-mongoose-repository";
 import {PostsWithPaginationViewModel, PostViewModel} from "../models/PostViewModel";
 import {CreatePostModelWithBlogId} from "../models/CreatePostModelWithBlogId";
+import {PostsService} from "../application/posts-service";
 
 
 export const blogsRouter = Router({})
 
 class BlogController {
+    private blogsQueryMongooseRepository: BlogsQueryMongooseRepository
+    private blogService: BlogsService
+    private postsService: PostsService
+
+    constructor() {
+        this.blogsQueryMongooseRepository = new BlogsQueryMongooseRepository()
+        this.postsService = new PostsService()
+        this.blogService = new BlogsService()
+    }
+
     async getBlogs(req: RequestWithQuery<QueryBlogModel>, res: Response<BloggerWithPaginationViewModel>) {
 
         if (req.query.searchNameTerm) {
-            const foundBloggers: BloggerWithPaginationViewModel = await blogsQueryMongooseRepository.findBloggers(
+            const foundBloggers: BloggerWithPaginationViewModel = await this.blogsQueryMongooseRepository.findBloggers(
                 req.query.searchNameTerm,
                 req.query.pageNumber,
                 req.query.pageSize,
@@ -39,7 +51,7 @@ class BlogController {
             )
             res.status(HTTP_STATUSES.OK_200).send(foundBloggers)
         } else {
-            const foundBlogs: BloggerWithPaginationViewModel = await blogService.findBlogs(
+            const foundBlogs: BloggerWithPaginationViewModel = await this.blogService.findBlogs(
                 req.query.pageNumber,
                 req.query.pageSize,
                 req.query.sortBy,
@@ -50,7 +62,7 @@ class BlogController {
     }
 
     async getBlogById(req: RequestWithParams<URIParamsIdModel>, res: Response<BlogViewModel>) {
-        const foundBlog: BlogViewModel | null = await blogService.findBlogById(req.params.id)
+        const foundBlog: BlogViewModel | null = await this.blogService.findBlogById(req.params.id)
         if (foundBlog) {
             res.send(foundBlog)
         } else {
@@ -59,9 +71,9 @@ class BlogController {
     }
 
     async getPostsByBlogId(req: RequestWithParamsAndQuery<URIParamsBlogIdModel, QueryBlogModelWithId>, res: Response<PostsWithPaginationViewModel>) {
-        const foundBlog: BlogViewModel | null = await blogService.findBlogById(req.params.blogId!)
+        const foundBlog: BlogViewModel | null = await this.blogService.findBlogById(req.params.blogId!)
         if (foundBlog) {
-            const foundPosts: PostsWithPaginationViewModel = await postsService.findPosts(
+            const foundPosts: PostsWithPaginationViewModel = await this.postsService.findPosts(
                 req.query.pageNumber,
                 req.query.pageSize,
                 req.query.sortBy,
@@ -76,15 +88,15 @@ class BlogController {
     }
 
     async createBlogByAdmin(req: RequestWithBody<CreateBlogModel>, res: Response<BlogViewModel>) {
-        const newBlog: BlogViewModel = await blogService.createBlog(req.body.name, req.body.description, req.body.websiteUrl)
+        const newBlog: BlogViewModel = await this.blogService.createBlog(req.body.name, req.body.description, req.body.websiteUrl)
         // const token: any = req.headers.authorization
         res.status(HTTP_STATUSES.CREATED_201).send(newBlog)
     }
 
 
     async createPostByAdmin(req: RequestWithParamsAndBody<URIParamsBlogIdModel, CreatePostModelWithBlogId>, res: Response<PostViewModel>) {
-        const foundBlogger = await blogService.findBlogById(req.params.blogId)
-        const newPost: PostViewModel | null = await postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, req.params.blogId)
+        const foundBlogger = await this.blogService.findBlogById(req.params.blogId)
+        const newPost: PostViewModel | null = await this.postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, req.params.blogId)
         if (foundBlogger) {
             if (newPost) {
                 res.status(HTTP_STATUSES.CREATED_201).send(newPost)
@@ -97,7 +109,7 @@ class BlogController {
     }
 
     async updateBlogByAdmin(req: RequestWithParamsAndBody<URIParamsIdModel, UpdateBlogModel>, res: Response) {
-        const isUpdateBlogger: boolean = await blogService.updateBlog(req.params.id, req.body.description, req.body.name, req.body.websiteUrl)
+        const isUpdateBlogger: boolean = await this.blogService.updateBlog(req.params.id, req.body.description, req.body.name, req.body.websiteUrl)
         if (isUpdateBlogger) {
             res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
         } else {
@@ -106,7 +118,7 @@ class BlogController {
     }
 
     async removeBlogByAdmin(req: RequestWithParams<URIParamsIdModel>, res: Response) {
-        const isDeleteBlogger: boolean = await blogService.deleteBlog(req.params.id)
+        const isDeleteBlogger: boolean = await this.blogService.deleteBlog(req.params.id)
         if (isDeleteBlogger) {
             res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
         } else {
@@ -117,30 +129,30 @@ class BlogController {
 
 const blogController = new BlogController()
 
-blogsRouter.get('/', blogController.getBlogs)
-blogsRouter.get('/:id', blogController.getBlogById)
-blogsRouter.get('/:blogId/posts', blogController.getPostsByBlogId)
+blogsRouter.get('/', blogController.getBlogs.bind(blogController))
+blogsRouter.get('/:id', blogController.getBlogById.bind(blogController))
+blogsRouter.get('/:blogId/posts', blogController.getPostsByBlogId.bind(blogController))
 blogsRouter.post('/',
     authBasicMiddleware,
     blogValidation,
     checkedValidation,
-    blogController.createBlogByAdmin
+    blogController.createBlogByAdmin.bind(blogController)
 )
 blogsRouter.post('/:blogId/posts',
     authBasicMiddleware,
     createPostWithoutBlogIdValidation,
     checkedValidation,
-    blogController.getPostsByBlogId
+    blogController.createPostByAdmin.bind(blogController)
 )
 blogsRouter.put('/:id',
     authBasicMiddleware,
     blogValidation,
     checkedValidation,
-    blogController.updateBlogByAdmin
+    blogController.updateBlogByAdmin.bind(blogController)
 )
 blogsRouter.delete('/:id',
     authBasicMiddleware,
-    blogController.removeBlogByAdmin
+    blogController.removeBlogByAdmin.bind(blogController)
 )
 
 

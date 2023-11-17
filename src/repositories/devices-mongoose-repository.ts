@@ -2,7 +2,7 @@ import {DeviceDbType} from "../utils/types";
 import {DeviceViewModel} from "../api/viewModels/DeviceViewModel";
 import {DeviceModel} from "../mongo/device/device.model";
 
-class DevicesRepository {
+export class DevicesRepository {
     async addDevice(device: DeviceDbType): Promise<DeviceViewModel> {
         const deviceModelInstance = new DeviceModel({})
         deviceModelInstance.userId = device.userId
@@ -71,7 +71,6 @@ class DevicesRepository {
     }
 }
 
-export const devicesRepository = new DevicesRepository()
 
 // export const devicesRepository = {
 //     async addDevice(device: DeviceDbType): Promise<DeviceViewModel> {

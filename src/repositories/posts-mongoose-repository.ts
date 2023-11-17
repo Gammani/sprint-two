@@ -3,7 +3,7 @@ import {PostModel} from "../mongo/post/post.model";
 import {Post} from "../utils/types";
 
 
-class PostsRepository {
+export class PostsRepository {
     async findPosts(
         pageNumberQuery: string,
         pageSizeQuery: string,
@@ -122,8 +122,6 @@ class PostsRepository {
         return
     }
 }
-
-export const postsRepository = new PostsRepository()
 
 
 

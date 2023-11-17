@@ -1,6 +1,8 @@
 import {Response, Request, NextFunction} from "express";
 import {RequestForApiType} from "../utils/types";
-import {requestForApiRepository} from "../repositories/requestForApi-mongoose-repository";
+import {RequestForApiRepository} from "../repositories/requestForApi-mongoose-repository";
+
+const requestForApiRepository = new RequestForApiRepository()
 
 
 export const requestsCounter = async (req: Request, res: Response, next: NextFunction) => {

@@ -3,21 +3,28 @@ import bcrypt from 'bcrypt'
 import {v4 as uuidv4} from "uuid";
 import add from "date-fns/add";
 import {emailAdapter} from "../adapter/email-adapter";
-import {securityDevicesService} from "./sequrity-devices-service";
-import {usersRepository} from "../repositories/users-mongoose-repository";
 import {User, UserTypeDbModel} from "../utils/types";
 import {UserModel} from "../mongo/user/user.model";
 import {ObjectId} from "mongodb";
+import {UsersRepository} from "../repositories/users-mongoose-repository";
+import {DevicesRepository} from "../repositories/devices-mongoose-repository";
 
 
-class UsersService {
+export class UsersService {
+    usersRepository: UsersRepository
+    devicesRepository: DevicesRepository
+
+    constructor() {
+        this.usersRepository = new UsersRepository()
+        this.devicesRepository = new DevicesRepository()
+    }
     async findUsers(
         pageNumberQuery: string,
         pageSizeQuery: string,
         sortByQuery: string,
         sortDirectionQuery: string
     ): Promise<UserWithPaginationViewModel> {
-        return await usersRepository.findUsers(
+        return await this.usersRepository.findUsers(
             pageNumberQuery,
             pageSizeQuery,
             sortByQuery,
@@ -35,7 +42,7 @@ class UsersService {
     }
     async findUserByDeviceId(deviceId: string): Promise<UserTypeDbModel | null> {
         debugger
-        const foundUserId = await securityDevicesService.findUserIdByDeviceId(deviceId)
+        const foundUserId = await this.devicesRepository.findUserIdByDeviceId(deviceId)
         if (foundUserId) {
             return this.findUserById(foundUserId)
         } else {
@@ -43,7 +50,7 @@ class UsersService {
         }
     }
     async findUserByRecoveryCode(recoveryCode: string): Promise<UserTypeDbModel | null> {
-        const foundUser = usersRepository.findUserByRecoveryCode(recoveryCode)
+        const foundUser = this.usersRepository.findUserByRecoveryCode(recoveryCode)
         return foundUser
     }
     async createUser(login: string, email: string, password: string): Promise<UserViewModel | null> {
@@ -71,7 +78,7 @@ class UsersService {
                 isConfirmed: false
             }
         )
-        const createResult = await usersRepository.createUser(newUser)
+        const createResult = await this.usersRepository.createUser(newUser)
 
         try {
             await emailAdapter.sendEmail(email, login, `\` <h1>Thank for your registration</h1>
@@ -108,16 +115,16 @@ class UsersService {
                 isConfirmed: true
             }
         )
-        return await usersRepository.createUser(newUser)
+        return await this.usersRepository.createUser(newUser)
     }
     async deleteUser(id: string): Promise<boolean> {
-        return await usersRepository.deleteUser(id)
+        return await this.usersRepository.deleteUser(id)
     }
     async deleteAll() {
-        return await usersRepository.deleteAll()
+        return await this.usersRepository.deleteAll()
     }
     async checkCredentials(loginOrEmail: string, password: string): Promise<UserTypeDbModel | null> {
-        const user: UserTypeDbModel | null = await usersRepository.findUserByLoginOrEmail(loginOrEmail)
+        const user: UserTypeDbModel | null = await this.usersRepository.findUserByLoginOrEmail(loginOrEmail)
 
         if (!user) return null
         if (!user.emailConfirmation.isConfirmed) return null
@@ -140,19 +147,17 @@ class UsersService {
     }
     async updatePassword(newPassword: string, recoveryCode: string) {
         debugger
-        const foundUser = await usersService.findUserByRecoveryCode(recoveryCode)
+        const foundUser = await this.findUserByRecoveryCode(recoveryCode)
         if (foundUser) {
             const passwordSalt = await bcrypt.genSalt(10)
             const passwordHash = await this._generateHash(newPassword, passwordSalt)
 
 
-            return usersRepository.updatePassword(passwordHash, recoveryCode)
+            return this.usersRepository.updatePassword(passwordHash, recoveryCode)
         }
         return
     }
 }
-
-export const usersService = new UsersService()
 
 
 

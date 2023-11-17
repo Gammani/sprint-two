@@ -1,13 +1,20 @@
 import jwt from 'jsonwebtoken'
 import {settings} from "../settings";
-import {securityDevicesService} from "./sequrity-devices-service";
-import {expiredTokensRepository} from "../repositories/expiredToken-mongoose-repository";
+import {ExpiredTokenRepository} from "../repositories/expiredToken-mongoose-repository";
+import {DevicesRepository} from "../repositories/devices-mongoose-repository";
 
 interface JwtPayload {
     deviceId: string;
 }
 
-class JwtService {
+export class JwtService {
+    expiredTokensRepository: ExpiredTokenRepository
+    devicesRepository: DevicesRepository
+
+    constructor() {
+        this.expiredTokensRepository = new ExpiredTokenRepository()
+        this.devicesRepository = new DevicesRepository()
+    }
     async createAccessJWT(userId: string) {
         const token = await jwt.sign({userId}, settings.JWT_SECRET, {expiresIn: '600000'})
         return token
@@ -20,7 +27,7 @@ class JwtService {
         return token
     }
     async checkRefreshJWT(token: string) {
-        const foundToken = expiredTokensRepository.findToken(token)
+        const foundToken = this.expiredTokensRepository.findToken(token)
     }
     async getUserIdByAccessToken(token: string) {
         try {
@@ -36,7 +43,7 @@ class JwtService {
         try {
             debugger
             const result: any = await jwt.verify(token, settings.JWT_SECRET)
-            const userId: any = await securityDevicesService.findUserIdByDeviceId(result.deviceId)
+            const userId: any = await this.devicesRepository.findUserIdByDeviceId(result.deviceId)
             return userId
         } catch (error: any) {
             debugger
@@ -58,14 +65,6 @@ class JwtService {
         }
     }
 }
-
-export const jwtServices = new JwtService()
-
-
-
-
-
-
 
 
 

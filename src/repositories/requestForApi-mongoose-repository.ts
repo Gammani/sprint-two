@@ -1,7 +1,7 @@
 import {RequestForApiType} from "../utils/types";
 import {RequestForApiModel} from "../mongo/requestForApi/requestForApi.model";
 
-class RequestForApiRepository {
+export class RequestForApiRepository {
     async addRequest(dataRequest: RequestForApiType) {
         const requestInstance = new RequestForApiModel({})
 
@@ -23,8 +23,6 @@ class RequestForApiRepository {
         return
     }
 }
-
-export const requestForApiRepository = new RequestForApiRepository()
 
 
 

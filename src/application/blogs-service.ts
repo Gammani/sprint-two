@@ -1,16 +1,22 @@
 import {BlogViewModel, BloggerWithPaginationViewModel} from "../api/viewModels/BlogViewModel";
-import {blogsRepository} from "../repositories/blogs-mongoose-repository";
 import {Blog} from "../utils/types";
 import {ObjectId} from "mongodb";
+import {BlogsRepository} from "../repositories/blogs-mongoose-repository";
 
-class BlogsService {
+export class BlogsService {
+    blogsRepository: BlogsRepository
+
+    constructor() {
+        this.blogsRepository = new BlogsRepository()
+    }
+
     async findBlogs(
         pageNumberQuery: string,
         pageSizeQuery: string,
         sortByQuery: string,
         sortDirectionQuery: string
     ): Promise<BloggerWithPaginationViewModel> {
-        return await blogsRepository.findBlogs(
+        return await this.blogsRepository.findBlogs(
             pageNumberQuery,
             pageSizeQuery,
             sortByQuery,
@@ -21,7 +27,7 @@ class BlogsService {
     //     return await blogsQueryMongooseRepository.findBloggers(name)
     // },
     async findBlogById(id: string): Promise<BlogViewModel | null> {
-        return await blogsRepository.findBlogById(id)
+        return await this.blogsRepository.findBlogById(id)
     }
 
     async createBlog(name: string, description: string, websiteUrl: string): Promise<BlogViewModel> {
@@ -33,24 +39,22 @@ class BlogsService {
             new Date().toISOString(),
             true)
 
-        return await blogsRepository.createBlog(newBlog)
+        return await this.blogsRepository.createBlog(newBlog)
     }
 
     async updateBlog(id: string, description: string, name: string, websiteUrl: string): Promise<boolean> {
-        return await blogsRepository.updateBlog(id, description, name, websiteUrl)
+        return await this.blogsRepository.updateBlog(id, description, name, websiteUrl)
     }
 
     async deleteBlog(id: string): Promise<boolean> {
-        return await blogsRepository.deleteBlog(id)
+        return await this.blogsRepository.deleteBlog(id)
     }
 
     async deleteAll() {
-        return await blogsRepository.deleteAll()
+        return await this.blogsRepository.deleteAll()
     }
 }
 
-
-export const blogService = new BlogsService()
 
 // export const blogService = {
 //     async findBlogs(

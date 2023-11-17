@@ -3,12 +3,21 @@ import {body, CustomValidator, validationResult} from "express-validator";
 import {ErrorsType} from "../utils/types";
 import {BlogViewModel} from "../api/viewModels/BlogViewModel";
 import {HTTP_STATUSES} from "../utils/utils";
-import {jwtServices} from "../application/jwt-service";
-import {usersService} from "../application/users-service";
-import {securityDevicesService} from "../application/sequrity-devices-service";
-import {blogsRepository} from "../repositories/blogs-mongoose-repository";
-import {usersRepository} from "../repositories/users-mongoose-repository";
-import {expiredTokensRepository} from "../repositories/expiredToken-mongoose-repository";
+import {JwtService} from "../application/jwt-service";
+import {UsersService} from "../application/users-service";
+import {SecurityDevicesService} from "../application/sequrity-devices-service";
+import {BlogsRepository} from "../repositories/blogs-mongoose-repository";
+import {UsersRepository} from "../repositories/users-mongoose-repository";
+import {ExpiredTokenRepository} from "../repositories/expiredToken-mongoose-repository";
+
+
+const blogsRepository = new BlogsRepository()
+const usersService = new UsersService()
+const usersRepository = new UsersRepository()
+const expiredTokensRepository = new ExpiredTokenRepository()
+const jwtServices = new JwtService()
+const securityDevicesService = new SecurityDevicesService()
+
 
 
 export const authRegistrationValidation = [

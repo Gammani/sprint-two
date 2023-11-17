@@ -1,8 +1,8 @@
 import {NextFunction, Request, Response} from "express";
 import {Buffer} from "buffer";
 import {HTTP_STATUSES} from "../utils/utils";
-import {jwtServices} from "../application/jwt-service";
-import {usersService} from "../application/users-service";
+import {JwtService} from "../application/jwt-service";
+import {UsersService} from "../application/users-service";
 import {RequestUserViewModel} from "../api/viewModels/UserViewModel";
 
 // local?
@@ -17,6 +17,8 @@ declare global {
         }
     }
 }
+const jwtServices = new JwtService()
+const usersService = new UsersService()
 
 export const authBasicMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const auth = {login: 'admin', password: 'qwerty'} // change this

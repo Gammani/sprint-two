@@ -3,7 +3,7 @@ import {User, UserTypeDbModel} from "../utils/types";
 import {UserModel} from "../mongo/user/user.model";
 
 
-class UsersRepository {
+export class UsersRepository {
     async findUsers(
         pageNumberQuery: string,
         pageSizeQuery: string,
@@ -132,9 +132,6 @@ class UsersRepository {
         return
     }
 }
-
-
-export const usersRepository = new UsersRepository()
 
 
 

@@ -4,7 +4,7 @@ import {Blog, BlogDBType} from "../utils/types";
 import {getBlogViewModel} from "../utils/utils";
 
 
-class BlogsRepository {
+export class BlogsRepository {
     async findBlogs(
         pageNumberQuery: string,
         pageSizeQuery: string,
@@ -95,8 +95,6 @@ class BlogsRepository {
         return
     }
 }
-
-export const blogsRepository = new BlogsRepository()
 
 
 

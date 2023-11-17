@@ -1,12 +1,19 @@
 import {PostsWithPaginationViewModel, PostViewModel} from "../models/PostViewModel";
 import {BlogViewModel} from "../api/viewModels/BlogViewModel";
-import {blogService} from "./blogs-service";
 import {Post} from "../utils/types";
-import {postsRepository} from "../repositories/posts-mongoose-repository";
 import {ObjectId} from "mongodb";
+import {PostsRepository} from "../repositories/posts-mongoose-repository";
+import {BlogsRepository} from "../repositories/blogs-mongoose-repository";
 
 
-class PostsService {
+export class PostsService {
+    postsRepository: PostsRepository
+    blogsRepository: BlogsRepository
+
+    constructor() {
+        this.postsRepository = new PostsRepository()
+        this.blogsRepository = new BlogsRepository()
+    }
     // async findPosts(title: string | undefined | null): Promise<PostViewModel[]> {
     //     return await postsRepository.findPosts(title)
     // },
@@ -16,7 +23,7 @@ class PostsService {
         sortBy: string,
         sortDirection: string,
         blogId?: string): Promise<PostsWithPaginationViewModel> {
-        return await postsRepository.findPosts(
+        return await this.postsRepository.findPosts(
             pageNumber,
             pageSize,
             sortBy,
@@ -25,12 +32,12 @@ class PostsService {
         )
     }
     async findPostById(id: string): Promise<PostViewModel | null> {
-        return await postsRepository.findPostById(id)
+        return await this.postsRepository.findPostById(id)
     }
     async createPost(title: string, shortDescription: string, content: string, blogId: string): Promise<PostViewModel | null> {
         //const blog: Blog = blogRepo.getBlogById(blogId)
         //subscriptionService.createSubscribe('auto subscribe')
-        const foundBlogger: BlogViewModel | null = await blogService.findBlogById(blogId)
+        const foundBlogger: BlogViewModel | null = await this.blogsRepository.findBlogById(blogId)
         if (foundBlogger) {
             const createdPost = new Post(
                 new ObjectId,
@@ -41,7 +48,7 @@ class PostsService {
                 foundBlogger.name,
                 new Date().toISOString()
             )
-            const result = await postsRepository.createPost(createdPost)
+            const result = await this.postsRepository.createPost(createdPost)
 
             // return result.id
             return result
@@ -50,18 +57,15 @@ class PostsService {
     }
 
     async updatePost(postId: string, title: string, shortDescription: string, content: string, blogId: string): Promise<boolean> {
-        return await postsRepository.updatePost(postId, title, shortDescription, content, blogId)
+        return await this.postsRepository.updatePost(postId, title, shortDescription, content, blogId)
     }
     async deletePost(id: string): Promise<boolean> {
-        return await postsRepository.deletePost(id)
+        return await this.postsRepository.deletePost(id)
     }
     async deleteAll() {
-        return await postsRepository.deleteAll()
+        return await this.postsRepository.deleteAll()
     }
 }
-
-export const postsService = new PostsService()
-
 
 
 

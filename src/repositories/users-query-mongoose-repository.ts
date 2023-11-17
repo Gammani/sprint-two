@@ -3,7 +3,7 @@ import {UserModel} from "../mongo/user/user.model";
 import {UserTypeDbModel} from "../utils/types";
 
 
-class UsersQueryRepository {
+export class UsersQueryRepository {
     async findUsers(
         searchLoginTermQuery: string | undefined,
         searchEmailTermQuery: string | undefined,
@@ -62,8 +62,6 @@ class UsersQueryRepository {
         }
     }
 }
-
-export const usersQueryMongooseRepository = new UsersQueryRepository()
 
 
 

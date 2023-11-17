@@ -1,12 +1,18 @@
 import {emailAdapter} from "../adapter/email-adapter";
 import {v4 as uuidv4} from "uuid";
-import {usersRepository} from "../repositories/users-mongoose-repository";
+import {UsersRepository} from "../repositories/users-mongoose-repository";
 
 
-class AuthService {
+export class AuthService {
+    usersRepository: UsersRepository
+
+    constructor() {
+        this.usersRepository = new UsersRepository()
+    }
+
     async confirmEmail(code: string) {
         debugger
-        let user = await usersRepository.findUserByConfirmationCode(code)
+        let user = await this.usersRepository.findUserByConfirmationCode(code)
         if (!user) return false
         if (user.emailConfirmation.isConfirmed) return false
         if (user.emailConfirmation.confirmationCode !== code) return false
@@ -14,16 +20,17 @@ class AuthService {
             return false
         }
 
-        let result = await usersRepository.updateConfirmation(user._id.toString())
+        let result = await this.usersRepository.updateConfirmation(user._id.toString())
         debugger
         return result
     }
+
     async resendCode(email: string) {
-        const foundUser = await usersRepository.findUserByLoginOrEmail(email)
+        const foundUser = await this.usersRepository.findUserByLoginOrEmail(email)
         if (foundUser) {
             debugger
             const code = uuidv4()
-            const createResult = await usersRepository.updateCode(email, code)
+            const createResult = await this.usersRepository.updateCode(email, code)
             try {
                 debugger
                 await emailAdapter.sendEmail(email, foundUser.accountData.login, `\` <h1>Thank for your registration</h1>
@@ -42,11 +49,11 @@ class AuthService {
     }
 
     async passwordRecovery(email: string) {
-        const foundUser = await usersRepository.findUserByLoginOrEmail(email)
+        const foundUser = await this.usersRepository.findUserByLoginOrEmail(email)
 
         if (foundUser) {
             const recoveryCode = uuidv4()
-            const createResult = await usersRepository.updateRecoveryCode(email, recoveryCode)
+            const createResult = await this.usersRepository.updateRecoveryCode(email, recoveryCode)
             try {
                 await emailAdapter.sendEmail(email, foundUser.accountData.login, `\` <h1>Password recovery</h1>
  <p>To finish password recovery please follow the link below:
@@ -63,9 +70,6 @@ class AuthService {
         }
     }
 }
-
-
-export const authService = new AuthService()
 
 
 

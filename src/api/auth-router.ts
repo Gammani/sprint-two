@@ -12,14 +12,14 @@ import {
     checkedExistsForLoginOrEmail,
     checkedValidation
 } from "../middlewares/requestValidatorWithExpressValidator";
-import {usersService} from "../application/users-service";
+import {UsersService} from "../application/users-service";
 import {HTTP_STATUSES} from "../utils/utils";
-import {jwtServices} from "../application/jwt-service";
+import {JwtService} from "../application/jwt-service";
 import {authBearerMiddleware} from "../middlewares/auth-middleware";
 import {RequestUserViewModel, UserViewModel} from "./viewModels/UserViewModel";
 import {CreateUserModel} from "../models/CreateUserModel";
-import {authService} from "../application/auth-service";
-import {securityDevicesService} from "../application/sequrity-devices-service";
+import {AuthService} from "../application/auth-service";
+import {SecurityDevicesService} from "../application/sequrity-devices-service";
 import {restrictionRequests} from "../middlewares/restriction-requests";
 import {RequestWithBody} from "./inputModels/inputModels";
 import {DeviceViewModel} from "./viewModels/DeviceViewModel";
@@ -27,16 +27,26 @@ import {DeviceViewModel} from "./viewModels/DeviceViewModel";
 export const authRouter = Router({})
 
 class AuthController {
+    private usersService: UsersService
+    private jwtServices: JwtService
+    private authService: AuthService
+    private securityDevicesService: SecurityDevicesService
+
+    constructor() {
+        this.usersService = new UsersService()
+        this.jwtServices = new JwtService()
+        this.authService = new AuthService()
+        this.securityDevicesService = new SecurityDevicesService()
+    }
+
     async login(req: RequestWithBody<CreateAuthModel>, res: Response) {
-        debugger
 
-        const user: UserTypeDbModel | null = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
+        const user: UserTypeDbModel | null = await this.usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
         if (user) {
-            const device: DeviceViewModel = await securityDevicesService.addDevice(user._id, req.ip, req.headers['user-agent'] || "user-agent unknown",)
+            const device: DeviceViewModel = await this.securityDevicesService.addDevice(user._id, req.ip, req.headers['user-agent'] || "user-agent unknown",)
 
-            debugger
-            const accessToken = await jwtServices.createAccessJWT(user._id.toString())
-            const refreshToken = await jwtServices.createRefreshJWT(device.deviceId)
+            const accessToken = await this.jwtServices.createAccessJWT(user._id.toString())
+            const refreshToken = await this.jwtServices.createRefreshJWT(device.deviceId)
 
             res.cookie('refreshToken', refreshToken, {httpOnly: false, secure: false})  // local
             // res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true})
@@ -48,18 +58,18 @@ class AuthController {
     }
 
     async registration(req: RequestWithBody<CreateUserModel>, res: Response) {
-        const newUser: UserViewModel | null = await usersService.createUser(req.body.login, req.body.email, req.body.password)
+        const newUser: UserViewModel | null = await this.usersService.createUser(req.body.login, req.body.email, req.body.password)
 
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
     }
 
     async passwordRecovery(req: RequestWithBody<{ email: string }>, res: Response) {
-        await authService.passwordRecovery(req.body.email)
+        await this.authService.passwordRecovery(req.body.email)
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
     }
 
     async registrationConfirmation(req: RequestWithBody<{ code: string }>, res: Response) {
-        const result = await authService.confirmEmail(req.body.code)
+        const result = await this.authService.confirmEmail(req.body.code)
         if (result) {
             res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
         } else {
@@ -76,7 +86,7 @@ class AuthController {
 
     async registrationEmailResending(req: RequestWithBody<{ email: string }>, res: Response) {
 
-        const result = await authService.resendCode(req.body.email)
+        const result = await this.authService.resendCode(req.body.email)
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
     }
 
@@ -85,8 +95,8 @@ class AuthController {
         const user = req.user
         if (user) {
             debugger
-            const accessToken = await jwtServices.createAccessJWT(user.userId)
-            const refreshToken = await jwtServices.createRefreshJWT(user.deviceId!)
+            const accessToken = await this.jwtServices.createAccessJWT(user.userId)
+            const refreshToken = await this.jwtServices.createRefreshJWT(user.deviceId!)
 
             res.cookie('refreshToken', refreshToken, {httpOnly: false, secure: false}) // local
             // res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true})
@@ -96,7 +106,7 @@ class AuthController {
     }
 
     async logout(req: Request, res: Response) {
-        await securityDevicesService.deleteCurrentSessionById(req.user!.deviceId!)
+        await this.securityDevicesService.deleteCurrentSessionById(req.user!.deviceId!)
         res.cookie('refreshToken', "", {httpOnly: false, secure: false})   // local
         // res.cookie('refreshToken', "", {httpOnly: true, secure: true})
         res.send(HTTP_STATUSES.NO_CONTENT_204)
@@ -104,9 +114,9 @@ class AuthController {
 
     async newPassword(req: RequestWithBody<{ newPassword: string, recoveryCode: string }>, res: Response) {
         debugger
-        const foundUser = await usersService.findUserByRecoveryCode(req.body.recoveryCode)
+        const foundUser = await this.usersService.findUserByRecoveryCode(req.body.recoveryCode)
         if (foundUser) {
-            const result = await usersService.updatePassword(req.body.newPassword, req.body.recoveryCode)
+            const result = await this.usersService.updatePassword(req.body.newPassword, req.body.recoveryCode)
             res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
         } else {
             res.status(HTTP_STATUSES.BAD_REQUEST_400).send({
@@ -133,51 +143,51 @@ authRouter.post('/login',
     authLoginValidation,
     restrictionRequests,
     checkedValidation,
-    authController.login
+    authController.login.bind(authController)
 )
 authRouter.post('/registration',
     authRegistrationValidation,
     restrictionRequests,
     checkedValidation,
     checkedExistsForLoginOrEmail,
-    authController.registration
+    authController.registration.bind(authController)
 )
 authRouter.post('/password-recovery',
     authRegistrationEmailResendingValidation,
     restrictionRequests,
     checkedValidation,
-    authController.passwordRecovery
+    authController.passwordRecovery.bind(authController)
 )
 authRouter.post('/registration-confirmation',
     authRegistrationConfirmationValidation,
     restrictionRequests,
     checkedValidation,
-    authController.registrationConfirmation
+    authController.registrationConfirmation.bind(authController)
 )
 authRouter.post('/registration-email-resending',
     authRegistrationEmailResendingValidation,
     restrictionRequests,
     checkedValidation,
     checkedConfirmedEmail,
-    authController.registrationEmailResending
+    authController.registrationEmailResending.bind(authController)
 )
 authRouter.post('/refresh-token',
     checkAndUpdateRefreshToken,
-    authController.refreshToken
+    authController.refreshToken.bind(authController)
 )
 authRouter.post('/logout',
     checkAndUpdateRefreshToken,
-    authController.logout
+    authController.logout.bind(authController)
 )
 authRouter.post('/new-password',
     authNewPasswordValidation,
     restrictionRequests,
     checkedValidation,
-    authController.newPassword
+    authController.newPassword.bind(authController)
 )
 authRouter.get('/me',
     authBearerMiddleware,
-    authController.me
+    authController.me.bind(authController)
 )
 
 

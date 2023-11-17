@@ -1,12 +1,21 @@
 import {BlogViewModel} from "../api/viewModels/BlogViewModel";
-import {blogsRepository} from "../repositories/blogs-mongoose-repository";
-import {postsRepository} from "../repositories/posts-mongoose-repository";
-import {usersRepository} from "../repositories/users-mongoose-repository";
-import {commentsRepository} from "../repositories/comments-mongoose-repository";
-import {requestForApiRepository} from "../repositories/requestForApi-mongoose-repository";
-import {expiredTokensRepository} from "../repositories/expiredToken-mongoose-repository";
-import {devicesRepository} from "../repositories/devices-mongoose-repository";
+import {BlogsRepository} from "../repositories/blogs-mongoose-repository";
+import {PostsRepository} from "../repositories/posts-mongoose-repository";
+import {UsersRepository} from "../repositories/users-mongoose-repository";
+import {CommentsRepository} from "../repositories/comments-mongoose-repository";
+import {RequestForApiRepository} from "../repositories/requestForApi-mongoose-repository";
+import {ExpiredTokenRepository} from "../repositories/expiredToken-mongoose-repository";
+import {DevicesRepository} from "../repositories/devices-mongoose-repository";
 import {BlogDBType} from "./types";
+
+
+const blogsRepository = new BlogsRepository()
+const postsRepository = new PostsRepository()
+const usersRepository = new UsersRepository()
+const commentsRepository = new CommentsRepository()
+const expiredTokensRepository = new ExpiredTokenRepository()
+const requestForApiRepository = new RequestForApiRepository()
+const devicesRepository = new DevicesRepository()
 
 
 export const HTTP_STATUSES = {

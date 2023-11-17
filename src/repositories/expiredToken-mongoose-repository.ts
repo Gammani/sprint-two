@@ -4,7 +4,7 @@ import {settings} from "../settings";
 import {ExpiredTokenModel} from "../mongo/expiredToken/expiredToken.model";
 
 
-class ExpiredTokenRepository {
+export class ExpiredTokenRepository {
     async addTokenToDB(userId: string, token: string) {
         const expiredTokenInstance = new ExpiredTokenModel({})
 
@@ -34,9 +34,6 @@ class ExpiredTokenRepository {
         return
     }
 }
-
-
-export const expiredTokensRepository = new ExpiredTokenRepository()
 
 
 

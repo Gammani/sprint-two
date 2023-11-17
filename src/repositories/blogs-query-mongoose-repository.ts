@@ -2,7 +2,7 @@ import {BloggerWithPaginationViewModel} from "../api/viewModels/BlogViewModel";
 import {BlogModel} from "../mongo/blog/blog.model";
 
 
-class BlogsQueryMongooseRepository {
+export class BlogsQueryMongooseRepository {
     async findBloggers(
         searchNameTermQuery: string | undefined,
         pageNumberQuery: string,
@@ -50,8 +50,6 @@ class BlogsQueryMongooseRepository {
         }
     }
 }
-
-export const blogsQueryMongooseRepository = new BlogsQueryMongooseRepository()
 
 
 // export const blogsQueryMongooseRepository = {

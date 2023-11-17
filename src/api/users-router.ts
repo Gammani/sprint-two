@@ -3,8 +3,8 @@ import {authBasicMiddleware} from "../middlewares/auth-middleware";
 import {QueryUsersModel} from "../models/QueryUsersModel";
 import {UserViewModel, UserWithPaginationViewModel} from "./viewModels/UserViewModel";
 import {HTTP_STATUSES} from "../utils/utils";
-import {usersQueryMongooseRepository} from "../repositories/users-query-mongoose-repository";
-import {usersService} from "../application/users-service";
+import {UsersQueryRepository} from "../repositories/users-query-mongoose-repository";
+import {UsersService} from "../application/users-service";
 import {CreateUserModel} from "../models/CreateUserModel";
 import {authRegistrationValidation, checkedValidation} from "../middlewares/requestValidatorWithExpressValidator";
 import {URIParamsUserIdModel} from "./inputModels/URIParamsUserIdModel";
@@ -13,9 +13,17 @@ import {RequestWithBody, RequestWithParams, RequestWithQuery} from "./inputModel
 export const usersRouter = Router({})
 
 class UsersController {
+    private usersService: UsersService
+    private usersQueryMongooseRepository: UsersQueryRepository
+
+    constructor() {
+        this.usersQueryMongooseRepository = new UsersQueryRepository()
+        this.usersService = new UsersService()
+    }
+
     async getAllUsers(req: RequestWithQuery<QueryUsersModel>, res: Response<UserWithPaginationViewModel>) {
         if (req.query.searchEmailTerm || req.query.searchLoginTerm) {
-            const foundUsers: UserWithPaginationViewModel = await usersQueryMongooseRepository.findUsers(
+            const foundUsers: UserWithPaginationViewModel = await this.usersQueryMongooseRepository.findUsers(
                 req.query.searchLoginTerm,
                 req.query.searchEmailTerm,
                 req.query.pageNumber,
@@ -25,7 +33,7 @@ class UsersController {
             )
             res.status(HTTP_STATUSES.OK_200).send(foundUsers)
         } else {
-            const foundUsers: UserWithPaginationViewModel = await usersService.findUsers(
+            const foundUsers: UserWithPaginationViewModel = await this.usersService.findUsers(
                 req.query.pageNumber,
                 req.query.pageSize,
                 req.query.sortBy,
@@ -36,12 +44,12 @@ class UsersController {
     }
 
     async addNewUserByAdmin(req: RequestWithBody<CreateUserModel>, res: Response<UserViewModel>) {
-        const newUser: UserViewModel = await usersService.createUserByAdmin(req.body.login, req.body.email, req.body.password)
+        const newUser: UserViewModel = await this.usersService.createUserByAdmin(req.body.login, req.body.email, req.body.password)
         res.status(HTTP_STATUSES.CREATED_201).send(newUser)
     }
 
     async removeUserByAdmin(req: RequestWithParams<URIParamsUserIdModel>, res: Response) {
-        const isDeleteUser: boolean = await usersService.deleteUser(req.params.id)
+        const isDeleteUser: boolean = await this.usersService.deleteUser(req.params.id)
         if (isDeleteUser) {
             res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
         } else {
@@ -55,21 +63,15 @@ const usersController = new UsersController()
 
 usersRouter.get('/',
     authBasicMiddleware,
-    usersController.getAllUsers
-    )
+    usersController.getAllUsers.bind(usersController)
+)
 usersRouter.post('/', authBasicMiddleware,
     authRegistrationValidation,
     checkedValidation,
-    usersController.addNewUserByAdmin)
+    usersController.addNewUserByAdmin.bind(usersController))
 usersRouter.delete('/:id',
     authBasicMiddleware,
-    usersController.removeUserByAdmin)
-
-
-
-
-
-
+    usersController.removeUserByAdmin.bind(usersController))
 
 
 // usersRouter.get('/', authBasicMiddleware,
