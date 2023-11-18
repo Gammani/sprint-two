@@ -1,16 +1,16 @@
 import express, {Request, Response, RequestHandler} from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
-import {blogsRouter} from "./api/blogs-router";
-import {postsRouter} from "./api/posts-router";
+import {blogsRouter} from "./api/routes/blogs-router";
+import {postsRouter} from "./api/routes/posts-router";
 import {HTTP_STATUSES, removeAllDataBase} from "./utils/utils";
-import {usersRouter} from "./api/users-router";
-import {authRouter} from "./api/auth-router";
-import {commentsRouter} from "./api/comments-router";
+import {usersRouter} from "./api/routes/users-router";
+import {authRouter} from "./api/routes/auth-router";
+import {commentsRouter} from "./api/routes/comments-router";
 import {addressRouter} from "./api/address";
 import cookieParser from "cookie-parser";
 import {requestsCounter} from "./middlewares/requestsCounter";
-import {securityDevicesRouter} from "./api/security-devices-router";
+import {securityDevicesRouter} from "./api/routes/security-devices-router";
 
 
 export const createApp = () => {

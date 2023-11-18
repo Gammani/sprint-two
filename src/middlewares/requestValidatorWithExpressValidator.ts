@@ -9,14 +9,22 @@ import {SecurityDevicesService} from "../application/sequrity-devices-service";
 import {BlogsRepository} from "../repositories/blogs-mongoose-repository";
 import {UsersRepository} from "../repositories/users-mongoose-repository";
 import {ExpiredTokenRepository} from "../repositories/expiredToken-mongoose-repository";
+import {
+    blogsRepository,
+    expiredTokenRepository,
+    jwtService,
+    securityDevicesService,
+    usersRepository,
+    usersService
+} from "../composition-root";
 
 
-const blogsRepository = new BlogsRepository()
-const usersService = new UsersService()
-const usersRepository = new UsersRepository()
-const expiredTokensRepository = new ExpiredTokenRepository()
-const jwtServices = new JwtService()
-const securityDevicesService = new SecurityDevicesService()
+// const blogsRepository = new BlogsRepository()
+// const usersService = new UsersService()
+// const usersRepository = new UsersRepository()
+// const expiredTokensRepository = new ExpiredTokenRepository()
+// const jwtServices = new JwtService()
+// const securityDevicesService = new SecurityDevicesService()
 
 
 
@@ -135,7 +143,7 @@ export const checkAndUpdateRefreshToken = async (req: Request, res: Response, ne
     }
     debugger
 
-    const expiredToken = await expiredTokensRepository.findToken(req.cookies.refreshToken)
+    const expiredToken = await expiredTokenRepository.findToken(req.cookies.refreshToken)
     if(expiredToken) {
         res.sendStatus(HTTP_STATUSES.NO_UNAUTHORIZED_401)
         return
@@ -154,20 +162,20 @@ export const checkAndUpdateRefreshToken = async (req: Request, res: Response, ne
     //     }
     // });
 debugger
-    const isExpiredToken = await expiredTokensRepository.isExpiredToken(refreshToken)
+    const isExpiredToken = await expiredTokenRepository.isExpiredToken(refreshToken)
     if(isExpiredToken) {
         res.sendStatus(HTTP_STATUSES.NO_UNAUTHORIZED_401)
         return
     }
     debugger
-    const deviceId: string | null = await jwtServices.getDeviceIdByRefreshToken(refreshToken)
+    const deviceId: string | null = await jwtService.getDeviceIdByRefreshToken(refreshToken)
     if(deviceId) {
         debugger
         // const UserId: string | undefined = await securityDevicesService.findUserIdByDeviceId(deviceId)
         const foundUser = await usersService.findUserByDeviceId(deviceId)
         await securityDevicesService.findAndUpdateDeviceAfterRefresh(deviceId)
         debugger
-        expiredTokensRepository.addTokenToDB(foundUser!._id.toString(), refreshToken)
+        expiredTokenRepository.addTokenToDB(foundUser!._id.toString(), refreshToken)
         req.user = {
             email: foundUser!.accountData.email,
             login: foundUser!.accountData.login,
@@ -193,20 +201,20 @@ export const checkAndRemoveRefreshTokenById = async (req: Request, res: Response
     }
     debugger
 
-    if(await expiredTokensRepository.findToken(req.cookies.refreshToken)) {
+    if(await expiredTokenRepository.findToken(req.cookies.refreshToken)) {
         res.sendStatus(HTTP_STATUSES.NO_UNAUTHORIZED_401)
         return
     }
     debugger
     const refreshToken = req.cookies.refreshToken
     debugger
-    const isExpiredToken = await expiredTokensRepository.isExpiredToken(refreshToken)
+    const isExpiredToken = await expiredTokenRepository.isExpiredToken(refreshToken)
     if(isExpiredToken) {
         res.sendStatus(HTTP_STATUSES.NO_UNAUTHORIZED_401)
         return
     }
     debugger
-    const deviceId: string | null = await jwtServices.getDeviceIdByRefreshToken(refreshToken)
+    const deviceId: string | null = await jwtService.getDeviceIdByRefreshToken(refreshToken)
     // if(deviceId !== req.params.deviceId) {
     //     res.sendStatus(HTTP_STATUSES.FORBIDDEN_403)
     //     return
@@ -256,7 +264,7 @@ export const checkRefreshToken = async (req: Request, res: Response, next: NextF
         return
     }
     debugger
-    if(await expiredTokensRepository.findToken(req.cookies.refreshToken)) {
+    if(await expiredTokenRepository.findToken(req.cookies.refreshToken)) {
         res.sendStatus(HTTP_STATUSES.NO_UNAUTHORIZED_401)
         return
     }
@@ -265,13 +273,13 @@ export const checkRefreshToken = async (req: Request, res: Response, next: NextF
     console.log("token = ", token)
 
     debugger
-    const isExpiredToken = await expiredTokensRepository.isExpiredToken(token)
+    const isExpiredToken = await expiredTokenRepository.isExpiredToken(token)
     if(isExpiredToken) {
         res.sendStatus(HTTP_STATUSES.NO_UNAUTHORIZED_401)
         return
     }
     debugger
-    const deviceId: string | null = await jwtServices.getDeviceIdByRefreshToken(token)
+    const deviceId: string | null = await jwtService.getDeviceIdByRefreshToken(token)
     if(deviceId) {
         debugger
         // const UserId: string | undefined = await securityDevicesService.findUserIdByDeviceId(deviceId)

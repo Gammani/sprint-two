@@ -144,3 +144,40 @@ type DeviceType = {
     lastActiveDate: Date
 }
 export type DeviceDbType = WithId<DeviceType>
+
+// enum LikeStatus {
+//     Like,
+//     Dislike,
+//     None
+// }
+
+export const LikeStatus = {
+    LIKE: 'Like',
+    DISLIKE: 'Dislike',
+    NONE: 'None'
+}
+
+export type LikeDbType = WithId<{
+    userId: ObjectId
+    blogId: ObjectId
+    postId: ObjectId
+    commentId: ObjectId
+    likeStatus: typeof LikeStatus
+    createdAt: Date
+    lastUpdate: Date
+}>
+
+export class Like {
+    constructor(
+        public _id: ObjectId,
+        public userId: ObjectId,
+        public blogId: ObjectId,
+        public postId: ObjectId,
+        public commentId: ObjectId,
+        public likeStatus: typeof LikeStatus,
+        public createdAt: Date,
+        public lastUpdate: Date
+    ) {
+    }
+}
+

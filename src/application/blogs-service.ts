@@ -4,11 +4,7 @@ import {ObjectId} from "mongodb";
 import {BlogsRepository} from "../repositories/blogs-mongoose-repository";
 
 export class BlogsService {
-    blogsRepository: BlogsRepository
-
-    constructor() {
-        this.blogsRepository = new BlogsRepository()
-    }
+    constructor(protected blogsRepository: BlogsRepository) {}
 
     async findBlogs(
         pageNumberQuery: string,
@@ -54,45 +50,3 @@ export class BlogsService {
         return await this.blogsRepository.deleteAll()
     }
 }
-
-
-// export const blogService = {
-//     async findBlogs(
-//         pageNumberQuery: string,
-//         pageSizeQuery: string,
-//         sortByQuery: string,
-//         sortDirectionQuery: string
-//     ): Promise<BloggerWithPaginationViewModel> {
-//         return await blogsRepository.findBlogs(
-//             pageNumberQuery,
-//             pageSizeQuery,
-//             sortByQuery,
-//             sortDirectionQuery)
-//     },
-//     // async findBloggersByQuery(name: string | null | undefined): Promise<BlogViewModel[]> {
-//     //     return await blogsQueryMongooseRepository.findBloggers(name)
-//     // },
-//     async findBlogById(id: string): Promise<BlogViewModel | null> {
-//         return await blogsRepository.findBlogById(id)
-//     },
-//     async createBlog(name: string, description: string, websiteUrl: string): Promise<BlogViewModel> {
-//         const newBlog = new Blog(
-//             new ObjectId,
-//             name,
-//             description,
-//             websiteUrl,
-//             new Date().toISOString(),
-//             true)
-//
-//         return await blogsRepository.createBlog(newBlog)
-//     },
-//     async updateBlog(id: string, description: string, name: string, websiteUrl: string): Promise<boolean> {
-//         return await blogsRepository.updateBlog(id, description, name, websiteUrl)
-//     },
-//     async deleteBlog(id: string): Promise<boolean> {
-//         return await blogsRepository.deleteBlog(id)
-//     },
-//     async deleteAll() {
-//         return await blogsRepository.deleteAll()
-//     }
-// }

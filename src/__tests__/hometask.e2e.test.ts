@@ -9,13 +9,16 @@ import {PostsQueryRepository} from "../repositories/posts-query-mongoose-reposit
 import {CommentsRepository} from "../repositories/comments-mongoose-repository";
 import {DevicesRepository} from "../repositories/devices-mongoose-repository";
 import {JwtService} from "../application/jwt-service";
+import {ExpiredTokenRepository} from "../repositories/expiredToken-mongoose-repository";
+// import {jwtService} from "../composition-root";
 
 const usersRepository = new UsersRepository()
 const blogsRepository = new BlogsRepository()
 const postsQueryMongooseRepository = new PostsQueryRepository()
 const commentsRepository = new CommentsRepository()
 const devicesRepository = new DevicesRepository()
-const jwtServices = new JwtService()
+const expiredTokenRepository = new ExpiredTokenRepository()
+const jwtService = new JwtService(expiredTokenRepository, devicesRepository)
 
 
 const loginUser = async (): Promise<{ accessToken: string }> => {
@@ -162,7 +165,7 @@ describe('Mongoose integration', () => {
 
         it('should login and return accessToken from correct input date', async () => {
             const user = await usersRepository.findUserByLoginOrEmail("Leha")
-            const accessTokenByUserId = await jwtServices.createAccessJWT(user!._id.toString())
+            const accessTokenByUserId = await jwtService.createAccessJWT(user!._id.toString())
             // const userId = user!._id.toString()
             // const accessTokenByUserId = await jwt.sign({userId}, settings.JWT_SECRET, {expiresIn: '600000'})
 
@@ -181,12 +184,12 @@ describe('Mongoose integration', () => {
             const foundUser = await usersRepository.findUserByLoginOrEmail("Leha")
             const device = await devicesRepository.findDeviceTestByUserId(foundUser!._id.toString())
 
-            const refreshTokenByDeviceId = await jwtServices.createRefreshJWT(device!._id.toString())
+            const refreshTokenByDeviceId = await jwtService.createRefreshJWT(device!._id.toString())
             // const deviceId = device!._id.toString()
             // const refreshTokenByDeviceId = await jwt.sign({deviceId}, settings.JWT_SECRET, {expiresIn: '1200000'})
 
 
-            const accessTokenByUserId = await jwtServices.createAccessJWT(foundUser!._id.toString())
+            const accessTokenByUserId = await jwtService.createAccessJWT(foundUser!._id.toString())
             // const userId = foundUser!._id.toString()
             // const accessTokenByUserId = await jwt.sign({userId}, settings.JWT_SECRET, {expiresIn: '600000'})
 
@@ -200,7 +203,7 @@ describe('Mongoose integration', () => {
 
         it('should return my date from new accessToken info', async () => {
             const foundUser = await usersRepository.findUserByLoginOrEmail("Leha")
-            const accessTokenByUserId = await jwtServices.createAccessJWT(foundUser!._id.toString())
+            const accessTokenByUserId = await jwtService.createAccessJWT(foundUser!._id.toString())
             // const userId = foundUser!._id.toString()
             // const accessTokenByUserId = await jwt.sign({userId}, settings.JWT_SECRET, {expiresIn: '600000'})
 
@@ -359,7 +362,7 @@ describe('Mongoose integration', () => {
     describe('/comments', () => {
         it('should create new comment from correct input data', async () => {
             const foundUser = await usersRepository.findUserByLogin("Leha")
-            const accessTokenByUserId = await jwtServices.createAccessJWT(foundUser!._id.toString())
+            const accessTokenByUserId = await jwtService.createAccessJWT(foundUser!._id.toString())
             // const userId = foundUser!._id.toString()
             // const accessTokenByUserId = await jwt.sign({userId}, settings.JWT_SECRET, {expiresIn: '600000'})
             const foundPost = await postsQueryMongooseRepository.findPostByTitle("new title post")
@@ -382,7 +385,7 @@ describe('Mongoose integration', () => {
 
         it('should update and check created comment', async () => {
             const foundUser = await usersRepository.findUserByLogin("Leha")
-            const accessTokenByUserId = await jwtServices.createAccessJWT(foundUser!._id.toString())
+            const accessTokenByUserId = await jwtService.createAccessJWT(foundUser!._id.toString())
             // const userId = foundUser!._id.toString()
             // const accessTokenByUserId = await jwt.sign({userId}, settings.JWT_SECRET, {expiresIn: '600000'})
             const foundPost = await postsQueryMongooseRepository.findPostByTitle("new title post")
@@ -397,7 +400,7 @@ describe('Mongoose integration', () => {
 
         it('should delete test comment', async () => {
             const foundUser = await usersRepository.findUserByLogin("Leha")
-            const accessTokenByUserId = await jwtServices.createAccessJWT(foundUser!._id.toString())
+            const accessTokenByUserId = await jwtService.createAccessJWT(foundUser!._id.toString())
             // const userId = foundUser!._id.toString()
             // const accessTokenByUserId = await jwt.sign({userId}, settings.JWT_SECRET, {expiresIn: '600000'})
             const foundPost = await postsQueryMongooseRepository.findPostByTitle("new title post")

@@ -4,6 +4,7 @@ import {HTTP_STATUSES} from "../utils/utils";
 import {JwtService} from "../application/jwt-service";
 import {UsersService} from "../application/users-service";
 import {RequestUserViewModel} from "../api/viewModels/UserViewModel";
+import {jwtService, usersService} from "../composition-root";
 
 // local?
 // export interface userByRequest extends Request {
@@ -17,8 +18,8 @@ declare global {
         }
     }
 }
-const jwtServices = new JwtService()
-const usersService = new UsersService()
+// const jwtServices = new JwtService()
+// const usersService = new UsersService()
 
 export const authBasicMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const auth = {login: 'admin', password: 'qwerty'} // change this
@@ -50,7 +51,7 @@ debugger
 debugger
     const token = req.headers.authorization.split(' ')[1]
 debugger
-    const user: any = await jwtServices.getUserIdByAccessToken(token)
+    const user: any = await jwtService.getUserIdByAccessToken(token)
     debugger
     if(user) {
         debugger
