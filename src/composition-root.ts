@@ -21,6 +21,7 @@ import {UsersController} from "./api/controllers/userController";
 import {PostsController} from "./api/controllers/postController";
 import {CommentsController} from "./api/controllers/commentController";
 import {SecurityDevicesController} from "./api/controllers/securityDevicesController";
+import {CommentsQueryRepository} from "./repositories/comments-query-repository";
 
 export const usersRepository = new UsersRepository()
 export const blogsRepository = new BlogsRepository()
@@ -29,6 +30,7 @@ const usersQueryRepository = new UsersQueryRepository()
 const postsRepository = new PostsRepository()
 const postsQueryRepository = new PostsQueryRepository()
 const commentsRepository = new CommentsRepository()
+const commentsQueryRepository = new CommentsQueryRepository()
 const devicesRepository = new DevicesRepository()
 export const expiredTokenRepository = new ExpiredTokenRepository()
 const requestForApiRepository = new RequestForApiRepository()
@@ -44,6 +46,6 @@ export const securityDevicesService = new SecurityDevicesService(devicesReposito
 export const authController = new AuthController(usersService, jwtService, authService, securityDevicesService)
 export const usersController = new UsersController(usersService, usersQueryRepository)
 export const blogController = new BlogController(blogsQueryRepository, blogService, postsService)
-export const postsController = new PostsController(postsService, commentsService)
-export const commentsController = new CommentsController(commentsService)
+export const postsController = new PostsController(postsService, commentsService, postsQueryRepository, commentsQueryRepository)
+export const commentsController = new CommentsController(commentsService, commentsQueryRepository)
 export const securityDevicesController = new SecurityDevicesController(securityDevicesService)

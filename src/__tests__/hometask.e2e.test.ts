@@ -379,6 +379,12 @@ describe('Mongoose integration', () => {
                 commentatorInfo: {
                     userId: expect(res_.body.commentatorInfo.userId).toEqual(foundUser!._id.toString()),
                     userLogin: expect(res_.body.commentatorInfo.userLogin).toEqual("Leha")
+                },
+                createdAt: expect(res_.body.createdAt).toEqual(expect.any(String)),
+                likesInfo: {
+                    likesCount: expect(res_.body.likesInfo.likesCount).toEqual(0),
+                    dislikesCount: expect(res_.body.likesInfo.dislikesCount).toEqual(0),
+                    myStatus: expect(res_.body.likesInfo.myStatus).toEqual("None")
                 }
             })
         })

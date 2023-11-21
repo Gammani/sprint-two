@@ -1,12 +1,16 @@
-type CommentatorInfo = {
+import {LikesInfoType} from "../../utils/types";
+
+type CommentatorInfoType = {
     userId: string
     userLogin: string
 }
+
 export type CommentViewModel = {
     id: string
     content: string
-    commentatorInfo: CommentatorInfo
+    commentatorInfo: CommentatorInfoType
     createdAt: string
+    likesInfo: LikesInfoType
 }
 
 export type CommentsWithPaginationViewModel = {

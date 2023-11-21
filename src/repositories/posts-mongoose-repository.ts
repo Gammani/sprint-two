@@ -1,6 +1,6 @@
 import {PostsWithPaginationViewModel, PostViewModel} from "../models/PostViewModel";
 import {PostModel} from "../mongo/post/post.model";
-import {Post} from "../utils/types";
+import {Post, PostDbType} from "../utils/types";
 
 
 export class PostsRepository {
@@ -64,8 +64,8 @@ export class PostsRepository {
         }
     }
 
-    async findPostById(id: string): Promise<PostViewModel | null> {
-        const post: PostViewModel | null = await PostModel.findOne({_id: id})
+    async findPostById(id: string): Promise<PostDbType | null> {
+        const post: PostDbType | null = await PostModel.findOne({_id: id})
         if (post) {
             return post;
         } else {

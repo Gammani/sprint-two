@@ -1,13 +1,14 @@
 import {RequestUserViewModel} from "../api/viewModels/UserViewModel";
 import {CommentsWithPaginationViewModel, CommentViewModel} from "../api/viewModels/CommentViewModel";
 import {PostViewModel} from "../models/PostViewModel";
-import {CommentDBType} from "../utils/types";
+import {CommentDBType, LikeDbType, LikesInfoType, LikeStatus, PostDbType} from "../utils/types";
 import {ObjectId} from "mongodb";
 import {CommentsRepository} from "../repositories/comments-mongoose-repository";
 import {PostsRepository} from "../repositories/posts-mongoose-repository";
 
 export class CommentsService {
-    constructor(protected commentsRepository: CommentsRepository, protected postsRepository: PostsRepository) {}
+    constructor(protected commentsRepository: CommentsRepository, protected postsRepository: PostsRepository) {
+    }
 
     async findComments(
         pageNumber: string,
@@ -24,12 +25,15 @@ export class CommentsService {
             postId
         )
     }
-    async findCommentById(id: string): Promise<CommentViewModel | null> {
+
+    async findCommentById(id: string): Promise<CommentDBType | null> {
         return await this.commentsRepository.findCommentById(id)
     }
-    async createComment(content: string, user: RequestUserViewModel | undefined | null, postId: string): Promise<CommentViewModel | null> {
-        const foundPost: PostViewModel | null = await this.postsRepository.findPostById(postId)
-        if(foundPost) {
+
+    async createComment(content: string, user: RequestUserViewModel | undefined | null, postId: string): Promise<CommentDBType | null> {
+        const foundPost: PostDbType | null = await this.postsRepository.findPostById(postId)
+        if (foundPost) {
+
             const createdComment: CommentDBType = {
                 _id: new ObjectId,
                 content: content,
@@ -38,7 +42,13 @@ export class CommentsService {
                     userLogin: user!.login
                 },
                 createdAt: new Date().toISOString(),
-                _postId: postId
+                _postId: new ObjectId(postId),
+                _blogId: new ObjectId(foundPost.blogId),
+                likesInfo: {
+                    likesCount: 0,
+                    dislikesCount: 0,
+                    myStatus: LikeStatus.None
+                }
             }
 
             return await this.commentsRepository.createComment(createdComment)
@@ -46,12 +56,15 @@ export class CommentsService {
             return null
         }
     }
+
     async updateComment(commentId: string, content: string): Promise<boolean> {
         return await this.commentsRepository.updateComment(commentId, content)
     }
+
     async deleteComment(id: string): Promise<boolean> {
         return await this.commentsRepository.deleteComment(id)
     }
+
     async deleteAll() {
         return await this.commentsRepository.deleteAll()
     }

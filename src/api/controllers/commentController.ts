@@ -4,14 +4,17 @@ import {URIParamsCommentComIdModel, URIParamsCommentIdModel} from "../inputModel
 import {Response} from "express";
 import {HTTP_STATUSES} from "../../utils/utils";
 import {RequestCommentWithContent} from "../../models/CreateCommentModel";
-import {CommentViewModel} from "../viewModels/CommentViewModel";
+import {CommentsQueryRepository} from "../../repositories/comments-query-repository";
+import {CommentDBType} from "../../utils/types";
 
 export class CommentsController {
-    constructor(protected commentsService: CommentsService) {
+    constructor(
+        protected commentsService: CommentsService,
+        protected commentsQueryRepository: CommentsQueryRepository) {
     }
 
     async getCommentById(req: RequestWithParams<URIParamsCommentIdModel>, res: Response) {
-        const foundComment = await this.commentsService.findCommentById(req.params.id)
+        const foundComment = await this.commentsQueryRepository.findCommentById(req.params.id)
         if (foundComment) {
             res.send(foundComment)
         } else {
@@ -23,7 +26,7 @@ export class CommentsController {
         // console.log("req.user = ", +req.user!.userId)
         // console.log("idUserByComment?.commentatorInfo.userId = ", +idUserByComment!.commentatorInfo.userId)
         // console.log(+req.user!.userId === +idUserByComment!.commentatorInfo.userId)
-        const foundComment: CommentViewModel | null = await this.commentsService.findCommentById(req.params.commentId)
+        const foundComment: CommentDBType | null = await this.commentsService.findCommentById(req.params.commentId)
         if (foundComment) {
             const idUserByComment = await this.commentsService.findCommentById(req.params.commentId)
             if (req.user!.userId === idUserByComment!.commentatorInfo.userId) {
@@ -38,7 +41,7 @@ export class CommentsController {
     }
 
     async removeCommentById(req: RequestWithParams<URIParamsCommentComIdModel>, res: Response) {
-        const foundComment: CommentViewModel | null = await this.commentsService.findCommentById(req.params.commentId)
+        const foundComment: CommentDBType | null = await this.commentsService.findCommentById(req.params.commentId)
         if (foundComment) {
             const idUserByComment = await this.commentsService.findCommentById(req.params.commentId)
             if (req.user!.userId === idUserByComment!.commentatorInfo.userId) {

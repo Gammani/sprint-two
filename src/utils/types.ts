@@ -42,7 +42,7 @@ export class Post {
         public content: string,
         public blogId: string,
         public blogName: string,
-        public createdAt: string
+        public createdAt: string,
     ) {
     }
 }
@@ -100,17 +100,44 @@ export class User {
     }
 }
 
+// Comment
 export type CommentatorInfoType = {
     userId: string
     userLogin: string
 }
+
+export enum LikeStatus {
+    Like = 'Like',
+    Dislike = 'Dislike',
+    None = "None"
+}
+
+export type LikesInfoType = {
+    likesCount: number
+    dislikesCount: number
+    myStatus: LikeStatus
+}
+
 export type CommentDBType = WithId<{
     content: string
     commentatorInfo: CommentatorInfoType
     createdAt: string
-    _postId: string
+    _postId: ObjectId
+    _blogId: ObjectId
+    likesInfo: LikesInfoType
 }>
 
+export class Comment {
+    constructor(
+        public content: string,
+        public commentatorInfo: CommentatorInfoType,
+        public createdAt: string,
+        public _postId: ObjectId,
+        public _blogId: ObjectId,
+        public likesInfo: LikesInfoType
+    ) {
+    }
+}
 
 type ErrorsMessageType = {
     message: string
@@ -145,24 +172,21 @@ type DeviceType = {
 }
 export type DeviceDbType = WithId<DeviceType>
 
-// enum LikeStatus {
-//     Like,
-//     Dislike,
-//     None
-// }
 
-export const LikeStatus = {
-    LIKE: 'Like',
-    DISLIKE: 'Dislike',
-    NONE: 'None'
-}
+// LIKE
+
+// export const LikeStatus = {
+//     LIKE: 'Like' as const,
+//     DISLIKE: 'Dislike' as const,
+//     NONE: 'None' as const
+// }
 
 export type LikeDbType = WithId<{
     userId: ObjectId
     blogId: ObjectId
     postId: ObjectId
     commentId: ObjectId
-    likeStatus: typeof LikeStatus
+    likeStatus: LikeStatus
     createdAt: Date
     lastUpdate: Date
 }>

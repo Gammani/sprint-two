@@ -3,7 +3,8 @@ import {CommentsService} from "../../application/comments-service";
 import {
     RequestWithBody,
     RequestWithParams,
-    RequestWithParamsAndBody, RequestWithParamsAndQuery,
+    RequestWithParamsAndBody,
+    RequestWithParamsAndQuery,
     RequestWithQuery
 } from "../inputModels/inputModels";
 import {QueryPostsModel} from "../../models/QueryPostsModel";
@@ -16,10 +17,15 @@ import {UpdatePostModel} from "../../models/UpdatePostModel";
 import {QueryCommentsModel} from "../../models/QueryCommentsModel";
 import {CommentsWithPaginationViewModel, CommentViewModel} from "../viewModels/CommentViewModel";
 import {RequestCommentWithContent} from "../../models/CreateCommentModel";
+import {CommentDBType, PostDbType} from "../../utils/types";
+import {PostsQueryRepository} from "../../repositories/posts-query-mongoose-repository";
+import {CommentsQueryRepository} from "../../repositories/comments-query-repository";
 
 export class PostsController {
     constructor(protected postsService: PostsService,
-                protected commentsService: CommentsService) {
+                protected commentsService: CommentsService,
+                protected postsQueryRepository: PostsQueryRepository,
+                protected commentsQueryRepository: CommentsQueryRepository) {
     }
 
     async getPosts(req: RequestWithQuery<QueryPostsModel>, res: Response<PostsWithPaginationViewModel>) {
@@ -33,7 +39,7 @@ export class PostsController {
     }
 
     async getPostById(req: RequestWithParams<URIParamsPostIdModel>, res: Response<PostViewModel>) {
-        const foundPost: PostViewModel | null = await this.postsService.findPostById(req.params.id)
+        const foundPost: PostViewModel | null = await this.postsQueryRepository.findPostById(req.params.id)
         if (foundPost) {
             res.send(foundPost)
         } else {
@@ -73,7 +79,7 @@ export class PostsController {
 
 // Comments from post    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     async getCommentsByPostId(req: RequestWithParamsAndQuery<URIParamsPostIdPostModel, QueryCommentsModel>, res: Response<CommentsWithPaginationViewModel | any>) {
-        const foundPost: PostViewModel | null = await this.postsService.findPostById(req.params.postId!)
+        const foundPost: PostDbType | null = await this.postsService.findPostById(req.params.postId!)
         if (foundPost) {
             const foundComments: CommentsWithPaginationViewModel = await this.commentsService.findComments(
                 req.query.pageNumber,
@@ -89,11 +95,12 @@ export class PostsController {
     }
 
     async createCommentByPostId(req: RequestWithParamsAndBody<URIParamsPostIdPostModel, RequestCommentWithContent>, res: Response) {
-        const foundPost: PostViewModel | null = await this.postsService.findPostById(req.params.postId!)
+        const foundPost: PostDbType | null = await this.postsService.findPostById(req.params.postId!)
         if (foundPost) {
-            const newComment: CommentViewModel | null = await this.commentsService.createComment(req.body.content, req.user, req.params.postId)
+            const newComment: CommentDBType | null = await this.commentsService.createComment(req.body.content, req.user, req.params.postId)
             if (newComment) {
-                res.status(HTTP_STATUSES.CREATED_201).send(newComment)
+                const foundComment: CommentViewModel | null = await this.commentsQueryRepository.findCommentById(newComment._id.toString())
+                    res.status(HTTP_STATUSES.CREATED_201).send(foundComment)
             } else {
                 res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
             }

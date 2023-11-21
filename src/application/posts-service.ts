@@ -1,6 +1,6 @@
 import {PostsWithPaginationViewModel, PostViewModel} from "../models/PostViewModel";
 import {BlogViewModel} from "../api/viewModels/BlogViewModel";
-import {Post} from "../utils/types";
+import {Post, PostDbType} from "../utils/types";
 import {ObjectId} from "mongodb";
 import {PostsRepository} from "../repositories/posts-mongoose-repository";
 import {BlogsRepository} from "../repositories/blogs-mongoose-repository";
@@ -26,7 +26,7 @@ export class PostsService {
             blogId
         )
     }
-    async findPostById(id: string): Promise<PostViewModel | null> {
+    async findPostById(id: string): Promise<PostDbType | null> {
         return await this.postsRepository.findPostById(id)
     }
     async createPost(title: string, shortDescription: string, content: string, blogId: string): Promise<PostViewModel | null> {
