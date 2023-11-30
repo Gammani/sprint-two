@@ -6,15 +6,20 @@ import {HTTP_STATUSES} from "../../utils/utils";
 import {RequestCommentWithContent} from "../../models/CreateCommentModel";
 import {CommentsQueryRepository} from "../../repositories/comments-query-repository";
 import {CommentDBType} from "../../utils/types";
+import {LikeStatusService} from "../../application/like-status-service";
+import {RequestCommentWithLikeStatus} from "../../models/CreateLikeStatusModel";
+import {CommentViewModel} from "../viewModels/CommentViewModel";
 
 export class CommentsController {
     constructor(
         protected commentsService: CommentsService,
-        protected commentsQueryRepository: CommentsQueryRepository) {
+        protected commentsQueryRepository: CommentsQueryRepository,
+        protected likeStatusService: LikeStatusService
+    ) {
     }
 
     async getCommentById(req: RequestWithParams<URIParamsCommentIdModel>, res: Response) {
-        const foundComment = await this.commentsQueryRepository.findCommentById(req.params.id)
+        const foundComment: CommentViewModel | null = await this.commentsQueryRepository.findCommentById(req.params.id)
         if (foundComment) {
             res.send(foundComment)
         } else {
@@ -28,13 +33,26 @@ export class CommentsController {
         // console.log(+req.user!.userId === +idUserByComment!.commentatorInfo.userId)
         const foundComment: CommentDBType | null = await this.commentsService.findCommentById(req.params.commentId)
         if (foundComment) {
-            const idUserByComment = await this.commentsService.findCommentById(req.params.commentId)
-            if (req.user!.userId === idUserByComment!.commentatorInfo.userId) {
+            // const idUserByComment = await this.commentsService.findCommentById(req.params.commentId)
+            if (req.user!.userId === foundComment.commentatorInfo.userId) {
                 const isUpdate: boolean = await this.commentsService.updateComment(req.params.commentId, req.body.content)
                 res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
             } else {
                 res.sendStatus(HTTP_STATUSES.FORBIDDEN_403)
             }
+        } else {
+            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
+        }
+    }
+
+    async updateLikeStatus(req: RequestWithParamsAndBody<URIParamsCommentComIdModel, RequestCommentWithLikeStatus>, res: Response) {
+        const foundComment: CommentDBType | null = await this.commentsService.findCommentById(req.params.commentId)
+        if (foundComment) {
+
+            const isCreated = await this.likeStatusService.createLike(foundComment, req.body.likeStatus)
+
+            res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+
         } else {
             res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
         }

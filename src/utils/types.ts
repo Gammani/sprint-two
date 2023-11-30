@@ -198,7 +198,7 @@ export class Like {
         public blogId: ObjectId,
         public postId: ObjectId,
         public commentId: ObjectId,
-        public likeStatus: typeof LikeStatus,
+        public likeStatus: LikeStatus,
         public createdAt: Date,
         public lastUpdate: Date
     ) {

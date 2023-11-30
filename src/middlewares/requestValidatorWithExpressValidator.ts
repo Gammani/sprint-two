@@ -1,6 +1,6 @@
 import {NextFunction, Request, Response} from "express";
 import {body, CustomValidator, validationResult} from "express-validator";
-import {ErrorsType} from "../utils/types";
+import {CommentDBType, ErrorsType} from "../utils/types";
 import {BlogViewModel} from "../api/viewModels/BlogViewModel";
 import {HTTP_STATUSES} from "../utils/utils";
 import {JwtService} from "../application/jwt-service";
@@ -14,8 +14,9 @@ import {
     expiredTokenRepository,
     jwtService,
     securityDevicesService,
+    likeStatusService,
     usersRepository,
-    usersService
+    usersService, commentsService
 } from "../composition-root";
 
 
@@ -80,6 +81,51 @@ export const createPostWithoutBlogIdValidation = [
 export const commentValidation = [
     body('content').isString().trim().notEmpty().isLength({max: 300, min: 20})
 ]
+
+export const likeStatusValidation = async (req: Request, res: Response, next: NextFunction) => {
+    debugger
+    if(!req.body.likeStatus) {
+        res.status(HTTP_STATUSES.BAD_REQUEST_400).send(
+            {
+                errorsMessages: [
+                    {
+                        message: "Не валидное поле",
+                        field: "likeStatus"
+                    }
+                ]
+            }
+        )
+        return
+    }
+    debugger
+    if(req.body.likeStatus !== 'None' && req.body.likeStatus !== 'Like' && req.body.likeStatus !== 'Dislike') {
+        res.status(HTTP_STATUSES.BAD_REQUEST_400).send(
+            {
+                errorsMessages: [
+                    {
+                        message: "Не валидное поле",
+                        field: "likeStatus"
+                    }
+                ]
+            }
+        )
+        return
+    }
+debugger
+    const foundComment: CommentDBType | null = await commentsService.findCommentById(req.params.commentId)
+    if(foundComment) {
+        // // должно быть экшнен какой то типа снять лайл если лайк
+        // if(foundComment.likesInfo.myStatus === req.body.likeStatus) {
+        //     res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+        // } else {
+        //     next()
+        // }
+        next()
+
+    } else {
+        res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
+    }
+}
 
 export const checkedValidation = (req: Request, res: Response, next: NextFunction) => {
     const error = validationResult(req).mapped();

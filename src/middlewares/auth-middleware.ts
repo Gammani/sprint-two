@@ -67,4 +67,23 @@ debugger
         res.send(HTTP_STATUSES.NO_UNAUTHORIZED_401)
     }
 }
+export const isTokenInsideHeader = async (req: Request, res: Response, next: NextFunction) => {
+    if(req.headers.authorization) {
+        const token = req.headers.authorization.split(' ')[1]
+        const user: any = await jwtService.getUserIdByAccessToken(token)
+        if(user) {
+            const foundUser: any = await usersService.findUserById(user.userId)
+            req.user = {
+                email: foundUser!.accountData.email,
+                login: foundUser!.accountData.login,
+                userId: foundUser!._id.toString()
+            }
+            next()
+        } else {
+            next()
+        }
+    } else {
+        next()
+    }
+}
 

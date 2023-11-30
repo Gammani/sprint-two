@@ -78,17 +78,56 @@ export class PostsController {
     }
 
 // Comments from post    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//     async getCommentsByPostId(req: RequestWithParamsAndQuery<URIParamsPostIdPostModel, QueryCommentsModel>, res: Response<CommentsWithPaginationViewModel | any>) {
+//         const foundPost: PostDbType | null = await this.postsService.findPostById(req.params.postId!)
+//         if (foundPost) {
+//             if(req.user) {
+//                 const foundCommentsWithUser: CommentsWithPaginationViewModel = await this.commentsService.findComments(
+//                     req.query.pageNumber,
+//                     req.query.pageSize,
+//                     req.query.sortBy,
+//                     req.query.sortDirection,
+//                     req.params.postId
+//                 )
+//                 res.send(foundComments)
+//             } else {
+//                 const foundCommentsWithUserNoName: CommentsWithPaginationViewModel = await this.commentsService.findComments(
+//                     req.query.pageNumber,
+//                     req.query.pageSize,
+//                     req.query.sortBy,
+//                     req.query.sortDirection,
+//                     req.params.postId
+//                 )
+//                 res.send(foundCommentsWithUserNoName)
+//             }
+//         } else {
+//             res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
+//         }
+//     }
+
     async getCommentsByPostId(req: RequestWithParamsAndQuery<URIParamsPostIdPostModel, QueryCommentsModel>, res: Response<CommentsWithPaginationViewModel | any>) {
         const foundPost: PostDbType | null = await this.postsService.findPostById(req.params.postId!)
         if (foundPost) {
-            const foundComments: CommentsWithPaginationViewModel = await this.commentsService.findComments(
-                req.query.pageNumber,
-                req.query.pageSize,
-                req.query.sortBy,
-                req.query.sortDirection,
-                req.params.postId
-            )
-            res.send(foundComments)
+            if(req.user) {
+                const foundCommentsWithUser: CommentsWithPaginationViewModel = await this.commentsQueryRepository.findComments(
+                    req.query.pageNumber,
+                    req.query.pageSize,
+                    req.query.sortBy,
+                    req.query.sortDirection,
+                    req.params.postId,
+                    req.user.userId
+                )
+                res.send(foundCommentsWithUser)
+            } else {
+                const foundCommentsWithUserNoName: CommentsWithPaginationViewModel = await this.commentsQueryRepository.findComments(
+                    req.query.pageNumber,
+                    req.query.pageSize,
+                    req.query.sortBy,
+                    req.query.sortDirection,
+                    req.params.postId
+                )
+                res.send(foundCommentsWithUserNoName)
+            }
         } else {
             res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
         }
@@ -100,7 +139,7 @@ export class PostsController {
             const newComment: CommentDBType | null = await this.commentsService.createComment(req.body.content, req.user, req.params.postId)
             if (newComment) {
                 const foundComment: CommentViewModel | null = await this.commentsQueryRepository.findCommentById(newComment._id.toString())
-                    res.status(HTTP_STATUSES.CREATED_201).send(foundComment)
+                res.status(HTTP_STATUSES.CREATED_201).send(foundComment)
             } else {
                 res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
             }

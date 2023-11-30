@@ -5,26 +5,64 @@ import {CommentDBType, LikeDbType, LikesInfoType, LikeStatus, PostDbType} from "
 import {ObjectId} from "mongodb";
 import {CommentsRepository} from "../repositories/comments-mongoose-repository";
 import {PostsRepository} from "../repositories/posts-mongoose-repository";
+import {CommentsQueryRepository} from "../repositories/comments-query-repository";
 
 export class CommentsService {
-    constructor(protected commentsRepository: CommentsRepository, protected postsRepository: PostsRepository) {
+    constructor(
+        protected commentsRepository: CommentsRepository,
+        protected postsRepository: PostsRepository,
+        protected commentsQueryRepository: CommentsQueryRepository
+    ) {
     }
 
-    async findComments(
-        pageNumber: string,
-        pageSize: string,
-        sortBy: string,
-        sortDirection: string,
-        postId: string
-    ): Promise<CommentsWithPaginationViewModel> {
-        return await this.commentsRepository.findComments(
-            pageNumber,
-            pageSize,
-            sortBy,
-            sortDirection,
-            postId
-        )
-    }
+    // async findComments(
+    //     pageNumber: string,
+    //     pageSize: string,
+    //     sortBy: string,
+    //     sortDirection: string,
+    //     postId: string
+    // ): Promise<CommentsWithPaginationViewModel> {
+    //     return await this.commentsRepository.findComments(
+    //         pageNumber,
+    //         pageSize,
+    //         sortBy,
+    //         sortDirection,
+    //         postId
+    //     )
+    // }
+
+    // async findCommentsWithUser(
+    //     pageNumber: string,
+    //     pageSize: string,
+    //     sortBy: string,
+    //     sortDirection: string,
+    //     postId: string,
+    //     userId: string
+    // ): Promise<CommentsWithPaginationViewModel> {
+    //     return await this.commentsRepository.findComments(
+    //         pageNumber,
+    //         pageSize,
+    //         sortBy,
+    //         sortDirection,
+    //         postId
+    //     )
+    // }
+    //
+    // async findCommentsWithUserWithUserNoName(
+    //     pageNumber: string,
+    //     pageSize: string,
+    //     sortBy: string,
+    //     sortDirection: string,
+    //     postId: string
+    // ): Promise<CommentsWithPaginationViewModel> {
+    //     return await this.commentsRepository.findComments(
+    //         pageNumber,
+    //         pageSize,
+    //         sortBy,
+    //         sortDirection,
+    //         postId
+    //     )
+    // }
 
     async findCommentById(id: string): Promise<CommentDBType | null> {
         return await this.commentsRepository.findCommentById(id)

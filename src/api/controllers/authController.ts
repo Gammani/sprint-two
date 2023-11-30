@@ -27,8 +27,8 @@ export class AuthController {
             const accessToken = await this.jwtServices.createAccessJWT(user._id.toString())
             const refreshToken = await this.jwtServices.createRefreshJWT(device.deviceId)
 
-            res.cookie('refreshToken', refreshToken, {httpOnly: false, secure: false})  // local
-            // res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true})
+            // res.cookie('refreshToken', refreshToken, {httpOnly: false, secure: false})  // local
+            res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true})
 
             res.status(HTTP_STATUSES.OK_200).send({accessToken: accessToken})
         } else {
@@ -77,8 +77,8 @@ export class AuthController {
             const accessToken = await this.jwtServices.createAccessJWT(user.userId)
             const refreshToken = await this.jwtServices.createRefreshJWT(user.deviceId!)
 
-            res.cookie('refreshToken', refreshToken, {httpOnly: false, secure: false}) // local
-            // res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true})
+           // res.cookie('refreshToken', refreshToken, {httpOnly: false, secure: false}) // local
+            res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true})
 
             res.status(HTTP_STATUSES.OK_200).send({accessToken: accessToken})
         }
@@ -86,8 +86,8 @@ export class AuthController {
 
     async logout(req: Request, res: Response) {
         await this.securityDevicesService.deleteCurrentSessionById(req.user!.deviceId!)
-        res.cookie('refreshToken', "", {httpOnly: false, secure: false})   // local
-        // res.cookie('refreshToken', "", {httpOnly: true, secure: true})
+        // res.cookie('refreshToken', "", {httpOnly: false, secure: false})   // local
+        res.cookie('refreshToken', "", {httpOnly: true, secure: true})
         res.send(HTTP_STATUSES.NO_CONTENT_204)
     }
 

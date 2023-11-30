@@ -1,6 +1,10 @@
 import {Router} from "express";
 import {authBearerMiddleware} from "../../middlewares/auth-middleware";
-import {checkedValidation, commentValidation} from "../../middlewares/requestValidatorWithExpressValidator";
+import {
+    checkedValidation,
+    commentValidation,
+    likeStatusValidation
+} from "../../middlewares/requestValidatorWithExpressValidator";
 import {commentsController} from "../../composition-root";
 
 export const commentsRouter = Router({})
@@ -13,6 +17,11 @@ commentsRouter.put('/:commentId',
     checkedValidation,
     commentsController.updateCommentById.bind(commentsController)
 )
+commentsRouter.put('/:commentId/like-status',
+    authBearerMiddleware,
+    likeStatusValidation,
+    commentsController.updateLikeStatus.bind(commentsController)
+    )
 commentsRouter.delete('/:commentId',
     authBearerMiddleware,
     commentsController.removeCommentById.bind(commentsController)

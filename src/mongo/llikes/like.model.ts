@@ -8,7 +8,7 @@ export const LikeSchema = new mongoose.Schema<LikeDbType>({
     blogId: {type: ObjectId, required: true},
     postId: {type: ObjectId, required: true},
     commentId: {type: ObjectId, required: true},
-    likeStatus: {type: String, enum: Object.keys(LikeStatus), required: true},
+    likeStatus: {type: String, enum: LikeStatus, required: true},
     createdAt: {type: Date, required: true},
     lastUpdate: {type: Date, required: true}
 })

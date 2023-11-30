@@ -1,5 +1,5 @@
 import {Router} from "express";
-import {authBasicMiddleware, authBearerMiddleware} from "../../middlewares/auth-middleware";
+import {authBasicMiddleware, authBearerMiddleware, isTokenInsideHeader} from "../../middlewares/auth-middleware";
 import {
     checkedValidation,
     commentValidation,
@@ -11,8 +11,12 @@ import {postsController} from "../../composition-root";
 export const postsRouter = Router({})
 
 
-postsRouter.get('/', postsController.getPosts.bind(postsController))
-postsRouter.get('/:id', postsController.getPostById.bind(postsController))
+postsRouter.get('/',
+    postsController.getPosts.bind(postsController)
+)
+postsRouter.get('/:id',
+    postsController.getPostById.bind(postsController)
+)
 postsRouter.post('/',
     authBasicMiddleware,
     postValidation,
@@ -30,7 +34,10 @@ postsRouter.delete('/:id',
     postsController.removePostByIdByAdmin.bind(postsController)
 )
 // Comments from post    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-postsRouter.get('/:postId/comments', postsController.getCommentsByPostId.bind(postsController))
+postsRouter.get('/:postId/comments',
+    isTokenInsideHeader,
+    postsController.getCommentsByPostId.bind(postsController)
+)
 postsRouter.post('/:postId/comments',
     authBearerMiddleware,
     commentValidation,
