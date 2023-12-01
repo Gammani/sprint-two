@@ -5,10 +5,11 @@ import {Response} from "express";
 import {HTTP_STATUSES} from "../../utils/utils";
 import {RequestCommentWithContent} from "../../models/CreateCommentModel";
 import {CommentsQueryRepository} from "../../repositories/comments-query-repository";
-import {CommentDBType} from "../../utils/types";
+import {CommentDBType, LikeDbType} from "../../utils/types";
 import {LikeStatusService} from "../../application/like-status-service";
 import {RequestCommentWithLikeStatus} from "../../models/CreateLikeStatusModel";
 import {CommentViewModel} from "../viewModels/CommentViewModel";
+import {ObjectId} from "mongodb";
 
 export class CommentsController {
     constructor(
@@ -19,9 +20,15 @@ export class CommentsController {
     }
 
     async getCommentById(req: RequestWithParams<URIParamsCommentIdModel>, res: Response) {
-        const foundComment: CommentViewModel | null = await this.commentsQueryRepository.findCommentById(req.params.id)
+        const foundComment: CommentDBType | null = await this.commentsService.findCommentById(req.params.id)
         if (foundComment) {
-            res.send(foundComment)
+            if(req.user) {
+                const foundCommentWithUser = await this.commentsQueryRepository.findCommentById(req.params.id, new ObjectId(req.user.userId))
+                res.send(foundCommentWithUser)
+            } else {
+                const foundCommentWithUserNoName = await this.commentsQueryRepository.findCommentById(req.params.id)
+                res.send(foundCommentWithUserNoName)
+            }
         } else {
             res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
         }
@@ -47,11 +54,19 @@ export class CommentsController {
 
     async updateLikeStatus(req: RequestWithParamsAndBody<URIParamsCommentComIdModel, RequestCommentWithLikeStatus>, res: Response) {
         const foundComment: CommentDBType | null = await this.commentsService.findCommentById(req.params.commentId)
+        console.log("req.params.commentId = ", req.params.commentId)
         if (foundComment) {
 
-            const isCreated = await this.likeStatusService.createLike(foundComment, req.body.likeStatus)
+            const foundLikeFromUser: LikeDbType | null = await this.likeStatusService.findLike(foundComment._id, new ObjectId(req.user!.userId))
 
-            res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+            if(foundLikeFromUser) {
+                const isUpdated = await this.likeStatusService.updateLikeStatus(req.body.likeStatus, foundLikeFromUser)
+                res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+            } else {
+                const isCreated = await this.likeStatusService.createLike(foundComment, req.body.likeStatus)
+
+                res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+            }
 
         } else {
             res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)

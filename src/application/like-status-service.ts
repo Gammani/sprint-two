@@ -32,9 +32,15 @@ export class LikeStatusService {
                 lastUpdate: new Date()
             }
             return await this.likeMongooseRepository.createLike(createdLike)
+        } else {
+            return
         }
 
-
-
     }
+
+    async updateLikeStatus(likeStatus: LikeStatus, like: LikeDbType) {
+        const isUpdate = await this.likeMongooseRepository.updateLikeStatus(likeStatus, like)
+        return isUpdate
+    }
+
 }

@@ -1,5 +1,5 @@
 import {Router} from "express";
-import {authBearerMiddleware} from "../../middlewares/auth-middleware";
+import {authBearerMiddleware, isTokenInsideHeader} from "../../middlewares/auth-middleware";
 import {
     checkedValidation,
     commentValidation,
@@ -10,7 +10,10 @@ import {commentsController} from "../../composition-root";
 export const commentsRouter = Router({})
 
 
-commentsRouter.get('/:id', commentsController.getCommentById.bind(commentsController))
+commentsRouter.get('/:id',
+    isTokenInsideHeader,
+    commentsController.getCommentById.bind(commentsController)
+)
 commentsRouter.put('/:commentId',
     authBearerMiddleware,
     commentValidation,

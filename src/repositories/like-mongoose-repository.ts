@@ -1,4 +1,4 @@
-import {CommentDBType, LikeDbType} from "../utils/types";
+import {CommentDBType, LikeDbType, LikeStatus} from "../utils/types";
 import {ObjectId} from "mongodb";
 import {LikeModel} from "../mongo/llikes/like.model";
 
@@ -28,21 +28,12 @@ export class LikeMongooseRepository {
         return result
     }
 
-    // async getLikeInfo(comment: CommentDBType, userId?: string) {
-    //     let myStatus;
-    //
-    //     if (userId) {
-    //         myStatus = await LikeModel.find({commentId: comment._id, userId})
-    //     }
-    //
-    //     const result = {
-    //         id: comment._id.toString(),
-    //         likesInfo: {
-    //             likesCount: await LikeModel.count({commentId: comment._id, status: 'Like'}),
-    //             dislikesCount: await LikeModel.count({commentId: comment._id, status: 'Dislike'}),
-    //             myStatus: myStatus ?? 'None'
-    //         }
-    //     }
-    //     return result
-    // }
+    async updateLikeStatus(likeStatus: LikeStatus, like: LikeDbType) {
+        const result = await LikeModel.updateOne({_id: like._id}, {
+            $set: {
+                likeStatus: likeStatus
+            }
+        })
+        return result.matchedCount === 1
+    }
 }

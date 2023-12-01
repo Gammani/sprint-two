@@ -432,5 +432,19 @@ describe('Mongoose integration', () => {
         })
     })
 
+
+    it('should update like-status', async () => {
+        const foundUser = await usersRepository.findUserByLogin("Leha")
+        const accessTokenByUserId = await jwtService.createAccessJWT(foundUser!._id.toString())
+
+        const foundPost = await postsQueryMongooseRepository.findPostByTitle("new title post")
+        const foundComment = await commentsRepository.findCommentByPostId(foundPost!._id.toString())
+
+        await request(app)
+            .put(`/comments/${foundComment!._id}/like-status`)
+            .set('Authorization', `Bearer ${accessTokenByUserId}`)
+            .send({"likeStatus": "None"})
+            .expect(HTTP_STATUSES.NO_CONTENT_204)
+    })
 })
 
