@@ -450,7 +450,7 @@ describe('Mongoose integration', () => {
     it("should like to be 2", async () => {
         const Leha = await usersRepository.findUserByLogin("Leha")
         const accessTokenByLeha = await jwtService.createAccessJWT(Leha!._id.toString())
-        const admin = await usersRepository.findUserByLogin("Leha")
+        const admin = await usersRepository.findUserByLogin("admin")
         const accessTokenByAdmin = await jwtService.createAccessJWT(admin!._id.toString())
 
         const foundPost = await postsQueryMongooseRepository.findPostByTitle("new title post")
@@ -481,7 +481,7 @@ describe('Mongoose integration', () => {
             },
             createdAt: expect(res_.body.createdAt).toEqual(expect.any(String)),
             likesInfo: {
-                likesCount: expect(res_.body.likesInfo.likesCount).toEqual(1),
+                likesCount: expect(res_.body.likesInfo.likesCount).toEqual(2),
                 dislikesCount: expect(res_.body.likesInfo.dislikesCount).toEqual(0),
                 myStatus: expect(res_.body.likesInfo.myStatus).toEqual("None")
             }
