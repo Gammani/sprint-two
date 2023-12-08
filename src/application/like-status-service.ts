@@ -17,13 +17,14 @@ export class LikeStatusService {
         }
     }
 
-    async createLike(comment: CommentDBType, likeStatus: LikeStatus) {
-        const foundLike = await this.findLike(comment._id, new ObjectId(comment.commentatorInfo.userId))
+    async createLike(comment: CommentDBType, likeStatus: LikeStatus, userId: ObjectId) {
+        debugger
+        const foundLike = await this.findLike(comment._id, new ObjectId(userId))
 
         if(!foundLike) {
             const createdLike: LikeDbType = {
                 _id: new ObjectId,
-                userId: new ObjectId(comment.commentatorInfo.userId),
+                userId: userId,
                 blogId: comment._blogId,
                 postId: comment._postId,
                 commentId: comment._id,

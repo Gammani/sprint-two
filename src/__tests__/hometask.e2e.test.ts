@@ -446,5 +446,46 @@ describe('Mongoose integration', () => {
             .send({"likeStatus": "None"})
             .expect(HTTP_STATUSES.NO_CONTENT_204)
     })
+
+    it("should like to be 2", async () => {
+        const Leha = await usersRepository.findUserByLogin("Leha")
+        const accessTokenByLeha = await jwtService.createAccessJWT(Leha!._id.toString())
+        const admin = await usersRepository.findUserByLogin("Leha")
+        const accessTokenByAdmin = await jwtService.createAccessJWT(admin!._id.toString())
+
+        const foundPost = await postsQueryMongooseRepository.findPostByTitle("new title post")
+        const foundComment = await commentsRepository.findCommentByPostId(foundPost!._id.toString())
+
+        await request(app)
+            .put(`/comments/${foundComment!._id}/like-status`)
+            .set('Authorization', `Bearer ${accessTokenByLeha}`)
+            .send({"likeStatus": "Like"})
+            .expect(HTTP_STATUSES.NO_CONTENT_204)
+
+
+        await request(app)
+            .put(`/comments/${foundComment!._id}/like-status`)
+            .set('Authorization', `Bearer ${accessTokenByAdmin}`)
+            .send({"likeStatus": "Like"})
+            .expect(HTTP_STATUSES.NO_CONTENT_204)
+
+        const res_ = await request(app)
+            .get(`/comments/${foundComment!._id}`)
+            .expect(HTTP_STATUSES.OK_200)
+        expect({
+            id: expect(res_.body.id).toEqual(expect.any(String)),
+            content: expect(res_.body.content).toEqual(expect.any(String)),
+            commentatorInfo: {
+                userId: expect(res_.body.commentatorInfo.userId).toEqual(Leha!._id.toString()),
+                userLogin: expect(res_.body.commentatorInfo.userLogin).toEqual("Leha")
+            },
+            createdAt: expect(res_.body.createdAt).toEqual(expect.any(String)),
+            likesInfo: {
+                likesCount: expect(res_.body.likesInfo.likesCount).toEqual(1),
+                dislikesCount: expect(res_.body.likesInfo.dislikesCount).toEqual(0),
+                myStatus: expect(res_.body.likesInfo.myStatus).toEqual("None")
+            }
+        })
+    })
 })
 

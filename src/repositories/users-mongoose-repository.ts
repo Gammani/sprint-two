@@ -99,10 +99,8 @@ export class UsersRepository {
 
     async findUserByConfirmationCode(confirmationCode: string) {
         debugger
-        console.log("confirmationCode = ", confirmationCode)
         const user = await UserModel.findOne({"emailConfirmation.confirmationCode": confirmationCode})
         // const user = await usersCollection.findOne({$or: [{"emailConfirmation.email": email}, {"emailConfirmation.email": email}]})
-        console.log('user = ', user)
         return user
     }
     async updateConfirmation(_id: string) {

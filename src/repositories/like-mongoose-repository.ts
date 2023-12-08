@@ -13,6 +13,7 @@ export class LikeMongooseRepository {
 
 
     async createLike(createdLike: LikeDbType) {
+        debugger
         const like = new LikeModel({})
 
         like._id = createdLike._id
@@ -35,5 +36,10 @@ export class LikeMongooseRepository {
             }
         })
         return result.matchedCount === 1
+    }
+
+    async deleteAll() {
+        const result = await LikeModel.deleteMany({})
+        return
     }
 }

@@ -98,8 +98,10 @@ export class CommentsQueryRepository {
             },
             createdAt: comment.createdAt,
             likesInfo: {
-                likesCount: await LikeModel.count({commentId: comment._id, likeStatus: 'Like'}),
-                dislikesCount: await LikeModel.count({commentId: comment._id, likeStatus: 'Dislike'}),
+                // likesCount: await LikeModel.count({commentId: comment._id, likeStatus: 'Like'}),
+                // dislikesCount: await LikeModel.count({commentId: comment._id, likeStatus: 'Dislike'}),
+                likesCount: await LikeModel.find({commentId: comment._id, likeStatus: LikeStatus.Like}).count({}),
+                dislikesCount: await LikeModel.find({commentId: comment._id, likeStatus: LikeStatus.Dislike}).count({}),
                 myStatus: myStatus ? myStatus.likeStatus : LikeStatus.None
             }
         }

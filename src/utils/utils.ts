@@ -7,6 +7,7 @@ import {RequestForApiRepository} from "../repositories/requestForApi-mongoose-re
 import {ExpiredTokenRepository} from "../repositories/expiredToken-mongoose-repository";
 import {DevicesRepository} from "../repositories/devices-mongoose-repository";
 import {BlogDBType} from "./types";
+import {LikeMongooseRepository} from "../repositories/like-mongoose-repository";
 
 
 const blogsRepository = new BlogsRepository()
@@ -16,6 +17,7 @@ const commentsRepository = new CommentsRepository()
 const expiredTokensRepository = new ExpiredTokenRepository()
 const requestForApiRepository = new RequestForApiRepository()
 const devicesRepository = new DevicesRepository()
+const likeMongooseRepository = new LikeMongooseRepository()
 
 
 export const HTTP_STATUSES = {
@@ -59,6 +61,7 @@ export const removeAllDataBase = async () => {
     await expiredTokensRepository.deleteAll()
     await requestForApiRepository.deleteAll()
     await devicesRepository.deleteAll()
+    await likeMongooseRepository.deleteAll()
     return
 }
 

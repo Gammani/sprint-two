@@ -22,7 +22,7 @@ export class CommentsController {
     async getCommentById(req: RequestWithParams<URIParamsCommentIdModel>, res: Response) {
         const foundComment: CommentDBType | null = await this.commentsService.findCommentById(req.params.id)
         if (foundComment) {
-            if(req.user) {
+            if (req.user) {
                 const foundCommentWithUser = await this.commentsQueryRepository.findCommentById(req.params.id, new ObjectId(req.user.userId))
                 res.send(foundCommentWithUser)
             } else {
@@ -53,17 +53,20 @@ export class CommentsController {
     }
 
     async updateLikeStatus(req: RequestWithParamsAndBody<URIParamsCommentComIdModel, RequestCommentWithLikeStatus>, res: Response) {
+        debugger
         const foundComment: CommentDBType | null = await this.commentsService.findCommentById(req.params.commentId)
-        console.log("req.params.commentId = ", req.params.commentId)
         if (foundComment) {
-
+            debugger
             const foundLikeFromUser: LikeDbType | null = await this.likeStatusService.findLike(foundComment._id, new ObjectId(req.user!.userId))
-
-            if(foundLikeFromUser) {
+            console.log("foundLikeFromUser = ", foundLikeFromUser)
+            if (foundLikeFromUser) {
+                console.log("нашел")
                 const isUpdated = await this.likeStatusService.updateLikeStatus(req.body.likeStatus, foundLikeFromUser)
                 res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
             } else {
-                const isCreated = await this.likeStatusService.createLike(foundComment, req.body.likeStatus)
+                debugger
+                console.log("ненашел")
+                const isCreated = await this.likeStatusService.createLike(foundComment, req.body.likeStatus, new ObjectId(req.user!.userId))
 
                 res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
             }
