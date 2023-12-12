@@ -1,6 +1,11 @@
+import {injectable} from "inversify";
 import {RequestForApiType} from "../utils/types";
 import {RequestForApiModel} from "../mongo/requestForApi/requestForApi.model";
 
+
+
+
+@injectable()
 export class RequestForApiRepository {
     async addRequest(dataRequest: RequestForApiType) {
         const requestInstance = new RequestForApiModel({})

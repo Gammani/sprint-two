@@ -4,7 +4,8 @@ import {HTTP_STATUSES} from "../utils/utils";
 import {JwtService} from "../application/jwt-service";
 import {UsersService} from "../application/users-service";
 import {RequestUserViewModel} from "../api/viewModels/UserViewModel";
-import {jwtService, usersService} from "../composition-root";
+import {container} from "../composition-root";
+//import {jwtService, usersService} from "../composition-root";
 
 // local?
 // export interface userByRequest extends Request {
@@ -18,8 +19,9 @@ declare global {
         }
     }
 }
-// const jwtServices = new JwtService()
-// const usersService = new UsersService()
+const jwtService = container.resolve(JwtService)
+const usersService = container.resolve(UsersService)
+
 
 export const authBasicMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const auth = {login: 'admin', password: 'qwerty'} // change this

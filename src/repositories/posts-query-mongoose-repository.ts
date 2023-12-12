@@ -1,7 +1,11 @@
+import {injectable} from "inversify";
 import {PostModel} from "../mongo/post/post.model";
 import {PostDbType} from "../utils/types";
 import {PostViewModel} from "../models/PostViewModel";
 
+
+
+@injectable()
 export class PostsQueryRepository {
     async findPostByTitle(title: string): Promise<PostDbType | null> {
         const post: PostDbType | null = await PostModel.findOne({title: title})

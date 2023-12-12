@@ -5,7 +5,12 @@ import {
     commentValidation,
     likeStatusValidation
 } from "../../middlewares/requestValidatorWithExpressValidator";
-import {commentsController} from "../../composition-root";
+import {container} from "../../composition-root";
+import {CommentsController} from "../controllers/commentController";
+
+
+const commentsController = container.resolve(CommentsController)
+
 
 export const commentsRouter = Router({})
 

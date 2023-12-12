@@ -16,13 +16,15 @@ import {PostsWithPaginationViewModel, PostViewModel} from "../../models/PostView
 import {CreateBlogModel} from "../../models/CreateBlogModel";
 import {CreatePostModelWithBlogId} from "../../models/CreatePostModelWithBlogId";
 import {UpdateBlogModel} from "../../models/UpdateBlogModel";
+import {inject, injectable} from "inversify";
 
 
+@injectable()
 export class BlogController {
     constructor(
-        protected blogsQueryRepository: BlogsQueryRepository,
-        protected blogService: BlogsService,
-        protected postsService: PostsService
+        @inject(BlogsQueryRepository) protected blogsQueryRepository: BlogsQueryRepository,
+        @inject(BlogsService) protected blogService: BlogsService,
+        @inject(PostsService) protected postsService: PostsService
     ) {
     }
 

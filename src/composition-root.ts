@@ -1,3 +1,4 @@
+import "reflect-metadata"
 import {BlogsRepository} from "./repositories/blogs-mongoose-repository";
 import {BlogsQueryRepository} from "./repositories/blogs-query-repository";
 import {UsersRepository} from "./repositories/users-mongoose-repository";
@@ -24,32 +25,67 @@ import {SecurityDevicesController} from "./api/controllers/securityDevicesContro
 import {CommentsQueryRepository} from "./repositories/comments-query-repository";
 import {LikeStatusService} from "./application/like-status-service";
 import {LikeMongooseRepository} from "./repositories/like-mongoose-repository";
+import {Container} from "inversify";
 
-export const usersRepository = new UsersRepository()
-export const blogsRepository = new BlogsRepository()
-const blogsQueryRepository = new BlogsQueryRepository()
-const usersQueryRepository = new UsersQueryRepository()
-const postsRepository = new PostsRepository()
-const postsQueryRepository = new PostsQueryRepository()
-const commentsRepository = new CommentsRepository()
-const commentsQueryRepository = new CommentsQueryRepository()
-const devicesRepository = new DevicesRepository()
-export const expiredTokenRepository = new ExpiredTokenRepository()
-const requestForApiRepository = new RequestForApiRepository()
-export const likeMongooseRepository = new LikeMongooseRepository()
 
-const authService = new AuthService(usersRepository)
-export const usersService = new UsersService(usersRepository, devicesRepository)
-const blogService = new BlogsService(blogsRepository)
-const postsService = new PostsService(postsRepository, blogsRepository)
-export const commentsService = new CommentsService(commentsRepository, postsRepository, commentsQueryRepository)
-export const likeStatusService = new LikeStatusService()
-export const jwtService = new JwtService(expiredTokenRepository, devicesRepository)
-export const securityDevicesService = new SecurityDevicesService(devicesRepository)
+export const container = new Container()
 
-export const authController = new AuthController(usersService, jwtService, authService, securityDevicesService)
-export const usersController = new UsersController(usersService, usersQueryRepository)
-export const blogController = new BlogController(blogsQueryRepository, blogService, postsService)
-export const postsController = new PostsController(postsService, commentsService, postsQueryRepository, commentsQueryRepository)
-export const commentsController = new CommentsController(commentsService, commentsQueryRepository, likeStatusService)
-export const securityDevicesController = new SecurityDevicesController(securityDevicesService)
+
+container.bind(UsersRepository).to(UsersRepository)
+container.bind(BlogsRepository).to(BlogsRepository)
+container.bind(BlogsQueryRepository).to(BlogsQueryRepository)
+container.bind(UsersQueryRepository).to(UsersQueryRepository)
+container.bind(PostsRepository).to(PostsRepository)
+container.bind(PostsQueryRepository).to(PostsQueryRepository)
+container.bind(CommentsRepository).to(CommentsRepository)
+container.bind(CommentsQueryRepository).to(CommentsQueryRepository)
+container.bind(DevicesRepository).to(DevicesRepository)
+container.bind(ExpiredTokenRepository).to(ExpiredTokenRepository)
+container.bind(RequestForApiRepository).to(RequestForApiRepository)
+container.bind(LikeMongooseRepository).to(LikeMongooseRepository)
+container.bind(AuthService).to(AuthService)
+container.bind(UsersService).to(UsersService)
+container.bind(BlogsService).to(BlogsService)
+container.bind(PostsService).to(PostsService)
+container.bind(CommentsService).to(CommentsService)
+container.bind(LikeStatusService).to(LikeStatusService)
+container.bind(JwtService).to(JwtService)
+container.bind(SecurityDevicesService).to(SecurityDevicesService)
+container.bind(AuthController).to(AuthController)
+container.bind(UsersController).to(UsersController)
+container.bind(BlogController).to(BlogController)
+container.bind(PostsController).to(PostsController)
+container.bind(CommentsController).to(CommentsController)
+container.bind(SecurityDevicesController).to(SecurityDevicesController)
+
+
+
+// export const usersRepository = new UsersRepository()
+// export const blogsRepository = new BlogsRepository()
+// const blogsQueryRepository = new BlogsQueryRepository()
+// const usersQueryRepository = new UsersQueryRepository()
+// const postsRepository = new PostsRepository()
+// const postsQueryRepository = new PostsQueryRepository()
+// const commentsRepository = new CommentsRepository()
+// const commentsQueryRepository = new CommentsQueryRepository()
+// const devicesRepository = new DevicesRepository()
+// export const expiredTokenRepository = new ExpiredTokenRepository()
+// const requestForApiRepository = new RequestForApiRepository()
+// export const likeMongooseRepository = new LikeMongooseRepository()
+
+// const authService = new AuthService(usersRepository)
+// export const usersService = new UsersService(usersRepository, devicesRepository)
+// const blogService = new BlogsService(blogsRepository)
+// const postsService = new PostsService(postsRepository, blogsRepository)
+// export const commentsService = new CommentsService(commentsRepository, postsRepository, commentsQueryRepository)
+// export const likeStatusService = new LikeStatusService()
+// export const jwtService = new JwtService(expiredTokenRepository, devicesRepository)
+// export const securityDevicesService = new SecurityDevicesService(devicesRepository)
+
+// export const authController = new AuthController(usersService, jwtService, authService, securityDevicesService)
+// export const usersController = new UsersController(usersService, usersQueryRepository)
+// export const blogController = new BlogController(blogsQueryRepository, blogService, postsService)
+// export const postsController = new PostsController(postsService, commentsService, postsQueryRepository, commentsQueryRepository)
+// export const commentsController = new CommentsController(commentsService, commentsQueryRepository, likeStatusService)
+// export const securityDevicesController = new SecurityDevicesController(securityDevicesService)
+

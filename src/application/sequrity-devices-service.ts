@@ -2,10 +2,12 @@ import {DeviceViewModel} from "../api/viewModels/DeviceViewModel";
 import {ObjectId} from "mongodb";
 import {Device} from "../utils/types";
 import {DevicesRepository} from "../repositories/devices-mongoose-repository";
+import {inject, injectable} from "inversify";
 
 
+@injectable()
 export class SecurityDevicesService {
-    constructor(protected devicesRepository: DevicesRepository) {}
+    constructor(@inject(DevicesRepository) protected devicesRepository: DevicesRepository) {}
 
     async addDevice(userId: ObjectId, ip: string, headerTitle: string): Promise<DeviceViewModel> {
         const createDevice = new Device(

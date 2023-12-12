@@ -1,9 +1,14 @@
+import {injectable} from "inversify";
 import {CommentsWithPaginationViewModel, CommentViewModel} from "../api/viewModels/CommentViewModel";
 import {CommentModel} from "../mongo/comment/comment.model";
 import {CommentDBType, LikeDbType, LikeStatus} from "../utils/types";
 import {LikeModel} from "../mongo/llikes/like.model";
 import {ObjectId} from "mongodb";
 
+
+
+
+@injectable()
 export class CommentsQueryRepository {
     async findCommentById(id: string, userId?: ObjectId): Promise<CommentViewModel | null> {
         const foundComment: CommentDBType | null = await CommentModel.findOne({_id: id})

@@ -12,7 +12,11 @@ import {
 } from "../../middlewares/requestValidatorWithExpressValidator";
 import {authBearerMiddleware} from "../../middlewares/auth-middleware";
 import {restrictionRequests} from "../../middlewares/restriction-requests";
-import {authController} from "../../composition-root";
+import {container} from "../../composition-root";
+import {AuthController} from "../controllers/authController";
+
+
+const authController = container.resolve(AuthController)
 
 export const authRouter = Router({})
 

@@ -9,24 +9,19 @@ import {SecurityDevicesService} from "../application/sequrity-devices-service";
 import {BlogsRepository} from "../repositories/blogs-mongoose-repository";
 import {UsersRepository} from "../repositories/users-mongoose-repository";
 import {ExpiredTokenRepository} from "../repositories/expiredToken-mongoose-repository";
-import {
-    blogsRepository,
-    expiredTokenRepository,
-    jwtService,
-    securityDevicesService,
-    likeStatusService,
-    usersRepository,
-    usersService, commentsService
-} from "../composition-root";
+import {container} from "../composition-root";
+import {LikeStatusService} from "../application/like-status-service";
+import {CommentsService} from "../application/comments-service";
 
 
-// const blogsRepository = new BlogsRepository()
-// const usersService = new UsersService()
-// const usersRepository = new UsersRepository()
-// const expiredTokensRepository = new ExpiredTokenRepository()
-// const jwtServices = new JwtService()
-// const securityDevicesService = new SecurityDevicesService()
-
+const blogsRepository = container.resolve(BlogsRepository)
+const expiredTokenRepository = container.resolve(ExpiredTokenRepository)
+const jwtService = container.resolve(JwtService)
+const securityDevicesService = container.resolve(SecurityDevicesService)
+const likeStatusService = container.resolve(LikeStatusService)
+const usersRepository = container.resolve(UsersRepository)
+const usersService = container.resolve(UsersService)
+const commentsService = container.resolve(CommentsService)
 
 
 export const authRegistrationValidation = [
@@ -58,7 +53,7 @@ export const blogValidation = [
 
 export const isValidId: CustomValidator = async (blogId) => {
     const foundBlogger: BlogViewModel | null = await blogsRepository.findBlogById(blogId)
-    if(!foundBlogger) {
+    if (!foundBlogger) {
         return Promise.reject('blogId не валидный')
     } else {
         return true
@@ -84,7 +79,7 @@ export const commentValidation = [
 
 export const likeStatusValidation = async (req: Request, res: Response, next: NextFunction) => {
     debugger
-    if(!req.body.likeStatus) {
+    if (!req.body.likeStatus) {
         res.status(HTTP_STATUSES.BAD_REQUEST_400).send(
             {
                 errorsMessages: [
@@ -98,7 +93,7 @@ export const likeStatusValidation = async (req: Request, res: Response, next: Ne
         return
     }
     debugger
-    if(req.body.likeStatus !== 'None' && req.body.likeStatus !== 'Like' && req.body.likeStatus !== 'Dislike') {
+    if (req.body.likeStatus !== 'None' && req.body.likeStatus !== 'Like' && req.body.likeStatus !== 'Dislike') {
         res.status(HTTP_STATUSES.BAD_REQUEST_400).send(
             {
                 errorsMessages: [
@@ -111,9 +106,9 @@ export const likeStatusValidation = async (req: Request, res: Response, next: Ne
         )
         return
     }
-debugger
+    debugger
     const foundComment: CommentDBType | null = await commentsService.findCommentById(req.params.commentId)
-    if(foundComment) {
+    if (foundComment) {
         // // должно быть экшнен какой то типа снять лайл если лайк
         // if(foundComment.likesInfo.myStatus === req.body.likeStatus) {
         //     res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
@@ -130,9 +125,12 @@ debugger
 export const checkedValidation = (req: Request, res: Response, next: NextFunction) => {
     const error = validationResult(req).mapped();
     let errors: ErrorsType = {errorsMessages: []}
-    Object.keys(error).forEach(a => errors.errorsMessages.push({message: `не валидное поле ${error[a].param}`, field: error[a].param}))
+    Object.keys(error).forEach(a => errors.errorsMessages.push({
+        message: `не валидное поле ${error[a].param}`,
+        field: error[a].param
+    }))
 
-    if(errors.errorsMessages.length > 0) {
+    if (errors.errorsMessages.length > 0) {
         res.status(HTTP_STATUSES.BAD_REQUEST_400).send(errors)
     } else {
         next()
@@ -141,14 +139,14 @@ export const checkedValidation = (req: Request, res: Response, next: NextFunctio
 export const checkedExistsForLoginOrEmail = async (req: Request, res: Response, next: NextFunction) => {
     let errors: ErrorsType = {errorsMessages: []}
     const foundUserByLogin = await usersRepository.findUserByLogin(req.body.login)
-    if(foundUserByLogin) {
+    if (foundUserByLogin) {
         errors.errorsMessages.push({message: `не валидное поле login`, field: 'login'})
     }
     const foundUserByEmail = await usersRepository.findUserByEmail(req.body.email)
-    if(foundUserByEmail) {
+    if (foundUserByEmail) {
         errors.errorsMessages.push({message: `не валидное поле email`, field: 'email'})
     }
-    if(errors.errorsMessages.length > 0) {
+    if (errors.errorsMessages.length > 0) {
         res.status(HTTP_STATUSES.BAD_REQUEST_400).send(errors)
     } else {
         next()
@@ -157,13 +155,13 @@ export const checkedExistsForLoginOrEmail = async (req: Request, res: Response, 
 export const checkedConfirmedEmail = async (req: Request, res: Response, next: NextFunction) => {
     let errors: ErrorsType = {errorsMessages: []}
     const foundUser = await usersRepository.findUserByEmail(req.body.email)
-    if(!foundUser) {
+    if (!foundUser) {
         errors.errorsMessages.push({message: `не валидное поле email`, field: 'email'})
     }
-    if(foundUser?.emailConfirmation.isConfirmed) {
+    if (foundUser?.emailConfirmation.isConfirmed) {
         errors.errorsMessages.push({message: `не валидное поле email`, field: 'email'})
     }
-    if(errors.errorsMessages.length > 0) {
+    if (errors.errorsMessages.length > 0) {
         res.status(HTTP_STATUSES.BAD_REQUEST_400).send(errors)
     } else {
         next()
@@ -172,9 +170,12 @@ export const checkedConfirmedEmail = async (req: Request, res: Response, next: N
 export const checkedEmail = async (req: Request, res: Response, next: NextFunction) => {
     const error = validationResult(req).mapped();
     let errors: ErrorsType = {errorsMessages: []}
-    Object.keys(error).forEach(a => errors.errorsMessages.push({message: `не валидное поле ${error[a].param}`, field: error[a].param}))
+    Object.keys(error).forEach(a => errors.errorsMessages.push({
+        message: `не валидное поле ${error[a].param}`,
+        field: error[a].param
+    }))
 
-    if(errors.errorsMessages.length > 0) {
+    if (errors.errorsMessages.length > 0) {
         res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
     } else {
         next()
@@ -183,14 +184,14 @@ export const checkedEmail = async (req: Request, res: Response, next: NextFuncti
 
 export const checkAndUpdateRefreshToken = async (req: Request, res: Response, next: NextFunction) => {
     debugger
-    if(!req.cookies.refreshToken) {
+    if (!req.cookies.refreshToken) {
         res.sendStatus(HTTP_STATUSES.NO_UNAUTHORIZED_401)
         return
     }
     debugger
 
     const expiredToken = await expiredTokenRepository.findToken(req.cookies.refreshToken)
-    if(expiredToken) {
+    if (expiredToken) {
         res.sendStatus(HTTP_STATUSES.NO_UNAUTHORIZED_401)
         return
     }
@@ -207,15 +208,15 @@ export const checkAndUpdateRefreshToken = async (req: Request, res: Response, ne
     //         */
     //     }
     // });
-debugger
+    debugger
     const isExpiredToken = await expiredTokenRepository.isExpiredToken(refreshToken)
-    if(isExpiredToken) {
+    if (isExpiredToken) {
         res.sendStatus(HTTP_STATUSES.NO_UNAUTHORIZED_401)
         return
     }
     debugger
     const deviceId: string | null = await jwtService.getDeviceIdByRefreshToken(refreshToken)
-    if(deviceId) {
+    if (deviceId) {
         debugger
         // const UserId: string | undefined = await securityDevicesService.findUserIdByDeviceId(deviceId)
         const foundUser = await usersService.findUserByDeviceId(deviceId)
@@ -237,17 +238,17 @@ debugger
 export const checkAndRemoveRefreshTokenById = async (req: Request, res: Response, next: NextFunction) => {
     debugger
     const userIdFromURI = await securityDevicesService.findUserIdByDeviceId(req.params.deviceId)  // левый юзер
-    if(!userIdFromURI) {
+    if (!userIdFromURI) {
         res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
         return
     }
-    if(!req.cookies.refreshToken) {
+    if (!req.cookies.refreshToken) {
         res.sendStatus(HTTP_STATUSES.NO_UNAUTHORIZED_401)
         return
     }
     debugger
 
-    if(await expiredTokenRepository.findToken(req.cookies.refreshToken)) {
+    if (await expiredTokenRepository.findToken(req.cookies.refreshToken)) {
         res.sendStatus(HTTP_STATUSES.NO_UNAUTHORIZED_401)
         return
     }
@@ -255,7 +256,7 @@ export const checkAndRemoveRefreshTokenById = async (req: Request, res: Response
     const refreshToken = req.cookies.refreshToken
     debugger
     const isExpiredToken = await expiredTokenRepository.isExpiredToken(refreshToken)
-    if(isExpiredToken) {
+    if (isExpiredToken) {
         res.sendStatus(HTTP_STATUSES.NO_UNAUTHORIZED_401)
         return
     }
@@ -265,18 +266,18 @@ export const checkAndRemoveRefreshTokenById = async (req: Request, res: Response
     //     res.sendStatus(HTTP_STATUSES.FORBIDDEN_403)
     //     return
     // }
-    if(deviceId) {
+    if (deviceId) {
         debugger
         // const UserId: string | undefined = await securityDevicesService.findUserIdByDeviceId(deviceId)
         const foundUser = await usersService.findUserByDeviceId(deviceId)
         debugger
-        if(foundUser) {
+        if (foundUser) {
             const isFoundDeviceFromUserId = await securityDevicesService.findDeviceFromUserId(deviceId, userIdFromURI)
             // мне приходит токен а в парамс приходит deviceId, нужно узнать является ли deviceId тому же юзеру что и токен. DeviceId
             // вытащили из токена.
             // токен который указан в id
 
-            if(isFoundDeviceFromUserId) {
+            if (isFoundDeviceFromUserId) {
                 // expiredTokensRepository.addTokenToDB(foundUser.accountData.id, refreshToken) КОММЕНТ
                 console.log(foundUser)
                 req.user = {
@@ -305,12 +306,12 @@ export const checkAndRemoveRefreshTokenById = async (req: Request, res: Response
 
 export const checkRefreshToken = async (req: Request, res: Response, next: NextFunction) => {
     debugger
-    if(!req.cookies.refreshToken) {
+    if (!req.cookies.refreshToken) {
         res.sendStatus(HTTP_STATUSES.NO_UNAUTHORIZED_401)
         return
     }
     debugger
-    if(await expiredTokenRepository.findToken(req.cookies.refreshToken)) {
+    if (await expiredTokenRepository.findToken(req.cookies.refreshToken)) {
         res.sendStatus(HTTP_STATUSES.NO_UNAUTHORIZED_401)
         return
     }
@@ -320,13 +321,13 @@ export const checkRefreshToken = async (req: Request, res: Response, next: NextF
 
     debugger
     const isExpiredToken = await expiredTokenRepository.isExpiredToken(token)
-    if(isExpiredToken) {
+    if (isExpiredToken) {
         res.sendStatus(HTTP_STATUSES.NO_UNAUTHORIZED_401)
         return
     }
     debugger
     const deviceId: string | null = await jwtService.getDeviceIdByRefreshToken(token)
-    if(deviceId) {
+    if (deviceId) {
         debugger
         // const UserId: string | undefined = await securityDevicesService.findUserIdByDeviceId(deviceId)
         const foundUser = await usersService.findUserByDeviceId(deviceId)

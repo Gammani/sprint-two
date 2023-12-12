@@ -8,10 +8,14 @@ import {UserModel} from "../mongo/user/user.model";
 import {ObjectId} from "mongodb";
 import {UsersRepository} from "../repositories/users-mongoose-repository";
 import {DevicesRepository} from "../repositories/devices-mongoose-repository";
+import {inject, injectable} from "inversify";
 
 
+@injectable()
 export class UsersService {
-    constructor(protected usersRepository: UsersRepository, protected devicesRepository: DevicesRepository) {}
+    constructor(
+        @inject(UsersRepository) protected usersRepository: UsersRepository,
+        @inject(DevicesRepository) protected devicesRepository: DevicesRepository) {}
 
     async findUsers(
         pageNumberQuery: string,

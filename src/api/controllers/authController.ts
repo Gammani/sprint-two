@@ -10,12 +10,15 @@ import {DeviceViewModel} from "../viewModels/DeviceViewModel";
 import {HTTP_STATUSES} from "../../utils/utils";
 import {CreateUserModel} from "../../models/CreateUserModel";
 import {RequestUserViewModel, UserViewModel} from "../viewModels/UserViewModel";
+import {inject, injectable} from "inversify";
 
+
+@injectable()
 export class AuthController {
-    constructor(protected usersService: UsersService,
-                protected jwtServices: JwtService,
-                protected authService: AuthService,
-                protected securityDevicesService: SecurityDevicesService) {
+    constructor(@inject(UsersService) protected usersService: UsersService,
+                @inject(JwtService) protected jwtServices: JwtService,
+                @inject(AuthService) protected authService: AuthService,
+                @inject(SecurityDevicesService) protected securityDevicesService: SecurityDevicesService) {
     }
 
     async login(req: RequestWithBody<CreateAuthModel>, res: Response) {
@@ -77,7 +80,7 @@ export class AuthController {
             const accessToken = await this.jwtServices.createAccessJWT(user.userId)
             const refreshToken = await this.jwtServices.createRefreshJWT(user.deviceId!)
 
-           // res.cookie('refreshToken', refreshToken, {httpOnly: false, secure: false}) // local
+            // res.cookie('refreshToken', refreshToken, {httpOnly: false, secure: false}) // local
             res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true})
 
             res.status(HTTP_STATUSES.OK_200).send({accessToken: accessToken})

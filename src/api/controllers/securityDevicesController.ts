@@ -1,9 +1,12 @@
 import {SecurityDevicesService} from "../../application/sequrity-devices-service";
 import {Request, Response} from "express";
 import {HTTP_STATUSES} from "../../utils/utils";
+import {inject, injectable} from "inversify";
 
+
+@injectable()
 export class SecurityDevicesController {
-    constructor(protected securityDevicesService: SecurityDevicesService) {
+    constructor(@inject(SecurityDevicesService) protected securityDevicesService: SecurityDevicesService) {
     }
 
     async getAllDevicesFromUser(req: Request, res: Response) {

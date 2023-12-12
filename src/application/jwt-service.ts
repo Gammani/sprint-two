@@ -2,18 +2,25 @@ import jwt from 'jsonwebtoken'
 import {settings} from "../settings";
 import {ExpiredTokenRepository} from "../repositories/expiredToken-mongoose-repository";
 import {DevicesRepository} from "../repositories/devices-mongoose-repository";
+import {inject, injectable} from "inversify";
 
 interface JwtPayload {
     deviceId: string;
 }
 
+
+@injectable()
 export class JwtService {
-    constructor(protected expiredTokensRepository: ExpiredTokenRepository, protected devicesRepository: DevicesRepository) {}
+    constructor(
+        @inject(ExpiredTokenRepository) protected expiredTokensRepository: ExpiredTokenRepository,
+        @inject(DevicesRepository) protected devicesRepository: DevicesRepository) {
+    }
 
     async createAccessJWT(userId: string) {
         const token = await jwt.sign({userId}, settings.JWT_SECRET, {expiresIn: '600000'})
         return token
     }
+
     async createRefreshJWT(deviceId: string) {
         // const token = await jwt.sign({userId}, settings.JWT_SECRET, {expiresIn: '20000'})
         const token = await jwt.sign({deviceId: deviceId}, settings.JWT_SECRET, {expiresIn: '1200000'})
@@ -21,9 +28,11 @@ export class JwtService {
 
         return token
     }
+
     async checkRefreshJWT(token: string) {
         const foundToken = this.expiredTokensRepository.findToken(token)
     }
+
     async getUserIdByAccessToken(token: string) {
         try {
             const result: any = await jwt.verify(token, settings.JWT_SECRET)
@@ -34,6 +43,7 @@ export class JwtService {
             return null
         }
     }
+
     async getUserIdByRefreshToken(token: string) {
         try {
             debugger
@@ -46,6 +56,7 @@ export class JwtService {
             return null
         }
     }
+
     async getDeviceIdByRefreshToken(token: string) {
         try {
             debugger

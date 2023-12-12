@@ -5,7 +5,11 @@ import {
     checkedValidation,
     createPostWithoutBlogIdValidation
 } from "../../middlewares/requestValidatorWithExpressValidator";
-import {blogController} from "../../composition-root";
+import {container} from "../../composition-root";
+import {BlogController} from "../controllers/blogController";
+
+
+const blogController = container.resolve(BlogController)
 
 
 export const blogsRouter = Router({})

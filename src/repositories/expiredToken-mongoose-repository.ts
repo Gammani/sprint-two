@@ -1,9 +1,13 @@
+import {injectable} from "inversify";
 import {ExpiredTokenType} from "../utils/types";
 import jwt from "jsonwebtoken";
 import {settings} from "../settings";
 import {ExpiredTokenModel} from "../mongo/expiredToken/expiredToken.model";
 
 
+
+
+@injectable()
 export class ExpiredTokenRepository {
     async addTokenToDB(userId: string, token: string) {
         const expiredTokenInstance = new ExpiredTokenModel({})

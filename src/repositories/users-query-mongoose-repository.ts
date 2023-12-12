@@ -1,8 +1,12 @@
+import {injectable} from "inversify";
 import {UserWithPaginationViewModel} from "../api/viewModels/UserViewModel"
 import {UserModel} from "../mongo/user/user.model";
 import {UserTypeDbModel} from "../utils/types";
 
 
+
+
+@injectable()
 export class UsersQueryRepository {
     async findUsers(
         searchLoginTermQuery: string | undefined,

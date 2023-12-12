@@ -1,52 +1,12 @@
+import {injectable} from "inversify";
 import {CommentsWithPaginationViewModel, CommentViewModel} from "../api/viewModels/CommentViewModel";
 import {CommentModel} from "../mongo/comment/comment.model";
 import {CommentDBType} from "../utils/types";
 import {Comment} from "../utils/types"
 
+
+@injectable()
 export class CommentsRepository{
-    // async findComments(
-    //     pageNumberQuery: string,
-    //     pageSizeQuery: string,
-    //     sortByQuery: string,
-    //     sortDirectionQuery: string,
-    //     postId: string
-    // ): Promise<CommentsWithPaginationViewModel> {
-    //     const pageNumber = isNaN(Number(pageNumberQuery)) ? 1 : Number(pageNumberQuery)
-    //     const pageSize = isNaN(Number(pageSizeQuery)) ? 10 : Number(pageSizeQuery)
-    //     const sortBy = sortByQuery ? sortByQuery : 'createdAt'
-    //     const sortDirection = sortDirectionQuery === 'asc' ? 1 : -1
-    //
-    //     const skipPages: number = (pageNumber - 1) * pageSize
-    //
-    //     const items = await CommentModel
-    //         .find({_postId: postId})
-    //         .sort({[sortBy]: sortDirection})
-    //         .skip(skipPages)
-    //         .limit(pageSize)
-    //     const totalCount = await CommentModel.find({_postId: postId}).count({})
-    //     const pageCount = Math.ceil(totalCount / pageSize)
-    //
-    //     return {
-    //         pagesCount: pageCount,
-    //         page: pageNumber,
-    //         pageSize: pageSize,
-    //         totalCount: totalCount,
-    //         items: items.map(i => ({
-    //             id: i._id.toString(),
-    //             content: i.content,
-    //             commentatorInfo: i.commentatorInfo,
-    //             createdAt: i.createdAt,
-    //             likesInfo: {
-    //                 likesCount: 0,
-    //                 dislikesCount: 0,
-    //                 myStatus: 'Like'
-    //             }
-    //
-    //         }))
-    //     }
-    // }
-
-
 
 
     async findCommentById(id: string): Promise<CommentDBType | null> {

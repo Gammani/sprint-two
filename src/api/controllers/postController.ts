@@ -20,12 +20,15 @@ import {RequestCommentWithContent} from "../../models/CreateCommentModel";
 import {CommentDBType, PostDbType} from "../../utils/types";
 import {PostsQueryRepository} from "../../repositories/posts-query-mongoose-repository";
 import {CommentsQueryRepository} from "../../repositories/comments-query-repository";
+import {inject, injectable} from "inversify";
 
+
+@injectable()
 export class PostsController {
-    constructor(protected postsService: PostsService,
-                protected commentsService: CommentsService,
-                protected postsQueryRepository: PostsQueryRepository,
-                protected commentsQueryRepository: CommentsQueryRepository) {
+    constructor(@inject(PostsService) protected postsService: PostsService,
+                @inject(CommentsService) protected commentsService: CommentsService,
+                @inject(PostsQueryRepository) protected postsQueryRepository: PostsQueryRepository,
+                @inject(CommentsQueryRepository) protected commentsQueryRepository: CommentsQueryRepository) {
     }
 
     async getPosts(req: RequestWithQuery<QueryPostsModel>, res: Response<PostsWithPaginationViewModel>) {

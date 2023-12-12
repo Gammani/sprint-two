@@ -1,8 +1,12 @@
+import {injectable} from "inversify";
 import {UserViewModel, UserWithPaginationViewModel} from "../api/viewModels/UserViewModel";
 import {User, UserTypeDbModel} from "../utils/types";
 import {UserModel} from "../mongo/user/user.model";
 
 
+
+
+@injectable()
 export class UsersRepository {
     async findUsers(
         pageNumberQuery: string,

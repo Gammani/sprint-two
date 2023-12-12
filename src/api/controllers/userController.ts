@@ -7,10 +7,13 @@ import {UserViewModel, UserWithPaginationViewModel} from "../viewModels/UserView
 import {HTTP_STATUSES} from "../../utils/utils";
 import {CreateUserModel} from "../../models/CreateUserModel";
 import {URIParamsUserIdModel} from "../inputModels/URIParamsUserIdModel";
+import {inject, injectable} from "inversify";
 
+
+@injectable()
 export class UsersController {
-    constructor(protected usersService: UsersService,
-                protected usersQueryRepository: UsersQueryRepository) {
+    constructor(@inject(UsersService) protected usersService: UsersService,
+                @inject(UsersQueryRepository) protected usersQueryRepository: UsersQueryRepository) {
     }
 
     async getAllUsers(req: RequestWithQuery<QueryUsersModel>, res: Response<UserWithPaginationViewModel>) {

@@ -1,7 +1,10 @@
-import {CommentDBType, LikeDbType, LikeStatus} from "../utils/types";
+import {injectable} from "inversify";
+import {LikeDbType, LikeStatus} from "../utils/types";
 import {ObjectId} from "mongodb";
 import {LikeModel} from "../mongo/llikes/like.model";
 
+
+@injectable()
 export class LikeMongooseRepository {
     async findLike(commentId: ObjectId, userId: ObjectId): Promise<LikeDbType | null> {
         const result = await LikeModel.findOne({commentId: commentId, userId: userId})

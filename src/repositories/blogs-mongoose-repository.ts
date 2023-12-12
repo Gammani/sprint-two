@@ -1,9 +1,14 @@
+import "reflect-metadata"
+import {injectable} from "inversify";
 import {BloggerWithPaginationViewModel, BlogViewModel} from "../api/viewModels/BlogViewModel";
 import {BlogModel} from "../mongo/blog/blog.model";
 import {Blog, BlogDBType} from "../utils/types";
 import {getBlogViewModel} from "../utils/utils";
 
 
+
+
+@injectable()
 export class BlogsRepository {
     async findBlogs(
         pageNumberQuery: string,

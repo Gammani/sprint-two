@@ -1,10 +1,12 @@
 import {emailAdapter} from "../adapter/email-adapter";
 import {v4 as uuidv4} from "uuid";
 import {UsersRepository} from "../repositories/users-mongoose-repository";
+import {inject, injectable} from "inversify";
 
 
+@injectable()
 export class AuthService {
-    constructor(protected usersRepository: UsersRepository) {}
+    constructor(@inject(UsersRepository) protected usersRepository: UsersRepository) {}
 
     async confirmEmail(code: string) {
         debugger

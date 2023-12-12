@@ -1,7 +1,11 @@
+import {injectable} from "inversify";
 import {DeviceDbType} from "../utils/types";
 import {DeviceViewModel} from "../api/viewModels/DeviceViewModel";
 import {DeviceModel} from "../mongo/device/device.model";
 
+
+
+@injectable()
 export class DevicesRepository {
     async addDevice(device: DeviceDbType): Promise<DeviceViewModel> {
         const deviceModelInstance = new DeviceModel({})

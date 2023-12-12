@@ -1,7 +1,10 @@
+import {injectable} from "inversify";
 import {BloggerWithPaginationViewModel} from "../api/viewModels/BlogViewModel";
 import {BlogModel} from "../mongo/blog/blog.model";
 
 
+
+@injectable()
 export class BlogsQueryRepository {
     async findBloggers(
         searchNameTermQuery: string | undefined,

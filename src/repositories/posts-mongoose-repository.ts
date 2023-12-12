@@ -1,8 +1,12 @@
+import {injectable} from "inversify";
 import {PostsWithPaginationViewModel, PostViewModel} from "../models/PostViewModel";
 import {PostModel} from "../mongo/post/post.model";
 import {Post, PostDbType} from "../utils/types";
 
 
+
+
+@injectable()
 export class PostsRepository {
     async findPosts(
         pageNumberQuery: string,

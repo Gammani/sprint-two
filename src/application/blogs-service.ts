@@ -2,9 +2,12 @@ import {BlogViewModel, BloggerWithPaginationViewModel} from "../api/viewModels/B
 import {Blog} from "../utils/types";
 import {ObjectId} from "mongodb";
 import {BlogsRepository} from "../repositories/blogs-mongoose-repository";
+import {inject, injectable} from "inversify";
 
+
+@injectable()
 export class BlogsService {
-    constructor(protected blogsRepository: BlogsRepository) {}
+    constructor(@inject(BlogsRepository) protected blogsRepository: BlogsRepository) {}
 
     async findBlogs(
         pageNumberQuery: string,

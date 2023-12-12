@@ -5,7 +5,11 @@ import {
     commentValidation,
     postValidation
 } from "../../middlewares/requestValidatorWithExpressValidator";
-import {postsController} from "../../composition-root";
+import {container} from "../../composition-root";
+import {PostsController} from "../controllers/postController";
+
+
+const postsController = container.resolve(PostsController)
 
 
 export const postsRouter = Router({})

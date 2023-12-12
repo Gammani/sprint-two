@@ -3,7 +3,12 @@ import {
     checkAndRemoveRefreshTokenById,
     checkRefreshToken
 } from "../../middlewares/requestValidatorWithExpressValidator";
-import {securityDevicesController} from "../../composition-root";
+import {container} from "../../composition-root";
+import {SecurityDevicesController} from "../controllers/securityDevicesController";
+
+
+
+const securityDevicesController = container.resolve(SecurityDevicesController)
 
 export const securityDevicesRouter = Router({})
 

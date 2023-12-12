@@ -8,14 +8,16 @@ import {CommentsQueryRepository} from "../../repositories/comments-query-reposit
 import {CommentDBType, LikeDbType} from "../../utils/types";
 import {LikeStatusService} from "../../application/like-status-service";
 import {RequestCommentWithLikeStatus} from "../../models/CreateLikeStatusModel";
-import {CommentViewModel} from "../viewModels/CommentViewModel";
 import {ObjectId} from "mongodb";
+import {inject, injectable} from "inversify";
 
+
+@injectable()
 export class CommentsController {
     constructor(
-        protected commentsService: CommentsService,
-        protected commentsQueryRepository: CommentsQueryRepository,
-        protected likeStatusService: LikeStatusService
+        @inject(CommentsService) protected commentsService: CommentsService,
+        @inject(CommentsQueryRepository) protected commentsQueryRepository: CommentsQueryRepository,
+        @inject(LikeStatusService) protected likeStatusService: LikeStatusService
     ) {
     }
 

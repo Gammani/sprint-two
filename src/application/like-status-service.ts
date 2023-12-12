@@ -1,10 +1,13 @@
 import {CommentDBType, LikeDbType, LikeStatus} from "../utils/types";
 import {ObjectId} from "mongodb";
 import {LikeMongooseRepository} from "../repositories/like-mongoose-repository";
+import {inject, injectable} from "inversify";
 
+
+@injectable()
 export class LikeStatusService {
     constructor(
-        protected likeMongooseRepository = new LikeMongooseRepository()
+        @inject(LikeMongooseRepository) protected likeMongooseRepository: LikeMongooseRepository
     ) {
     }
 
