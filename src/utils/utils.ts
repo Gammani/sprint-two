@@ -7,7 +7,7 @@ import {RequestForApiRepository} from "../repositories/requestForApi-mongoose-re
 import {ExpiredTokenRepository} from "../repositories/expiredToken-mongoose-repository";
 import {DevicesRepository} from "../repositories/devices-mongoose-repository";
 import {BlogDBType} from "./types";
-import {LikeMongooseRepository} from "../repositories/like-mongoose-repository";
+import {CommentLikeMongooseRepository} from "../repositories/comment-like-mongoose-repository";
 
 
 const blogsRepository = new BlogsRepository()
@@ -17,7 +17,7 @@ const commentsRepository = new CommentsRepository()
 const expiredTokensRepository = new ExpiredTokenRepository()
 const requestForApiRepository = new RequestForApiRepository()
 const devicesRepository = new DevicesRepository()
-const likeMongooseRepository = new LikeMongooseRepository()
+const likeMongooseRepository = new CommentLikeMongooseRepository()
 
 
 export const HTTP_STATUSES = {

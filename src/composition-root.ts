@@ -24,7 +24,7 @@ import {CommentsController} from "./api/controllers/commentController";
 import {SecurityDevicesController} from "./api/controllers/securityDevicesController";
 import {CommentsQueryRepository} from "./repositories/comments-query-repository";
 import {LikeStatusService} from "./application/like-status-service";
-import {LikeMongooseRepository} from "./repositories/like-mongoose-repository";
+import {CommentLikeMongooseRepository} from "./repositories/comment-like-mongoose-repository";
 import {Container} from "inversify";
 
 
@@ -42,7 +42,7 @@ container.bind(CommentsQueryRepository).to(CommentsQueryRepository)
 container.bind(DevicesRepository).to(DevicesRepository)
 container.bind(ExpiredTokenRepository).to(ExpiredTokenRepository)
 container.bind(RequestForApiRepository).to(RequestForApiRepository)
-container.bind(LikeMongooseRepository).to(LikeMongooseRepository)
+container.bind(CommentLikeMongooseRepository).to(CommentLikeMongooseRepository)
 container.bind(AuthService).to(AuthService)
 container.bind(UsersService).to(UsersService)
 container.bind(BlogsService).to(BlogsService)
@@ -71,7 +71,7 @@ container.bind(SecurityDevicesController).to(SecurityDevicesController)
 // const devicesRepository = new DevicesRepository()
 // export const expiredTokenRepository = new ExpiredTokenRepository()
 // const requestForApiRepository = new RequestForApiRepository()
-// export const likeMongooseRepository = new LikeMongooseRepository()
+// export const commentLikeMongooseRepository = new CommentLikeMongooseRepository()
 
 // const authService = new AuthService(usersRepository)
 // export const usersService = new UsersService(usersRepository, devicesRepository)

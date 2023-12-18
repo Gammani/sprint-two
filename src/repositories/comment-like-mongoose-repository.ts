@@ -5,7 +5,7 @@ import {LikeModel} from "../mongo/llikes/like.model";
 
 
 @injectable()
-export class LikeMongooseRepository {
+export class CommentLikeMongooseRepository {
     async findLike(commentId: ObjectId, userId: ObjectId): Promise<LikeDbType | null> {
         const result = await LikeModel.findOne({commentId: commentId, userId: userId})
         if (result) {
