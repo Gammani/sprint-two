@@ -5,7 +5,7 @@ import {Response} from "express";
 import {HTTP_STATUSES} from "../../utils/utils";
 import {RequestCommentWithContent} from "../../models/CreateCommentModel";
 import {CommentsQueryRepository} from "../../repositories/comments-query-repository";
-import {CommentDBType, LikeDbType} from "../../utils/types";
+import {CommentDBType, CommentLikeDbType} from "../../utils/types";
 import {LikeStatusService} from "../../application/like-status-service";
 import {RequestCommentWithLikeStatus} from "../../models/CreateLikeStatusModel";
 import {ObjectId} from "mongodb";
@@ -59,7 +59,7 @@ export class CommentsController {
         const foundComment: CommentDBType | null = await this.commentsService.findCommentById(req.params.commentId)
         if (foundComment) {
             debugger
-            const foundLikeFromUser: LikeDbType | null = await this.likeStatusService.findLike(foundComment._id, new ObjectId(req.user!.userId))
+            const foundLikeFromUser: CommentLikeDbType | null = await this.likeStatusService.findLike(foundComment._id, new ObjectId(req.user!.userId))
             console.log("foundLikeFromUser = ", foundLikeFromUser)
             if (foundLikeFromUser) {
                 console.log("нашел")

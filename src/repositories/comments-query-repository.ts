@@ -1,8 +1,8 @@
 import {injectable} from "inversify";
 import {CommentsWithPaginationViewModel, CommentViewModel} from "../api/viewModels/CommentViewModel";
 import {CommentModel} from "../mongo/comment/comment.model";
-import {CommentDBType, LikeDbType, LikeStatus} from "../utils/types";
-import {LikeModel} from "../mongo/llikes/like.model";
+import {CommentDBType, CommentLikeDbType, LikeStatus} from "../utils/types";
+import {CommentLikeModel} from "../mongo/llikes/commentLikeModel";
 import {ObjectId} from "mongodb";
 
 
@@ -15,7 +15,7 @@ export class CommentsQueryRepository {
 
 
         if (foundComment) {
-            const myStatus = await LikeModel.findOne({commentId: foundComment._id, userId})
+            const myStatus = await CommentLikeModel.findOne({commentId: foundComment._id, userId})
 
             return {
                 id: foundComment._id.toString(),
@@ -26,8 +26,8 @@ export class CommentsQueryRepository {
                 },
                 createdAt: foundComment.createdAt,
                 likesInfo: {
-                    likesCount: await LikeModel.count({commentId: foundComment._id, likeStatus: LikeStatus.Like}),
-                    dislikesCount: await LikeModel.count({commentId: foundComment._id, likeStatus: LikeStatus.Dislike}),
+                    likesCount: await CommentLikeModel.count({commentId: foundComment._id, likeStatus: LikeStatus.Like}),
+                    dislikesCount: await CommentLikeModel.count({commentId: foundComment._id, likeStatus: LikeStatus.Dislike}),
                     myStatus: myStatus ? myStatus.likeStatus : LikeStatus.None
                 }
             }
@@ -88,10 +88,10 @@ export class CommentsQueryRepository {
 
 
     async getLikeInfo(comment: CommentDBType, userId?: string) {
-        let myStatus: LikeDbType | null = null;
+        let myStatus: CommentLikeDbType | null = null;
 
         if (userId) {
-            myStatus = await LikeModel.findOne({commentId: comment._id, userId})
+            myStatus = await CommentLikeModel.findOne({commentId: comment._id, userId})
         }
 
         const result = {
@@ -105,8 +105,8 @@ export class CommentsQueryRepository {
             likesInfo: {
                 // likesCount: await LikeModel.count({commentId: comment._id, likeStatus: 'Like'}),
                 // dislikesCount: await LikeModel.count({commentId: comment._id, likeStatus: 'Dislike'}),
-                likesCount: await LikeModel.find({commentId: comment._id, likeStatus: LikeStatus.Like}).count({}),
-                dislikesCount: await LikeModel.find({commentId: comment._id, likeStatus: LikeStatus.Dislike}).count({}),
+                likesCount: await CommentLikeModel.find({commentId: comment._id, likeStatus: LikeStatus.Like}).count({}),
+                dislikesCount: await CommentLikeModel.find({commentId: comment._id, likeStatus: LikeStatus.Dislike}).count({}),
                 myStatus: myStatus ? myStatus.likeStatus : LikeStatus.None
             }
         }

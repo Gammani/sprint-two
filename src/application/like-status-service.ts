@@ -1,4 +1,4 @@
-import {CommentDBType, LikeDbType, LikeStatus} from "../utils/types";
+import {CommentDBType, CommentLikeDbType, LikeStatus} from "../utils/types";
 import {ObjectId} from "mongodb";
 import {CommentLikeMongooseRepository} from "../repositories/comment-like-mongoose-repository";
 import {inject, injectable} from "inversify";
@@ -11,8 +11,8 @@ export class LikeStatusService {
     ) {
     }
 
-    async findLike(commentId: ObjectId, userId: ObjectId): Promise<LikeDbType | null> {
-        const foundLike: LikeDbType | null = await this.likeMongooseRepository.findLike(commentId, userId)
+    async findLike(commentId: ObjectId, userId: ObjectId): Promise<CommentLikeDbType | null> {
+        const foundLike: CommentLikeDbType | null = await this.likeMongooseRepository.findLike(commentId, userId)
         if(foundLike) {
             return foundLike
         } else {
@@ -25,7 +25,7 @@ export class LikeStatusService {
         const foundLike = await this.findLike(comment._id, new ObjectId(userId))
 
         if(!foundLike) {
-            const createdLike: LikeDbType = {
+            const createdLike: CommentLikeDbType = {
                 _id: new ObjectId,
                 userId: userId,
                 blogId: comment._blogId,
@@ -42,7 +42,7 @@ export class LikeStatusService {
 
     }
 
-    async updateLikeStatus(likeStatus: LikeStatus, like: LikeDbType) {
+    async updateLikeStatus(likeStatus: LikeStatus, like: CommentLikeDbType) {
         const isUpdate = await this.likeMongooseRepository.updateLikeStatus(likeStatus, like)
         return isUpdate
     }

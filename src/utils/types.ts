@@ -181,7 +181,7 @@ export type DeviceDbType = WithId<DeviceType>
 //     NONE: 'None' as const
 // }
 
-export type LikeDbType = WithId<{
+export type CommentLikeDbType = WithId<{
     userId: ObjectId
     blogId: ObjectId
     postId: ObjectId
@@ -191,7 +191,7 @@ export type LikeDbType = WithId<{
     lastUpdate: Date
 }>
 
-export class Like {
+export class CommentLike {
     constructor(
         public _id: ObjectId,
         public userId: ObjectId,

@@ -1,13 +1,13 @@
 import {injectable} from "inversify";
-import {LikeDbType, LikeStatus} from "../utils/types";
+import {CommentLikeDbType, LikeStatus} from "../utils/types";
 import {ObjectId} from "mongodb";
-import {LikeModel} from "../mongo/llikes/like.model";
+import {CommentLikeModel} from "../mongo/llikes/commentLikeModel";
 
 
 @injectable()
 export class CommentLikeMongooseRepository {
-    async findLike(commentId: ObjectId, userId: ObjectId): Promise<LikeDbType | null> {
-        const result = await LikeModel.findOne({commentId: commentId, userId: userId})
+    async findLike(commentId: ObjectId, userId: ObjectId): Promise<CommentLikeDbType | null> {
+        const result = await CommentLikeModel.findOne({commentId: commentId, userId: userId})
         if (result) {
             return result
         }
@@ -15,9 +15,9 @@ export class CommentLikeMongooseRepository {
     }
 
 
-    async createLike(createdLike: LikeDbType) {
+    async createLike(createdLike: CommentLikeDbType) {
         debugger
-        const like = new LikeModel({})
+        const like = new CommentLikeModel({})
 
         like._id = createdLike._id
         like.userId = createdLike.userId
@@ -32,8 +32,8 @@ export class CommentLikeMongooseRepository {
         return result
     }
 
-    async updateLikeStatus(likeStatus: LikeStatus, like: LikeDbType) {
-        const result = await LikeModel.updateOne({_id: like._id}, {
+    async updateLikeStatus(likeStatus: LikeStatus, like: CommentLikeDbType) {
+        const result = await CommentLikeModel.updateOne({_id: like._id}, {
             $set: {
                 likeStatus: likeStatus
             }
@@ -42,7 +42,7 @@ export class CommentLikeMongooseRepository {
     }
 
     async deleteAll() {
-        const result = await LikeModel.deleteMany({})
+        const result = await CommentLikeModel.deleteMany({})
         return
     }
 }

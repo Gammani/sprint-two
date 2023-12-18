@@ -1,9 +1,9 @@
 import * as mongoose from "mongoose";
-import {LikeDbType, LikeStatus} from "../../utils/types";
+import {CommentLikeDbType, LikeStatus} from "../../utils/types";
 import {ObjectId} from "mongodb";
 
 
-export const LikeSchema = new mongoose.Schema<LikeDbType>({
+export const CommentLikeSchema = new mongoose.Schema<CommentLikeDbType>({
     userId: {type: ObjectId, required: true},
     blogId: {type: ObjectId, required: true},
     postId: {type: ObjectId, required: true},
@@ -13,4 +13,4 @@ export const LikeSchema = new mongoose.Schema<LikeDbType>({
     lastUpdate: {type: Date, required: true}
 })
 
-export const LikeModel = mongoose.model<LikeDbType>('like', LikeSchema)
+export const CommentLikeModel = mongoose.model<CommentLikeDbType>('like', CommentLikeSchema)
