@@ -3,6 +3,7 @@ import {authBasicMiddleware, authBearerMiddleware, isTokenInsideHeader} from "..
 import {
     checkedValidation,
     commentValidation,
+    postLikeStatusValidation,
     postValidation
 } from "../../middlewares/requestValidatorWithExpressValidator";
 import {container} from "../../composition-root";
@@ -16,9 +17,11 @@ export const postsRouter = Router({})
 
 
 postsRouter.get('/',
+    isTokenInsideHeader,
     postsController.getPosts.bind(postsController)
 )
 postsRouter.get('/:id',
+    isTokenInsideHeader,
     postsController.getPostById.bind(postsController)
 )
 postsRouter.post('/',
@@ -32,6 +35,11 @@ postsRouter.put('/:id',
     postValidation,
     checkedValidation,
     postsController.updatePostByIdByAdmin.bind(postsController)
+)
+postsRouter.put('/:postId/like-status',
+    authBearerMiddleware,
+    postLikeStatusValidation,
+    postsController.updatePostLikeStatus.bind(postsController)
 )
 postsRouter.delete('/:id',
     authBasicMiddleware,

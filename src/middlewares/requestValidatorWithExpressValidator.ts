@@ -1,6 +1,6 @@
 import {NextFunction, Request, Response} from "express";
 import {body, CustomValidator, validationResult} from "express-validator";
-import {CommentDBType, ErrorsType} from "../utils/types";
+import {CommentDBType, ErrorsType, PostDbType} from "../utils/types";
 import {BlogViewModel} from "../api/viewModels/BlogViewModel";
 import {HTTP_STATUSES} from "../utils/utils";
 import {JwtService} from "../application/jwt-service";
@@ -10,18 +10,20 @@ import {BlogsRepository} from "../repositories/blogs-mongoose-repository";
 import {UsersRepository} from "../repositories/users-mongoose-repository";
 import {ExpiredTokenRepository} from "../repositories/expiredToken-mongoose-repository";
 import {container} from "../composition-root";
-import {LikeStatusService} from "../application/like-status-service";
+import {CommentLikeStatusService} from "../application/comment-like-status-service";
 import {CommentsService} from "../application/comments-service";
+import {PostsService} from "../application/posts-service";
 
 
 const blogsRepository = container.resolve(BlogsRepository)
 const expiredTokenRepository = container.resolve(ExpiredTokenRepository)
 const jwtService = container.resolve(JwtService)
 const securityDevicesService = container.resolve(SecurityDevicesService)
-const likeStatusService = container.resolve(LikeStatusService)
+const commentLikeStatusService = container.resolve(CommentLikeStatusService)
 const usersRepository = container.resolve(UsersRepository)
 const usersService = container.resolve(UsersService)
 const commentsService = container.resolve(CommentsService)
+const postsService = container.resolve(PostsService)
 
 
 export const authRegistrationValidation = [
@@ -77,7 +79,7 @@ export const commentValidation = [
     body('content').isString().trim().notEmpty().isLength({max: 300, min: 20})
 ]
 
-export const likeStatusValidation = async (req: Request, res: Response, next: NextFunction) => {
+export const commentLikeStatusValidation = async (req: Request, res: Response, next: NextFunction) => {
     debugger
     if (!req.body.likeStatus) {
         res.status(HTTP_STATUSES.BAD_REQUEST_400).send(
@@ -109,6 +111,51 @@ export const likeStatusValidation = async (req: Request, res: Response, next: Ne
     debugger
     const foundComment: CommentDBType | null = await commentsService.findCommentById(req.params.commentId)
     if (foundComment) {
+        // // должно быть экшнен какой то типа снять лайл если лайк
+        // if(foundComment.likesInfo.myStatus === req.body.likeStatus) {
+        //     res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+        // } else {
+        //     next()
+        // }
+        next()
+
+    } else {
+        res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
+    }
+}
+
+export const postLikeStatusValidation = async (req: Request, res: Response, next: NextFunction) => {
+    debugger
+    if (!req.body.likeStatus) {
+        res.status(HTTP_STATUSES.BAD_REQUEST_400).send(
+            {
+                errorsMessages: [
+                    {
+                        message: "Не валидное поле",
+                        field: "likeStatus"
+                    }
+                ]
+            }
+        )
+        return
+    }
+    debugger
+    if (req.body.likeStatus !== 'None' && req.body.likeStatus !== 'Like' && req.body.likeStatus !== 'Dislike') {
+        res.status(HTTP_STATUSES.BAD_REQUEST_400).send(
+            {
+                errorsMessages: [
+                    {
+                        message: "Не валидное поле",
+                        field: "likeStatus"
+                    }
+                ]
+            }
+        )
+        return
+    }
+    debugger
+    const foundPost: PostDbType | null = await postsService.findPostById(req.params.postId)
+    if (foundPost) {
         // // должно быть экшнен какой то типа снять лайл если лайк
         // if(foundComment.likesInfo.myStatus === req.body.likeStatus) {
         //     res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)

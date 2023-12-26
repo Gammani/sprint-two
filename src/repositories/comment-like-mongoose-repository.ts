@@ -16,16 +16,16 @@ export class CommentLikeMongooseRepository {
 
 
     async createLike(createdLike: CommentLikeDbType) {
-        debugger
         const like = new CommentLikeModel({})
 
         like._id = createdLike._id
         like.userId = createdLike.userId
+        like.login = createdLike.login
         like.blogId = createdLike.blogId
         like.postId = createdLike.postId
         like.commentId = createdLike.commentId
         like.likeStatus = createdLike.likeStatus
-        like.createdAt = createdLike.createdAt
+        like.addedAt = createdLike.addedAt
         like.lastUpdate = createdLike.lastUpdate
 
         const result = await like.save()

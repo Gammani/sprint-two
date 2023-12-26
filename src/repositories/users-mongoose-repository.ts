@@ -52,6 +52,15 @@ export class UsersRepository {
             })
         }
     }
+    async findUserById(userId: string): Promise<UserTypeDbModel | null> {
+        debugger
+        const user: UserTypeDbModel | null = await UserModel.findOne({'_id': userId})
+        if (user) {
+            return user
+        } else {
+            return null
+        }
+    }
     async findUserByLogin(login: string): Promise<UserTypeDbModel | null> {
         const foundUser = await UserModel.findOne({'accountData.login': login})
         if(foundUser) {

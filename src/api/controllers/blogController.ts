@@ -67,6 +67,7 @@ export class BlogController {
                 req.query.pageSize,
                 req.query.sortBy,
                 req.query.sortDirection,
+                req.user?.userId,
                 req.params.blogId
             )
             res.status(HTTP_STATUSES.OK_200).send(foundPosts)

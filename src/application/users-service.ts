@@ -30,9 +30,18 @@ export class UsersService {
             sortDirectionQuery
         )
     }
+    // async findUserById(userId: string): Promise<UserTypeDbModel | null> {
+    //     debugger
+    //     const user: UserTypeDbModel | null = await UserModel.findOne({'_id': userId})
+    //     if (user) {
+    //         return user
+    //     } else {
+    //         return null
+    //     }
+    // }
     async findUserById(userId: string): Promise<UserTypeDbModel | null> {
         debugger
-        const user: UserTypeDbModel | null = await UserModel.findOne({'_id': userId})
+        const user: UserTypeDbModel | null = await this.usersRepository.findUserById(userId)
         if (user) {
             return user
         } else {

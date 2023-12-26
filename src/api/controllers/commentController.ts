@@ -6,10 +6,11 @@ import {HTTP_STATUSES} from "../../utils/utils";
 import {RequestCommentWithContent} from "../../models/CreateCommentModel";
 import {CommentsQueryRepository} from "../../repositories/comments-query-repository";
 import {CommentDBType, CommentLikeDbType} from "../../utils/types";
-import {LikeStatusService} from "../../application/like-status-service";
+import {CommentLikeStatusService} from "../../application/comment-like-status-service";
 import {RequestCommentWithLikeStatus} from "../../models/CreateLikeStatusModel";
 import {ObjectId} from "mongodb";
 import {inject, injectable} from "inversify";
+
 
 
 @injectable()
@@ -17,7 +18,7 @@ export class CommentsController {
     constructor(
         @inject(CommentsService) protected commentsService: CommentsService,
         @inject(CommentsQueryRepository) protected commentsQueryRepository: CommentsQueryRepository,
-        @inject(LikeStatusService) protected likeStatusService: LikeStatusService
+        @inject(CommentLikeStatusService) protected commentLikeStatusService: CommentLikeStatusService
     ) {
     }
 
@@ -55,21 +56,14 @@ export class CommentsController {
     }
 
     async updateLikeStatus(req: RequestWithParamsAndBody<URIParamsCommentComIdModel, RequestCommentWithLikeStatus>, res: Response) {
-        debugger
         const foundComment: CommentDBType | null = await this.commentsService.findCommentById(req.params.commentId)
         if (foundComment) {
-            debugger
-            const foundLikeFromUser: CommentLikeDbType | null = await this.likeStatusService.findLike(foundComment._id, new ObjectId(req.user!.userId))
-            console.log("foundLikeFromUser = ", foundLikeFromUser)
+            const foundLikeFromUser: CommentLikeDbType | null = await this.commentLikeStatusService.findLike(foundComment._id, new ObjectId(req.user!.userId))
             if (foundLikeFromUser) {
-                console.log("нашел")
-                const isUpdated = await this.likeStatusService.updateLikeStatus(req.body.likeStatus, foundLikeFromUser)
+                const isUpdated = await this.commentLikeStatusService.updateLikeStatus(req.body.likeStatus, foundLikeFromUser)
                 res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
             } else {
-                debugger
-                console.log("ненашел")
-                const isCreated = await this.likeStatusService.createLike(foundComment, req.body.likeStatus, new ObjectId(req.user!.userId))
-
+                const isCreated = await this.commentLikeStatusService.createLike(foundComment, req.body.likeStatus, new ObjectId(req.user!.userId), req.user!.login)
                 res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
             }
 

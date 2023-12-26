@@ -1,73 +1,11 @@
 import {injectable} from "inversify";
-import {PostsWithPaginationViewModel, PostViewModel} from "../models/PostViewModel";
+import {PostViewModel} from "../models/PostViewModel";
 import {PostModel} from "../mongo/post/post.model";
-import {Post, PostDbType} from "../utils/types";
-
-
+import {LikeStatus, Post, PostDbType} from "../utils/types";
 
 
 @injectable()
 export class PostsRepository {
-    async findPosts(
-        pageNumberQuery: string,
-        pageSizeQuery: string,
-        sortByQuery: string,
-        sortDirectionQuery: string,
-        blogId?: string
-    ): Promise<PostsWithPaginationViewModel> {
-
-        const pageNumber = isNaN(Number(pageNumberQuery)) ? 1 : Number(pageNumberQuery)
-        const pageSize = isNaN(Number(pageSizeQuery)) ? 10 : Number(pageSizeQuery)
-        const sortBy = sortByQuery ? sortByQuery : 'createdAt'
-        const sortDirection = sortDirectionQuery === 'asc' ? 1 : -1
-
-        const skipPages: number = (pageNumber - 1) * pageSize
-
-
-        // if(blogId) {
-        //     const items = await postsCollection
-        //         .find({blogId: blogId}, {projection: {_id: 0}})
-        //         .sort({[sortBy]: sortDirection})
-        //         .skip(skipPages)
-        //         .limit(pageSize)
-        //         .toArray()
-        //     const totalCount = await postsCollection.find({blogId: blogId}).count({})
-        //     const pageCount = Math.ceil(totalCount / pageSize)
-        //
-        //     return {
-        //         pagesCount: pageCount,
-        //         page: pageNumber,
-        //         pageSize: pageSize,
-        //         totalCount: totalCount,
-        //         items: items
-        //     }
-        // }
-
-        const items = await PostModel
-            .find({}, {projection: {_id: 0}})
-            .sort({[sortBy]: sortDirection})
-            .skip(skipPages)
-            .limit(pageSize)
-        const totalCount = await PostModel.find({}).count({})
-        const pageCount = Math.ceil(totalCount / pageSize)
-
-        return {
-            pagesCount: pageCount,
-            page: pageNumber,
-            pageSize: pageSize,
-            totalCount: totalCount,
-            items: items.map(i => ({
-                id: i._id.toString(),
-                title: i.title,
-                shortDescription: i.shortDescription,
-                content: i.content,
-                blogId: i.blogId,
-                blogName: i.blogName,
-                createdAt: i.createdAt
-            }))
-        }
-    }
-
     async findPostById(id: string): Promise<PostDbType | null> {
         const post: PostDbType | null = await PostModel.findOne({_id: id})
         if (post) {
@@ -90,7 +28,8 @@ export class PostsRepository {
             postInstance.content = createdPost.content,
             postInstance.blogId = createdPost.blogId,
             postInstance.blogName = createdPost.blogName,
-            postInstance.createdAt = createdPost.createdAt
+            postInstance.createdAt = createdPost.createdAt,
+            postInstance.extendedLikesInfo = createdPost.extendedLikesInfo
 
         const result = await postInstance.save()
 
@@ -102,7 +41,13 @@ export class PostsRepository {
             content: result.content,
             blogId: result.blogId,
             blogName: result.blogName,
-            createdAt: result.createdAt
+            createdAt: result.createdAt,
+            extendedLikesInfo: {
+                likesCount: 0,
+                dislikesCount: 0,
+                myStatus: LikeStatus.None,
+                newestLikes: []
+            }
         }
     }
     async updatePost(postId: string, title: string, shortDescription: string, content: string, blogId: string): Promise<boolean> {

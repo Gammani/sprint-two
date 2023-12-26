@@ -235,12 +235,24 @@ describe('Mongoose integration', () => {
                 .expect(HTTP_STATUSES.CREATED_201)
 
         })
+        it('should create second blog', async () => {
+            await request(app)
+                .post('/blogs')
+                .set('Authorization', 'Basic ' + Buffer.from('admin:qwerty').toString('base64'))
+                .send({
+                    "name": "second blog",
+                    "description": "description for new blog",
+                    "websiteUrl": "https://www.youtube.com/"
+                })
+                .expect(HTTP_STATUSES.CREATED_201)
+
+        })
 
         it('should return created blog', async () => {
             const res_ = await request(app)
                 .get('/blogs')
                 .expect(HTTP_STATUSES.OK_200)
-            expect(res_.body.items.length).toBe(1)
+            expect(res_.body.items.length).toBe(2)
         })
 
         it('should update blog with input data', async () => {
@@ -282,7 +294,7 @@ describe('Mongoose integration', () => {
                 .expect(HTTP_STATUSES.NO_CONTENT_204)
             const res_ = await request(app)
                 .get('/blogs')
-            expect(res_.body.items.length).toBe(1)
+            expect(res_.body.items.length).toBe(2)
         })
     })
 
@@ -303,12 +315,27 @@ describe('Mongoose integration', () => {
                 })
                 .expect(HTTP_STATUSES.CREATED_201)
         })
+        it('should create new post for second blog', async () => {
+            const foundBlog = await blogsRepository.findBlogByName("second blog")
+
+            await request(app)
+                .post('/posts')
+                .set('Authorization', 'Basic ' + Buffer.from('admin:qwerty').toString('base64'))
+                .send({
+                    "title": "new title post",
+                    "shortDescription": "new description for post",
+                    "content": "content for post",
+                    "blogId": foundBlog!._id.toString()
+                    // "blogId": "123"
+                })
+                .expect(HTTP_STATUSES.CREATED_201)
+        })
 
         it('should return created post', async () => {
             const res_ = await request(app)
                 .get('/posts')
                 .expect(HTTP_STATUSES.OK_200)
-            expect(res_.body.items.length).toBe(1)
+            expect(res_.body.items.length).toBe(2)
         })
 
         it('should update post with input data', async () => {
@@ -354,7 +381,14 @@ describe('Mongoose integration', () => {
                 .expect(HTTP_STATUSES.NO_CONTENT_204)
             const res_ = await request(app)
                 .get('/posts')
-            expect(res_.body.items.length).toBe(1)
+            expect(res_.body.items.length).toBe(2)
+        })
+        it('should return all posts from blogId', async () => {
+
+            const foundBlog = await blogsRepository.findBlogByName("second blog")
+            const res_ = await request(app)
+                .get(`/blogs/${foundBlog!._id.toString()}/posts`)
+                expect(res_.body.items.length).toBe(1)
         })
     })
 
@@ -433,7 +467,7 @@ describe('Mongoose integration', () => {
     })
 
 
-    it('should update like-status', async () => {
+    it('should update comment like-status', async () => {
         const foundUser = await usersRepository.findUserByLogin("Leha")
         const accessTokenByUserId = await jwtService.createAccessJWT(foundUser!._id.toString())
 
@@ -471,6 +505,7 @@ describe('Mongoose integration', () => {
 
         const res_ = await request(app)
             .get(`/comments/${foundComment!._id}`)
+            .set('Authorization', `Bearer ${accessTokenByLeha}`)
             .expect(HTTP_STATUSES.OK_200)
         expect({
             id: expect(res_.body.id).toEqual(expect.any(String)),
@@ -483,8 +518,73 @@ describe('Mongoose integration', () => {
             likesInfo: {
                 likesCount: expect(res_.body.likesInfo.likesCount).toEqual(2),
                 dislikesCount: expect(res_.body.likesInfo.dislikesCount).toEqual(0),
-                myStatus: expect(res_.body.likesInfo.myStatus).toEqual("None")
+                myStatus: expect(res_.body.likesInfo.myStatus).toEqual("Like")
             }
+        })
+    })
+
+
+    describe('/comments/{postId}/like-status', () => {
+
+        it('should update post like-status', async () => {
+            const Leha = await usersRepository.findUserByLogin("Leha")
+            const accessTokenByLeha = await jwtService.createAccessJWT(Leha!._id.toString())
+            const admin = await usersRepository.findUserByLogin("admin")
+            const accessTokenByAdmin = await jwtService.createAccessJWT(admin!._id.toString())
+
+            const foundPost = await postsQueryMongooseRepository.findPostByTitle("new title post")
+
+            await request(app)
+                .put(`/posts/${foundPost!._id}/like-status`)
+                .set('Authorization', `Bearer ${accessTokenByLeha}`)
+                .send({"likeStatus": "Like"})
+                .expect(HTTP_STATUSES.NO_CONTENT_204)
+
+            await request(app)
+                .put(`/posts/${foundPost!._id}/like-status`)
+                .set('Authorization', `Bearer ${accessTokenByAdmin}`)
+                .send({"likeStatus": "Dislike"})
+                .expect(HTTP_STATUSES.NO_CONTENT_204)
+
+
+            const res_ = await request(app)
+                .get(`/posts/${foundPost!._id}`)
+                .set('Authorization', `Bearer ${accessTokenByLeha}`)
+                .expect(HTTP_STATUSES.OK_200)
+
+            expect({
+                id: expect(res_.body.id).toEqual(expect.any(String)),
+                title: "string",
+                shortDescription: "string",
+                content: "string",
+                blogId: "string",
+                blogName: "string",
+                createdAt: "2023-12-24T08:28:09.955Z",
+                extendedLikesInfo: {
+                    likesCount: expect(res_.body.extendedLikesInfo.likesCount).toEqual(1),
+                    dislikesCount: expect(res_.body.extendedLikesInfo.dislikesCount).toEqual(1),
+                    myStatus: expect(res_.body.extendedLikesInfo.myStatus).toEqual("Like"),
+                    "newestLikes": [
+                        {
+                            "addedAt": "2023-12-24T08:28:09.955Z",
+                            "userId": "string",
+                            "login": "string"
+                        }
+                    ]
+                }
+            })
+        })
+        it('should Expected status: 400 when incorrect input like-status', async () => {
+            const Leha = await usersRepository.findUserByLogin("Leha")
+            const accessTokenByLeha = await jwtService.createAccessJWT(Leha!._id.toString())
+
+            const foundPost = await postsQueryMongooseRepository.findPostByTitle("new title post")
+
+            await request(app)
+                .put(`/posts/${foundPost!._id}/like-status`)
+                .set('Authorization', `Bearer ${accessTokenByLeha}`)
+                .send({"likeStatus": ""})
+                .expect(HTTP_STATUSES.BAD_REQUEST_400)
         })
     })
 })

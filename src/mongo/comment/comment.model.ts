@@ -10,7 +10,7 @@ const CommentatorInfoSchema = new mongoose.Schema<WithId<CommentatorInfoType>>({
 const CommentatorLikesInfo = new mongoose.Schema<WithId<LikesInfoType>>({
     likesCount: Number,
     dislikesCount: Number,
-    myStatus: {type: String, enum: Object.keys(LikeStatus), required: true},
+    myStatus: {type: String, enum: LikeStatus, required: true},
 })
 
 export const CommentSchema = new mongoose.Schema<CommentDBType>({
@@ -22,4 +22,4 @@ export const CommentSchema = new mongoose.Schema<CommentDBType>({
     likesInfo: {type: CommentatorLikesInfo, required: true}
 })
 
-export const CommentModel = mongoose.model<CommentDBType>('comment', CommentSchema)
+export const CommentModel = mongoose.model<CommentDBType>('comments', CommentSchema)

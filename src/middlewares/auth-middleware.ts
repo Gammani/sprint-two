@@ -5,6 +5,9 @@ import {JwtService} from "../application/jwt-service";
 import {UsersService} from "../application/users-service";
 import {RequestUserViewModel} from "../api/viewModels/UserViewModel";
 import {container} from "../composition-root";
+import {ExpiredTokenRepository} from "../repositories/expiredToken-mongoose-repository";
+import {DevicesRepository} from "../repositories/devices-mongoose-repository";
+import {UsersRepository} from "../repositories/users-mongoose-repository";
 //import {jwtService, usersService} from "../composition-root";
 
 // local?
@@ -15,12 +18,12 @@ import {container} from "../composition-root";
 declare global {
     namespace Express {
         export interface Request {
-            user?: RequestUserViewModel | null
+            user: RequestUserViewModel | null
         }
     }
 }
-const jwtService = container.resolve(JwtService)
-const usersService = container.resolve(UsersService)
+const jwtService =/* container.resolve(JwtService)*/ new JwtService(new ExpiredTokenRepository(), new DevicesRepository())
+const usersService = /*container.resolve(UsersService)*/ new UsersService(new UsersRepository(), new DevicesRepository())
 
 
 export const authBasicMiddleware = async (req: Request, res: Response, next: NextFunction) => {
@@ -88,4 +91,25 @@ export const isTokenInsideHeader = async (req: Request, res: Response, next: Nex
         next()
     }
 }
+// export const isTokenInsidePostHeader = async (req: Request, res: Response, next: NextFunction) => {
+//     if(req.headers.authorization) {
+//         const token = req.headers.authorization.split(' ')[1]
+//         const user: any = await jwtService.getUserIdByAccessToken(token)
+//         if(user) {
+//             console.log('user in payload',user)
+//             const foundUser: any = await usersService.findUserById(user.userId)
+//             console.log('user in db', foundUser)
+//             req.user = {
+//                 email: foundUser!.accountData.email,
+//                 login: foundUser!.accountData.login,
+//                 userId: foundUser!._id.toString()
+//             }
+//             next()
+//         } else {
+//             next()
+//         }
+//     } else {
+//         next()
+//     }
+// }
 

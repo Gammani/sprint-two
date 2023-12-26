@@ -8,6 +8,7 @@ import {ExpiredTokenRepository} from "../repositories/expiredToken-mongoose-repo
 import {DevicesRepository} from "../repositories/devices-mongoose-repository";
 import {BlogDBType} from "./types";
 import {CommentLikeMongooseRepository} from "../repositories/comment-like-mongoose-repository";
+import {PostLikeMongooseRepository} from "../repositories/post-like-mongoose-repository";
 
 
 const blogsRepository = new BlogsRepository()
@@ -18,6 +19,7 @@ const expiredTokensRepository = new ExpiredTokenRepository()
 const requestForApiRepository = new RequestForApiRepository()
 const devicesRepository = new DevicesRepository()
 const likeMongooseRepository = new CommentLikeMongooseRepository()
+const postLikeMongooseRepository = new PostLikeMongooseRepository()
 
 
 export const HTTP_STATUSES = {
@@ -62,6 +64,27 @@ export const removeAllDataBase = async () => {
     await requestForApiRepository.deleteAll()
     await devicesRepository.deleteAll()
     await likeMongooseRepository.deleteAll()
+    await postLikeMongooseRepository.deleteAll()
     return
+}
+
+export type presetQueryParamsType = {
+    pageNumber: number
+    pageSize: number
+    sortBy: string
+    sortDirection: string | number
+}
+
+export const presetQueryParams = (
+    pageNumberQuery: string,
+    pageSizeQuery: string,
+    sortByQuery: string,
+    sortDirectionQuery: string): presetQueryParamsType => {
+    return {
+        pageNumber: isNaN(Number(pageNumberQuery)) ? 1 : Number(pageNumberQuery),
+        pageSize: isNaN(Number(pageSizeQuery)) ? 10 : Number(pageSizeQuery),
+        sortBy: sortByQuery ? sortByQuery : 'createdAt',
+        sortDirection: sortDirectionQuery === 'asc' ? 1 : -1
+    }
 }
 

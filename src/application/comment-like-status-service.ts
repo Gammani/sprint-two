@@ -5,14 +5,14 @@ import {inject, injectable} from "inversify";
 
 
 @injectable()
-export class LikeStatusService {
+export class CommentLikeStatusService {
     constructor(
-        @inject(CommentLikeMongooseRepository) protected likeMongooseRepository: CommentLikeMongooseRepository
+        @inject(CommentLikeMongooseRepository) protected commentLikeMongooseRepository: CommentLikeMongooseRepository
     ) {
     }
 
     async findLike(commentId: ObjectId, userId: ObjectId): Promise<CommentLikeDbType | null> {
-        const foundLike: CommentLikeDbType | null = await this.likeMongooseRepository.findLike(commentId, userId)
+        const foundLike: CommentLikeDbType | null = await this.commentLikeMongooseRepository.findLike(commentId, userId)
         if(foundLike) {
             return foundLike
         } else {
@@ -20,22 +20,22 @@ export class LikeStatusService {
         }
     }
 
-    async createLike(comment: CommentDBType, likeStatus: LikeStatus, userId: ObjectId) {
-        debugger
+    async createLike(comment: CommentDBType, likeStatus: LikeStatus, userId: ObjectId, userLogin: string) {
         const foundLike = await this.findLike(comment._id, new ObjectId(userId))
 
         if(!foundLike) {
-            const createdLike: CommentLikeDbType = {
+            const createdCommentLike: CommentLikeDbType = {
                 _id: new ObjectId,
                 userId: userId,
+                login: userLogin,
                 blogId: comment._blogId,
                 postId: comment._postId,
                 commentId: comment._id,
                 likeStatus: likeStatus,
-                createdAt: new Date(),
+                addedAt: new Date(),
                 lastUpdate: new Date()
             }
-            return await this.likeMongooseRepository.createLike(createdLike)
+            return await this.commentLikeMongooseRepository.createLike(createdCommentLike)
         } else {
             return
         }
@@ -43,7 +43,7 @@ export class LikeStatusService {
     }
 
     async updateLikeStatus(likeStatus: LikeStatus, like: CommentLikeDbType) {
-        const isUpdate = await this.likeMongooseRepository.updateLikeStatus(likeStatus, like)
+        const isUpdate = await this.commentLikeMongooseRepository.updateLikeStatus(likeStatus, like)
         return isUpdate
     }
 

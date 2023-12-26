@@ -1,5 +1,5 @@
 import {Router} from "express";
-import {authBasicMiddleware} from "../../middlewares/auth-middleware";
+import {authBasicMiddleware, isTokenInsideHeader} from "../../middlewares/auth-middleware";
 import {
     blogValidation,
     checkedValidation,
@@ -17,7 +17,10 @@ export const blogsRouter = Router({})
 
 blogsRouter.get('/', blogController.getBlogs.bind(blogController))
 blogsRouter.get('/:id', blogController.getBlogById.bind(blogController))
-blogsRouter.get('/:blogId/posts', blogController.getPostsByBlogId.bind(blogController))
+blogsRouter.get('/:blogId/posts',
+    isTokenInsideHeader,
+    blogController.getPostsByBlogId.bind(blogController)
+)
 blogsRouter.post('/',
     authBasicMiddleware,
     blogValidation,

@@ -4,6 +4,7 @@ import {CommentModel} from "../mongo/comment/comment.model";
 import {CommentDBType, CommentLikeDbType, LikeStatus} from "../utils/types";
 import {CommentLikeModel} from "../mongo/llikes/commentLikeModel";
 import {ObjectId} from "mongodb";
+import {presetQueryParams, presetQueryParamsType} from "../utils/utils";
 
 
 
@@ -49,6 +50,11 @@ export class CommentsQueryRepository {
         const pageSize = isNaN(Number(pageSizeQuery)) ? 10 : Number(pageSizeQuery)
         const sortBy = sortByQuery ? sortByQuery : 'createdAt'
         const sortDirection = sortDirectionQuery === 'asc' ? 1 : -1
+        // const queryParams: presetQueryParamsType = presetQueryParams(pageNumberQuery, pageSizeQuery, sortByQuery, sortDirectionQuery)
+        // const pageNumber = queryParams.pageNumber
+        // const pageSize = queryParams.pageSize
+        // const sortBy = queryParams.sortBy
+        // const sortDirection = queryParams.sortDirection
 
         const skipPages: number = (pageNumber - 1) * pageSize
 
@@ -88,7 +94,7 @@ export class CommentsQueryRepository {
 
 
     async getLikeInfo(comment: CommentDBType, userId?: string) {
-        let myStatus: CommentLikeDbType | null = null;
+        let myStatus: CommentLikeDbType | null = null
 
         if (userId) {
             myStatus = await CommentLikeModel.findOne({commentId: comment._id, userId})

@@ -1,4 +1,5 @@
 import "reflect-metadata"
+import {Container} from "inversify";
 import {BlogsRepository} from "./repositories/blogs-mongoose-repository";
 import {BlogsQueryRepository} from "./repositories/blogs-query-repository";
 import {UsersRepository} from "./repositories/users-mongoose-repository";
@@ -23,40 +24,43 @@ import {PostsController} from "./api/controllers/postController";
 import {CommentsController} from "./api/controllers/commentController";
 import {SecurityDevicesController} from "./api/controllers/securityDevicesController";
 import {CommentsQueryRepository} from "./repositories/comments-query-repository";
-import {LikeStatusService} from "./application/like-status-service";
+import {CommentLikeStatusService} from "./application/comment-like-status-service";
 import {CommentLikeMongooseRepository} from "./repositories/comment-like-mongoose-repository";
-import {Container} from "inversify";
+import {PostLikeMongooseRepository} from "./repositories/post-like-mongoose-repository";
+import {PostLikeStatusService} from "./application/post-like-status-service";
 
 
 export const container = new Container()
 
 
-container.bind(UsersRepository).to(UsersRepository)
-container.bind(BlogsRepository).to(BlogsRepository)
-container.bind(BlogsQueryRepository).to(BlogsQueryRepository)
-container.bind(UsersQueryRepository).to(UsersQueryRepository)
-container.bind(PostsRepository).to(PostsRepository)
-container.bind(PostsQueryRepository).to(PostsQueryRepository)
-container.bind(CommentsRepository).to(CommentsRepository)
-container.bind(CommentsQueryRepository).to(CommentsQueryRepository)
-container.bind(DevicesRepository).to(DevicesRepository)
-container.bind(ExpiredTokenRepository).to(ExpiredTokenRepository)
-container.bind(RequestForApiRepository).to(RequestForApiRepository)
-container.bind(CommentLikeMongooseRepository).to(CommentLikeMongooseRepository)
-container.bind(AuthService).to(AuthService)
-container.bind(UsersService).to(UsersService)
-container.bind(BlogsService).to(BlogsService)
-container.bind(PostsService).to(PostsService)
-container.bind(CommentsService).to(CommentsService)
-container.bind(LikeStatusService).to(LikeStatusService)
 container.bind(JwtService).to(JwtService)
-container.bind(SecurityDevicesService).to(SecurityDevicesService)
 container.bind(AuthController).to(AuthController)
 container.bind(UsersController).to(UsersController)
 container.bind(BlogController).to(BlogController)
 container.bind(PostsController).to(PostsController)
 container.bind(CommentsController).to(CommentsController)
 container.bind(SecurityDevicesController).to(SecurityDevicesController)
+container.bind(AuthService).to(AuthService)
+container.bind(UsersService).to(UsersService)
+container.bind(BlogsService).to(BlogsService)
+container.bind(PostsService).to(PostsService)
+container.bind(PostLikeStatusService).to(PostLikeStatusService)
+container.bind(CommentsService).to(CommentsService)
+container.bind(CommentLikeStatusService).to(CommentLikeStatusService)
+container.bind(SecurityDevicesService).to(SecurityDevicesService)
+container.bind(UsersRepository).to(UsersRepository)
+container.bind(BlogsRepository).to(BlogsRepository)
+container.bind(BlogsQueryRepository).to(BlogsQueryRepository)
+container.bind(UsersQueryRepository).to(UsersQueryRepository)
+container.bind(PostsRepository).to(PostsRepository)
+container.bind(PostsQueryRepository).to(PostsQueryRepository)
+container.bind(PostLikeMongooseRepository).to(PostLikeMongooseRepository)
+container.bind(CommentsRepository).to(CommentsRepository)
+container.bind(CommentsQueryRepository).to(CommentsQueryRepository)
+container.bind(DevicesRepository).to(DevicesRepository)
+container.bind(ExpiredTokenRepository).to(ExpiredTokenRepository)
+container.bind(RequestForApiRepository).to(RequestForApiRepository)
+container.bind(CommentLikeMongooseRepository).to(CommentLikeMongooseRepository)
 
 
 
@@ -78,7 +82,7 @@ container.bind(SecurityDevicesController).to(SecurityDevicesController)
 // const blogService = new BlogsService(blogsRepository)
 // const postsService = new PostsService(postsRepository, blogsRepository)
 // export const commentsService = new CommentsService(commentsRepository, postsRepository, commentsQueryRepository)
-// export const likeStatusService = new LikeStatusService()
+
 // export const jwtService = new JwtService(expiredTokenRepository, devicesRepository)
 // export const securityDevicesService = new SecurityDevicesService(devicesRepository)
 

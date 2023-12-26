@@ -3,7 +3,7 @@ import {authBearerMiddleware, isTokenInsideHeader} from "../../middlewares/auth-
 import {
     checkedValidation,
     commentValidation,
-    likeStatusValidation
+    commentLikeStatusValidation
 } from "../../middlewares/requestValidatorWithExpressValidator";
 import {container} from "../../composition-root";
 import {CommentsController} from "../controllers/commentController";
@@ -27,7 +27,7 @@ commentsRouter.put('/:commentId',
 )
 commentsRouter.put('/:commentId/like-status',
     authBearerMiddleware,
-    likeStatusValidation,
+    commentLikeStatusValidation,
     commentsController.updateLikeStatus.bind(commentsController)
     )
 commentsRouter.delete('/:commentId',

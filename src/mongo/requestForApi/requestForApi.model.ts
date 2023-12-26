@@ -8,4 +8,4 @@ export const RequestForApiSchema = new mongoose.Schema<WithId<RequestForApiType>
     date: {type: Date, required: true}
 })
 
-export const RequestForApiModel = mongoose.model<RequestForApiType>('requestForApi', RequestForApiSchema)
+export const RequestForApiModel = mongoose.model<RequestForApiType>('requestForApis', RequestForApiSchema)
