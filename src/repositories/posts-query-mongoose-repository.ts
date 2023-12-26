@@ -21,19 +21,26 @@ export class PostsQueryRepository {
         const sortDirection = sortDirectionQuery === 'asc' ? 1 : -1
 
         const skipPages: number = (pageNumber - 1) * pageSize
-        const totalCount = await PostModel.find({}).count({})
-        const pageCount = Math.ceil(totalCount / pageSize)
 
+        // const totalCount = await PostModel.find({}).count({})
+        // const pageCount = Math.ceil(totalCount / pageSize)
+        let totalCount
+        let pageCount
 
         let items: PostDbType[]
         console.log("blogId = ", blogId)
+
         if(blogId) {
+            totalCount = await PostModel.find({blogId: blogId}).count({})
+            pageCount = Math.ceil(totalCount / pageSize)
             items = await PostModel
                 .find({blogId: blogId})
                 .sort({[sortBy]: sortDirection})
                 .skip(skipPages)
                 .limit(pageSize)
         } else {
+            totalCount = await PostModel.find({}).count({})
+            pageCount = Math.ceil(totalCount / pageSize)
             items = await PostModel
                 .find({})
                 .sort({[sortBy]: sortDirection})
