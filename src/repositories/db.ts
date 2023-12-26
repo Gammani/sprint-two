@@ -5,7 +5,7 @@ import {settings} from "../settings";
 
 dotenv.config()
 
-export const dbName = process.env.mongoDBName || "friendlyWorlds"
+// export const dbName = process.env.MONGODB_URL || "friendlyWorlds"
 export const mongoURI = settings.MONGO_URI
 
 // const mongoURI = "mongodb://0.0.0.0:27017"
@@ -25,7 +25,7 @@ export async function runDb() {
         // Connect the client to the server
         // await client.connect();
         // Establish and verify connection
-        await mongoose.connect(mongoURI + "/" + dbName)
+        await mongoose.connect(mongoURI)
 
         // await client.db("blogs").command({ping: 1})
         // await client.db("posts").command({ping: 1})
