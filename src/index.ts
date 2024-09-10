@@ -1,5 +1,5 @@
-// import {createApp} from "./app-config";
-// import cookieParser from "cookie-parser";
+import {createApp} from "./app-config";
+import cookieParser from "cookie-parser";
 //
 // const port = process.env.PORT || 5000
 //
@@ -13,6 +13,7 @@
 
 import { app } from './app-settings'
 import { runDb } from './repositories/db'
+import {DocumentBuilder, SwaggerModule} from "@nestjs/swagger";
 
 const port = process.env.PORT || 3999
 app.set('trust proxy', true)

@@ -105,7 +105,7 @@ export class UsersRepository {
         return foundUser
     }
     async deleteUser(id: string): Promise<boolean> {
-        const result = await UserModel.deleteOne({id: id})
+        const result = await UserModel.deleteOne({_id: id})
         return result.deletedCount === 1
     }
 
@@ -116,7 +116,7 @@ export class UsersRepository {
         // const user = await usersCollection.findOne({$or: [{"emailConfirmation.email": email}, {"emailConfirmation.email": email}]})
         return user
     }
-    async updateConfirmation(_id: string) {
+    async updateConfirmation(_id: string): Promise<boolean> {
         let result = await UserModel
             .updateOne({_id}, {$set: {'emailConfirmation.isConfirmed': true}})
         return result.modifiedCount === 1

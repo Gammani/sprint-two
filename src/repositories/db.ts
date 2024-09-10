@@ -25,6 +25,7 @@ export async function runDb() {
         // Connect the client to the server
         // await client.connect();
         // Establish and verify connection
+        console.log(mongoURI, " mongoURI")
         await mongoose.connect(mongoURI)
 
         // await client.db("blogs").command({ping: 1})
@@ -39,6 +40,7 @@ export async function runDb() {
 
     } catch(e) {
         console.log("Can't connect to db");
+        console.log(e, " error")
         // Ensures that the client will close when you finish/error
         // await client.close();
         await mongoose.disconnect()
